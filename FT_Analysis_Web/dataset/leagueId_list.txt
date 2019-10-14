@@ -6,6 +6,7 @@
 1-dorostenecka-ligatransferswettbewerbCZ19
 1-hnltransferswettbewerbKR1
 1-landesliga-niederosterreichtransferswettbewerbA4N
+1-landesliga-salzburgtransferswettbewerbA5S
 1-liga-classic-gruppe-1transferswettbewerbCHC1
 1-liga-classic-gruppe-2transferswettbewerbCHC2
 1-liga-classic-gruppe-3transferswettbewerbCHC3
@@ -48,9 +49,11 @@ a-jgd-bl-nord-nordosttransferswettbewerbAJ1
 a-jgd-bl-sud-sudwesttransferswettbewerbAJ3
 a-jgd-bl-westtransferswettbewerbAJ2
 a-junioren-eerste-divisietransferswettbewerbNLAE
+a-junioren-eredivisietransferswettbewerbNLAJ
 a-leaguetransferswettbewerbAUS1
 a-lygatransferswettbewerbLI1
 a-pojat-sm-sarja-endrundetransferswettbewerbFJE
+a-pojat-sm-sarjatransferswettbewerbFINJ
 absa-premiershiptransferswettbewerbSFA1
 alka-superligaen-abstiegsrundetransferswettbewerbDKAR
 alka-superligaen-meisterrundetransferswettbewerbDKMR
@@ -62,6 +65,7 @@ ascenso-mx-clausuratransferswettbewerbMEX2
 aufstiegsrunde-eerste-klasse-amateurstransferswettbewerbB3AU
 azadegan-leaguetransferswettbewerbIRN2
 b-grupatransferswettbewerbBU2
+b-jgd-bl-westtransferswettbewerbBJ2
 bangladesh-football-premier-leaguetransferswettbewerbBGD1
 bardsragujn-chumbtransferswettbewerbARM1
 bayernliga-sudtransferswettbewerbOLB2
@@ -76,6 +80,7 @@ bundesligatransferswettbewerbA1
 burgenlandligatransferswettbewerbA4B
 campeonato-brasileiro-serie-atransferswettbewerbBRA1
 campeonato-brasileiro-serie-btransferswettbewerbBRA2
+campionato-allievi-nazionali-girone-atransferswettbewerbITJ4
 campionato-allievi-nazionali-girone-ctransferswettbewerbITJ6
 campionato-sammarinese-prima-fasetransferswettbewerbCSPF
 campionato-sammarinese-seconda-fasetransferswettbewerbCSSF
@@ -104,7 +109,9 @@ effodeildintransferswettbewerbFARO
 egyptian-premier-leaguetransferswettbewerbEGY1
 ehrenpromotiontransferswettbewerbLUX2
 ekstraklasatransferswettbewerbPL1
+eliteliga-salzburgtransferswettbewerbELSA
 eliteliga-tiroltransferswettbewerbELTI
+eliteliga-vorarlbergtransferswettbewerbELVA
 eredivisietransferswettbewerbNL1
 erovnuli-liga-ab-2017-transferswettbewerbGE1N
 esiliiga-btransferswettbewerbEST3
@@ -114,6 +121,7 @@ first-division-leaguetransferswettbewerbHGKG
 first-divisiontransferswettbewerbIR2
 first-divisiontransferswettbewerbMAL2
 folksam-u21-allsvenskan-norratransferswettbewerbS21N
+folksam-u21-allsvenskan-sodratransferswettbewerbS21S
 fortuna-liga-abstiegsplayofftransferswettbewerbFLAP
 fortuna-liga-abstiegsrundetransferswettbewerbSLAR
 fortuna-liga-abstiegsrundetransferswettbewerbT1AR
@@ -122,6 +130,7 @@ fortuna-liga-meisterrundetransferswettbewerbT1MR
 gambrinus-ligatransferswettbewerbTS1
 gibraltar-premier-divisiontransferswettbewerbGI1
 go-jek-traveloka-liga-1transferswettbewerbIN1L
+hessenligatransferswettbewerbOBLC
 hoofdklasse-a-zaterdagtransferswettbewerbHAZA
 hoofdklasse-a-zondagtransferswettbewerbHAZO
 hoofdklasse-b-zaterdagtransferswettbewerbHBZA
@@ -136,6 +145,8 @@ j-league-division-1transferswettbewerbJAP1
 j-league-division-2transferswettbewerbJAP2
 j3-leaguetransferswettbewerbJAP3
 japan-football-leaguetransferswettbewerbJFL
+jugendliga-u16transferswettbewerbJGD3
+jugendliga-u18transferswettbewerbJGD2
 jupiler-leaguetransferswettbewerbNL2
 jupiler-pro-leaguetransferswettbewerbBE1
 k-league-challengetransferswettbewerbRSK2
@@ -147,6 +158,8 @@ kanalsport-divisionen-abstiegsrundetransferswettbewerbDKDA
 karntner-ligatransferswettbewerbA4K
 kasachischer-supercuptransferspokalwettbewerbKASC
 kategoria-superioretransferswettbewerbALB1
+kolmonen-helsinki-gruppe-2transferswettbewerbKOG2
+kolmonen-ita-suomitransferswettbewerbFI4L
 korea-national-leaguetransferswettbewerbRKNL
 landesliga-bayern-sudwesttransferswettbewerbLBSW
 landesliga-bremen-beta-transferswettbewerbLLHB
@@ -187,8 +200,11 @@ molodezhnoe-pervenstvo-rossiitransferswettbewerbRUJL
 moravskoslezska-fotbalova-ligatransferswettbewerbCZ3M
 myanmar-national-leaguetransferswettbewerbMYA1
 nasl-fall-championshiptransferswettbewerbNAFC
+national-premier-soccer-league-golden-gatetransferswettbewerbNPGG
 national-premier-soccer-league-great-lakestransferswettbewerbNPGL
+national-premier-soccer-league-heartlandtransferswettbewerbNPHE
 national-premier-soccer-league-mid-atlantictransferswettbewerbNPMA
+national-premier-soccer-league-north-atlantictransferswettbewerbNPNA
 national-premier-soccer-league-southeasttransferswettbewerbNPSE
 national-premier-soccer-league-southwesttransferswettbewerbNPSW
 national-premier-soccer-league-sunshinetransferswettbewerbNPSU
@@ -220,6 +236,7 @@ premier-leaguetransferswettbewerbMAL1
 premier-ligatransferswettbewerbKAS1
 premier-ligatransferswettbewerbRU1
 premier-ligatransferswettbewerbUKR1
+premijer-liga-bih-u17transferswettbewerbBI17
 premijer-liga-bih-u19transferswettbewerbBI19
 premijer-ligatransferswettbewerbBOS1
 premium-liigatransferswettbewerbEST1
@@ -231,9 +248,11 @@ primavera-1transferswettbewerbIJ1
 primavera-2atransferswettbewerbIJ2A
 primavera-2btransferswettbewerbIJ2B
 primeira-ligatransferswettbewerbPO1
+primera-b-aperturatransferswettbewerbCHL2
 primera-b-nacionaltransferswettbewerbARG2
 primera-division-clausuratransferswettbewerbURUC
 primera-division-inviernotransferswettbewerbCRPD
+primera-division-transiciontransferswettbewerbCHI%C3%9C
 primera-division-veranotransferswettbewerbPDV1
 primera-divisiontransferswettbewerbAR1N
 primera-divisiontransferswettbewerbES1
@@ -263,6 +282,7 @@ russian-professional-football-league-sudtransferswettbewerbRPLS
 russian-professional-football-league-ural-povolzjetransferswettbewerbRPLU
 russian-professional-football-league-westtransferswettbewerbRPLW
 russian-professional-football-league-zentraltransferswettbewerbRPLZ
+russian-u17-youth-football-leaguetransferswettbewerbRU17
 s-leaguetransferswettbewerbSIN1
 saarland-liga-beta-transferswettbewerbLLSA
 salzburger-ligatransferswettbewerbA4S
@@ -301,6 +321,7 @@ super-ligtransferswettbewerbTR1
 superettantransferswettbewerbSE2
 superligaentransferswettbewerbDK1
 superligatransferswettbewerbSER1
+swiss-u17-elite-leaguetransferswettbewerbCH17
 swiss-u18-elite-leaguetransferswettbewerbCH18
 thai-premier-leaguetransferswettbewerbTHA1
 thuringenliga-beta-transferswettbewerbTHLI
@@ -313,6 +334,8 @@ torneo-descentralizado-aperturatransferswettbewerbTDeA
 torneo-descentralizado-clausuratransferswettbewerbTDeC
 torneo-intermediotransferswettbewerbURUI
 tweede-divisietransferswettbewerbNTD
+u17-eliitliiga-esiliigatransferswettbewerbES17
+u18-patanekan-arajnutyuntransferswettbewerbAR18
 u18-premier-leaguetransferswettbewerbGB18
 u19-allsvenskan-norratransferswettbewerbJUNO
 u19-allsvenskan-sodratransferswettbewerbJUS%C3%96
@@ -333,11 +356,15 @@ verbandsliga-hessen-nord-beta-transferswettbewerbVLHN
 verbandsliga-hessen-sud-beta-transferswettbewerbVLHS
 verbandsliga-mecklenburg-vorpommerntransferswettbewerbVLMV
 verbandsliga-sudbaden-beta-transferswettbewerbVLSB
+verbandsliga-sudwest-beta-transferswettbewerbVLSW
 verbandsliga-westfalen-1-beta-transferswettbewerbVLW1
 verbandsliga-wurttemberg-beta-transferswettbewerbVLBW
 virsligatransferswettbewerbLET1
+voorronde-a-junioren-eredivisietransferswettbewerbNLJV
 vorarlberg-ligatransferswettbewerbA4V
+vorrunde-a-junioren-eerste-divisietransferswettbewerbNLEV
 welsh-premier-leaguetransferswettbewerbWAL1
 wiener-stadtligatransferswettbewerbA4W
 wyschejschaja-lihatransferswettbewerbWER1
 ykkonentransferswettbewerbFI2
+zentrale-jugendligatransferswettbewerbPLZJ
