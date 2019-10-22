@@ -16,16 +16,16 @@ for i in range(len(df)):
         if club_from != "":
             if club_from[:1] == " ":
                 club_from = club_from[1:]
-            if club_from[-3:-2] == 'U':
-                club_from = club_from[:-4]
+            """if club_from[-3:-2] == 'U':
+                club_from = club_from[:-4]"""
             arr.append(club_from)
 
         # clean club_to data
         if club_to != "":
             if club_to[:1] == " ":
                 club_to = club_to[1:]
-            if club_to[-3:-2] == 'U':
-                club_to = club_to[:-4]
+            """if club_to[-3:-2] == 'U':
+                club_to = club_to[:-4]"""
             arr.append(club_to)
 
 my_list = list(dict.fromkeys(arr))
