@@ -4,6 +4,8 @@ df = pd.read_json('dataset/transfers-2018_19-20191004.json', lines=True)
 count = 0
 arr = []
 exist = False
+englishPremierLeague_ID = "premier-leaguetransferswettbewerbGB1"
+
 
 for i in range(len(df)):
     league_from = df["from"][i]["leagueId"]
