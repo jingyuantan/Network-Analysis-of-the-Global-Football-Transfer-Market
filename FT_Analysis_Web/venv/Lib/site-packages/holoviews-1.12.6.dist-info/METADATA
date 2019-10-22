@@ -1,0 +1,311 @@
+Metadata-Version: 2.1
+Name: holoviews
+Version: 1.12.6
+Summary: Stop plotting your data - annotate your data and let it visualize itself.
+Home-page: https://www.holoviews.org
+Author: Jean-Luc Stevens and Philipp Rudiger
+Author-email: holoviews@gmail.com
+Maintainer: PyViz Developers
+Maintainer-email: developers@pyviz.org
+License: BSD
+Platform: Windows
+Platform: Mac OS X
+Platform: Linux
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Software Development :: Libraries
+Requires-Python: >=2.7
+Description-Content-Type: text/markdown
+Requires-Dist: param (<2.0,>=1.8.0)
+Requires-Dist: numpy (>=1.0)
+Requires-Dist: pyviz-comms (>=0.7.2)
+Provides-Extra: all
+Requires-Dist: dask ; extra == 'all'
+Requires-Dist: pillow ; extra == 'all'
+Requires-Dist: pandas ; extra == 'all'
+Requires-Dist: deepdiff ; extra == 'all'
+Requires-Dist: phantomjs ; extra == 'all'
+Requires-Dist: notebook ; extra == 'all'
+Requires-Dist: streamz (>=0.5.0) ; extra == 'all'
+Requires-Dist: jsonschema (==2.6.0) ; extra == 'all'
+Requires-Dist: cftime ; extra == 'all'
+Requires-Dist: netcdf4 ; extra == 'all'
+Requires-Dist: plotly (>=3.4) ; extra == 'all'
+Requires-Dist: selenium ; extra == 'all'
+Requires-Dist: xarray (>=0.10.4) ; extra == 'all'
+Requires-Dist: path.py ; extra == 'all'
+Requires-Dist: bzip2 ; extra == 'all'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'all'
+Requires-Dist: flake8 (==3.6.0) ; extra == 'all'
+Requires-Dist: awscli ; extra == 'all'
+Requires-Dist: matplotlib (<3.1,>=2.1) ; extra == 'all'
+Requires-Dist: datashader ; extra == 'all'
+Requires-Dist: cyordereddict ; extra == 'all'
+Requires-Dist: ipython (==5.4.1) ; extra == 'all'
+Requires-Dist: nbconvert (==5.3.1) ; extra == 'all'
+Requires-Dist: nose ; extra == 'all'
+Requires-Dist: scipy ; extra == 'all'
+Requires-Dist: bokeh (<2.0.0,>=1.1.0) ; extra == 'all'
+Requires-Dist: networkx ; extra == 'all'
+Requires-Dist: coveralls ; extra == 'all'
+Requires-Dist: ipython (>=5.4.0) ; extra == 'all'
+Requires-Dist: panel ; extra == 'all'
+Requires-Dist: ffmpeg ; extra == 'all'
+Provides-Extra: basic_tests
+Requires-Dist: nose ; extra == 'basic_tests'
+Requires-Dist: flake8 (==3.6.0) ; extra == 'basic_tests'
+Requires-Dist: coveralls ; extra == 'basic_tests'
+Requires-Dist: path.py ; extra == 'basic_tests'
+Requires-Dist: matplotlib (<3.1,>=2.1) ; extra == 'basic_tests'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'basic_tests'
+Requires-Dist: bokeh (>=1.1.0) ; extra == 'basic_tests'
+Requires-Dist: ipython (>=5.4.0) ; extra == 'basic_tests'
+Requires-Dist: notebook ; extra == 'basic_tests'
+Provides-Extra: build
+Requires-Dist: param (>=1.7.0) ; extra == 'build'
+Requires-Dist: setuptools ; extra == 'build'
+Provides-Extra: doc
+Requires-Dist: ipython (>=5.4.0) ; extra == 'doc'
+Requires-Dist: notebook ; extra == 'doc'
+Requires-Dist: pandas ; extra == 'doc'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'doc'
+Requires-Dist: bokeh (<2.0.0,>=1.1.0) ; extra == 'doc'
+Requires-Dist: panel ; extra == 'doc'
+Requires-Dist: networkx ; extra == 'doc'
+Requires-Dist: pillow ; extra == 'doc'
+Requires-Dist: xarray (>=0.10.4) ; extra == 'doc'
+Requires-Dist: plotly (>=3.4) ; extra == 'doc'
+Requires-Dist: datashader ; extra == 'doc'
+Requires-Dist: selenium ; extra == 'doc'
+Requires-Dist: phantomjs ; extra == 'doc'
+Requires-Dist: ffmpeg ; extra == 'doc'
+Requires-Dist: streamz (>=0.5.0) ; extra == 'doc'
+Requires-Dist: cftime ; extra == 'doc'
+Requires-Dist: netcdf4 ; extra == 'doc'
+Requires-Dist: bzip2 ; extra == 'doc'
+Requires-Dist: dask ; extra == 'doc'
+Requires-Dist: scipy ; extra == 'doc'
+Requires-Dist: nbsite (>0.5.2) ; extra == 'doc'
+Requires-Dist: sphinx (<2.0) ; extra == 'doc'
+Requires-Dist: sphinx-ioam-theme ; extra == 'doc'
+Provides-Extra: examples
+Requires-Dist: ipython (>=5.4.0) ; extra == 'examples'
+Requires-Dist: notebook ; extra == 'examples'
+Requires-Dist: pandas ; extra == 'examples'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'examples'
+Requires-Dist: bokeh (<2.0.0,>=1.1.0) ; extra == 'examples'
+Requires-Dist: panel ; extra == 'examples'
+Requires-Dist: networkx ; extra == 'examples'
+Requires-Dist: pillow ; extra == 'examples'
+Requires-Dist: xarray (>=0.10.4) ; extra == 'examples'
+Requires-Dist: plotly (>=3.4) ; extra == 'examples'
+Requires-Dist: datashader ; extra == 'examples'
+Requires-Dist: selenium ; extra == 'examples'
+Requires-Dist: phantomjs ; extra == 'examples'
+Requires-Dist: ffmpeg ; extra == 'examples'
+Requires-Dist: streamz (>=0.5.0) ; extra == 'examples'
+Requires-Dist: cftime ; extra == 'examples'
+Requires-Dist: netcdf4 ; extra == 'examples'
+Requires-Dist: bzip2 ; extra == 'examples'
+Requires-Dist: dask ; extra == 'examples'
+Requires-Dist: scipy ; extra == 'examples'
+Provides-Extra: extras
+Requires-Dist: ipython (>=5.4.0) ; extra == 'extras'
+Requires-Dist: notebook ; extra == 'extras'
+Requires-Dist: pandas ; extra == 'extras'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'extras'
+Requires-Dist: bokeh (<2.0.0,>=1.1.0) ; extra == 'extras'
+Requires-Dist: panel ; extra == 'extras'
+Requires-Dist: networkx ; extra == 'extras'
+Requires-Dist: pillow ; extra == 'extras'
+Requires-Dist: xarray (>=0.10.4) ; extra == 'extras'
+Requires-Dist: plotly (>=3.4) ; extra == 'extras'
+Requires-Dist: datashader ; extra == 'extras'
+Requires-Dist: selenium ; extra == 'extras'
+Requires-Dist: phantomjs ; extra == 'extras'
+Requires-Dist: ffmpeg ; extra == 'extras'
+Requires-Dist: streamz (>=0.5.0) ; extra == 'extras'
+Requires-Dist: cftime ; extra == 'extras'
+Requires-Dist: netcdf4 ; extra == 'extras'
+Requires-Dist: bzip2 ; extra == 'extras'
+Requires-Dist: dask ; extra == 'extras'
+Requires-Dist: scipy ; extra == 'extras'
+Requires-Dist: cyordereddict ; extra == 'extras'
+Requires-Dist: pscript (==0.7.1) ; extra == 'extras'
+Provides-Extra: nbtests
+Requires-Dist: ipython (>=5.4.0) ; extra == 'nbtests'
+Requires-Dist: notebook ; extra == 'nbtests'
+Requires-Dist: pandas ; extra == 'nbtests'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'nbtests'
+Requires-Dist: bokeh (<2.0.0,>=1.1.0) ; extra == 'nbtests'
+Requires-Dist: panel ; extra == 'nbtests'
+Requires-Dist: nose ; extra == 'nbtests'
+Requires-Dist: awscli ; extra == 'nbtests'
+Requires-Dist: deepdiff ; extra == 'nbtests'
+Requires-Dist: nbconvert (==5.3.1) ; extra == 'nbtests'
+Requires-Dist: jsonschema (==2.6.0) ; extra == 'nbtests'
+Requires-Dist: cyordereddict ; extra == 'nbtests'
+Requires-Dist: ipython (==5.4.1) ; extra == 'nbtests'
+Provides-Extra: notebook
+Requires-Dist: ipython (>=5.4.0) ; extra == 'notebook'
+Requires-Dist: notebook ; extra == 'notebook'
+Provides-Extra: recommended
+Requires-Dist: ipython (>=5.4.0) ; extra == 'recommended'
+Requires-Dist: notebook ; extra == 'recommended'
+Requires-Dist: pandas ; extra == 'recommended'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'recommended'
+Requires-Dist: bokeh (<2.0.0,>=1.1.0) ; extra == 'recommended'
+Requires-Dist: panel ; extra == 'recommended'
+Provides-Extra: tests
+Requires-Dist: nose ; extra == 'tests'
+Requires-Dist: flake8 (==3.6.0) ; extra == 'tests'
+Requires-Dist: coveralls ; extra == 'tests'
+Requires-Dist: path.py ; extra == 'tests'
+Requires-Dist: matplotlib (<3.1,>=2.1) ; extra == 'tests'
+Provides-Extra: unit_tests
+Requires-Dist: ipython (>=5.4.0) ; extra == 'unit_tests'
+Requires-Dist: notebook ; extra == 'unit_tests'
+Requires-Dist: pandas ; extra == 'unit_tests'
+Requires-Dist: matplotlib (>=2.1) ; extra == 'unit_tests'
+Requires-Dist: bokeh (<2.0.0,>=1.1.0) ; extra == 'unit_tests'
+Requires-Dist: panel ; extra == 'unit_tests'
+Requires-Dist: networkx ; extra == 'unit_tests'
+Requires-Dist: pillow ; extra == 'unit_tests'
+Requires-Dist: xarray (>=0.10.4) ; extra == 'unit_tests'
+Requires-Dist: plotly (>=3.4) ; extra == 'unit_tests'
+Requires-Dist: datashader ; extra == 'unit_tests'
+Requires-Dist: selenium ; extra == 'unit_tests'
+Requires-Dist: phantomjs ; extra == 'unit_tests'
+Requires-Dist: ffmpeg ; extra == 'unit_tests'
+Requires-Dist: streamz (>=0.5.0) ; extra == 'unit_tests'
+Requires-Dist: cftime ; extra == 'unit_tests'
+Requires-Dist: netcdf4 ; extra == 'unit_tests'
+Requires-Dist: bzip2 ; extra == 'unit_tests'
+Requires-Dist: dask ; extra == 'unit_tests'
+Requires-Dist: scipy ; extra == 'unit_tests'
+Requires-Dist: nose ; extra == 'unit_tests'
+Requires-Dist: flake8 (==3.6.0) ; extra == 'unit_tests'
+Requires-Dist: coveralls ; extra == 'unit_tests'
+Requires-Dist: path.py ; extra == 'unit_tests'
+Requires-Dist: matplotlib (<3.1,>=2.1) ; extra == 'unit_tests'
+
+[![PyPI](https://img.shields.io/pypi/v/holoviews.svg)](https://pypi.python.org/pypi/holoviews)
+[![Conda](https://anaconda.org/pyviz/holoviews/badges/installer/conda.svg)](https://anaconda.org/pyviz/holoviews)
+[![Downloads](https://s3.amazonaws.com/pubbadges/holoviews_current.svg)](https://anaconda.org/pyviz/holoviews)
+[![BuildStatus](https://travis-ci.org/pyviz/holoviews.svg?branch=master)](https://travis-ci.org/pyviz/holoviews)
+[![Coveralls](https://img.shields.io/coveralls/pyviz/holoviews.svg)](https://coveralls.io/r/pyviz/holoviews)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pyviz/pyviz?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/pyviz/holoviews/master?filepath=examples)
+
+# <img src="https://assets.holoviews.org/logo/holoviews_color_icon_500x500.png" alt="HoloViews logo" height="40px" align="left" /> HoloViews
+
+**Stop plotting your data - annotate your data and let it visualize
+itself.**
+
+HoloViews is an
+[open-source](https://github.com/pyviz/holoviews/blob/master/LICENSE.txt)
+Python library designed to make data analysis and visualization seamless
+and simple. With HoloViews, you can usually express what you want to do
+in very few lines of code, letting you focus on what you are trying to
+explore and convey, not on the process of plotting. 
+
+Check out the [HoloViews web site](http://holoviews.org) for extensive examples and documentation.
+
+<div>
+<div >
+  <a href="http://holoviews.org/gallery/demos/bokeh/iris_splom_example.html">
+    <img src="http://holoviews.org/_images/iris_splom_example_large.png" width='20%'> </img> </a>
+  <a href="http://holoviews.org/getting_started/Gridded_Datasets.html">
+    <img src="https://assets.holoviews.org/collage/cells.png" width='22%'> </img>  </a>
+  <a href="http://holoviews.org/gallery/demos/bokeh/scatter_economic.html">
+    <img src="http://holoviews.org/_images/scatter_economic_large.png" width='43%'> </img> </a>
+</div>
+
+<div >
+  <a href="http://holoviews.org/gallery/demos/bokeh/square_limit.html">
+    <img src="http://holoviews.org/_images/square_limit_large.png" width='20%'> </a>
+  <a href="http://holoviews.org/gallery/demos/bokeh/bars_economic.html">
+    <img src="http://holoviews.org/_images/bars_economic.png" width='20%'> </a>
+  <a href="http://holoviews.org/gallery/demos/bokeh/texas_choropleth_example.html">
+    <img src="http://holoviews.org/_images/texas_choropleth_example_large.png" width='20%'> </a>
+  <a href="http://holoviews.org/gallery/demos/bokeh/verhulst_mandelbrot.html">
+    <img src="http://holoviews.org/_images/verhulst_mandelbrot.png" width='20%'> </a>
+</div>
+<div >
+    <a href="http://holoviews.org/gallery/demos/bokeh/dropdown_economic.html">
+      <img src="https://assets.holoviews.org/collage/dropdown.gif" width='31%'> </a>
+    <a href="http://holoviews.org/gallery/demos/bokeh/dragon_curve.html">
+      <img src="https://assets.holoviews.org/collage/dragon_fractal.gif" width='26%'> </a>
+    <a href="http://holoviews.org/gallery/apps/bokeh/nytaxi_hover.html">
+      <img src="https://assets.holoviews.org/collage/ny_datashader.gif" width='31%'> </a>
+</div>
+</div>
+
+
+Installation
+============
+
+HoloViews works with 
+[Python 2.7 and Python 3](https://travis-ci.org/pyviz/holoviews)
+on Linux, Windows, or Mac, and provides optional extensions for working with the 
+[Jupyter/IPython Notebook](http://jupyter.org).
+
+The recommended way to install HoloViews is using the
+[conda](http://conda.pydata.org/docs/) command provided by
+[Anaconda](http://docs.continuum.io/anaconda/install) or
+[Miniconda](http://conda.pydata.org/miniconda.html):
+
+    conda install -c pyviz holoviews bokeh
+
+This command will install the typical packages most useful with
+HoloViews, though HoloViews itself depends only on
+[Numpy](http://numpy.org) and [Param](https://param.pyviz.org).
+Additional installation and configuration options are described in the
+[user guide](http://holoviews.org/user_guide/Installing_and_Configuring.html).
+
+You can also clone holoviews directly from GitHub and install it with:
+
+    git clone git://github.com/pyviz/holoviews.git
+    cd holoviews
+    pip install -e .
+
+Usage
+-----
+
+Once you've installed HoloViews, you can get a copy of all the
+examples shown on the website:
+
+    holoviews --install-examples
+    cd holoviews-examples
+
+And then you can launch Jupyter Notebook to explore them:
+
+    jupyter notebook
+
+To work with JupyterLab you will also need the PyViz JupyterLab
+extension:
+
+    conda install -c conda-forge jupyterlab
+    jupyter labextension install @pyviz/jupyterlab_pyviz
+
+Once you have installed JupyterLab and the extension launch it with::
+
+    jupyter-lab
+
+For more details on setup and configuration see [our website](http://holoviews.org/user_guide/Installing_and_Configuring.html).
+
+For general discussion, we have a [gitter channel](https://gitter.im/pyviz/pyviz).
+If you find any bugs or have any feature suggestions please file a GitHub 
+[issue](https://github.com/pyviz/holoviews/issues)
+or submit a [pull request](https://help.github.com/articles/about-pull-requests).
+
+
