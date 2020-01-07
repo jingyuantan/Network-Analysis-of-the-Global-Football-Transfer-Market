@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request
+from flask import Flask, render_template, request
 import plotly
 import plotly.graph_objs as go
 
@@ -10,10 +10,16 @@ app = Flask(__name__)
 
 
 @app.route('/')
+@app.route('/index')
 def index():
+    return render_template('index.html')
+
+
+@app.route('/explore/')
+def explore():
     feature = 'Bar'
     bar = create_plot(feature)
-    return render_template('index.html', plot=bar)
+    return render_template('explore.html', plot=bar)
 
 
 def create_plot(feature):
