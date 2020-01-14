@@ -2,13 +2,13 @@ from app import db
 
 
 class Player(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
-    position = db.Column(db.String(64))
-    age = db.Column(db.Integer)
-    nationality = db.Column(db.String(64))
-    href = db.Column(db.String(200), index=True, unique=True)
-    img_href = db.Column(db.String(200), index=True, unique=True)
+    id = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String)
+    position = db.Column(db.String)
+    age = db.Column(db.String)
+    nationality = db.Column(db.String)
+    #href = db.Column(db.String)
+    img_href = db.Column(db.String)
     transfers = db.relationship('Transfer', backref='player', lazy='dynamic')
 
     def __repr__(self):
@@ -16,22 +16,23 @@ class Player(db.Model):
 
 
 class Club(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
-    country = db.Column(db.String(64))
-    leagueId = db.Column(db.String(64), db.ForeignKey('league.id'))
-    country_img_href = db.Column(db.String(200), index=True, unique=True)
-    club_img_href = db.Column(db.String(200), index=True, unique=True)
-    transfers = db.relationship('Transfer', backref='club', lazy='dynamic')
+    id = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String, index=True)
+    country = db.Column(db.String)
+    leagueId = db.Column(db.String, db.ForeignKey('league.id'))
+    #href = db.Column(db.String, index=True)
+    country_img_href = db.Column(db.String, index=True)
+    club_img_href = db.Column(db.String, index=True)
+    #transfers = db.relationship('Transfer', backref='club', lazy='dynamic')
 
     def __repr__(self):
         return '<Club {}>'.format(self.name)
 
 
 class League(db.Model):
-    id = db.Column(db.String(200), primary_key=True)
-    name = db.Column(db.String(64), index=True)
-    href = db.Column(db.String(200), index=True, unique=True)
+    id = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String, index=True)
+    href = db.Column(db.String, index=True)
     clubs = db.relationship('Club', backref='league', lazy='dynamic')
 
     def __repr__(self):
@@ -39,14 +40,16 @@ class League(db.Model):
 
 
 class Transfer(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    playerId = db.Column(db.Integer, db.ForeignKey('player.id'))
-    fromId = db.Column(db.Integer, db.ForeignKey('club.id'))
-    toId = db.Column(db.Integer, db.ForeignKey('club.id'))
-    href = db.Column(db.String(200), unique=True)
-    value = db.Column(db.String(64))
-    timestamp = db.Column(db.String(64))
-    season = db.Column(db.String(64))
+    id = db.Column(db.String, primary_key=True)
+    playerId = db.Column(db.String, db.ForeignKey('player.id'))
+    fromId = db.Column(db.String, db.ForeignKey('club.id'))
+    toId = db.Column(db.String, db.ForeignKey('club.id'))
+    #href = db.Column(db.String)
+    value = db.Column(db.String)
+    timestamp = db.Column(db.String)
+    season = db.Column(db.String)
+    fromClubs = db.relationship('Club', foreign_keys=[fromId])
+    toClubs = db.relationship('Club', foreign_keys=[toId])
 
     def __repr__(self):
         return '<Transfer {}>'.format(self.id)
