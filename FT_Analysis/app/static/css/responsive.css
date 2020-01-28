@@ -1,0 +1,535 @@
+/* 05 responsive styles */
+@media screen and (max-width: 991px) and (min-width: 768px) {
+  /*02 Navbar Styles*/
+  .navbar-toggler {
+    background: #444;
+    margin: 12px 0;
+    padding: 10px 16px; }
+    .navbar-toggler span {
+      background: #76c100; }
+
+  .nav-menu {
+    position: relative;
+    background: #000; }
+    .nav-menu .navbar-header {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-content: center; }
+      .nav-menu .navbar-header .navbar-brand {
+        display: flex;
+        align-items: center; }
+    .nav-menu .navbar {
+      background: #444; }
+      .nav-menu .navbar .navbar-nav .nav-item .nav-link {
+        line-height: 40px; }
+        .nav-menu .navbar .navbar-nav .nav-item .nav-link:before {
+          position: inherit; }
+
+  /*header-match-area*/
+  .header-match-area .social-icon {
+    justify-content: center; }
+
+  /*header-middle-aera*/
+  .header-middle-area .logo {
+    line-height: 7;
+    text-align: center; }
+
+  /*slider-area*/
+  .slider-area .sliding-item .sliding-content {
+    position: absolute;
+    display: inline-block;
+    top: 22%;
+    right: 9%; }
+    .slider-area .sliding-item .sliding-content h2 {
+      font-size: 40px;
+      color: rgba(255, 255, 255, 0.8); }
+    .slider-area .sliding-item .sliding-content .upcoming div {
+      width: 300px;
+      max-height: 100px; }
+      .slider-area .sliding-item .sliding-content .upcoming div .cdown {
+        font-size: 18px; }
+        .slider-area .sliding-item .sliding-content .upcoming div .cdown p {
+          font-size: 18px;
+          margin: 0; }
+  .slider-area .sliding-item .league-content {
+    top: 28%;
+    left: 9%; }
+    .slider-area .sliding-item .league-content h2 {
+      font-size: 40px; }
+    .slider-area .sliding-item .league-content .club-link {
+      margin-top: 12px; }
+      .slider-area .sliding-item .league-content .club-link a {
+        font-size: 18px;
+        padding: 14px 43px;
+        color: #fff;
+        margin-right: 20px; }
+    .slider-area .sliding-item .league-content .upcomming-match {
+      padding: 5px 10px;
+      width: 300px;
+      margin-top: 15px; }
+      .slider-area .sliding-item .league-content .upcomming-match .first-match h4 {
+        font-size: 14px;
+        color: #fff;
+        margin-bottom: 5px; }
+      .slider-area .sliding-item .league-content .upcomming-match .first-match p {
+        font-size: 14px;
+        margin: 0;
+        line-height: 17px; }
+      .slider-area .sliding-item .league-content .upcomming-match .upcoming {
+        margin-left: 10px; }
+        .slider-area .sliding-item .league-content .upcomming-match .upcoming div .cdown span {
+          font-size: 14px; }
+        .slider-area .sliding-item .league-content .upcomming-match .upcoming div .cdown p {
+          font-size: 16px;
+          margin: 0; }
+  .slider-area .sliding-item .sliding-match {
+    width: 450px; }
+    .slider-area .sliding-item .sliding-match h4 {
+      margin: 0 0; }
+      .slider-area .sliding-item .sliding-match h4 a {
+        font-size: 14px;
+        padding: 5px 10px;
+        display: inline-block; }
+    .slider-area .sliding-item .sliding-match .match-vs {
+      justify-content: space-around; }
+      .slider-area .sliding-item .sliding-match .match-vs li img {
+        width: 80px;
+        height: 80px; }
+      .slider-area .sliding-item .sliding-match .match-vs li span {
+        font-size: 22px;
+        margin-top: 8px; }
+      .slider-area .sliding-item .sliding-match .match-vs li.vs {
+        flex-basis: 35px; }
+        .slider-area .sliding-item .sliding-match .match-vs li.vs h4 {
+          font-size: 40px; }
+  .slider-area .owl-nav {
+    display: none; }
+
+  /*home2-slider*/
+  .home2-slider:before {
+    content: "";
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    width: 50%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    z-index: 9; }
+  .home2-slider .score-content {
+    top: 28%;
+    right: 12%; }
+    .home2-slider .score-content h2 {
+      font-size: 22px; }
+    .home2-slider .score-content .upcoming div {
+      width: 250px;
+      max-height: 80px; }
+      .home2-slider .score-content .upcoming div .cdown {
+        line-height: 18px; }
+        .home2-slider .score-content .upcoming div .cdown p {
+          margin: 0;
+          font-size: 16px; }
+        .home2-slider .score-content .upcoming div .cdown span {
+          font-size: 16px; }
+  .home2-slider .live-scores {
+    display: flex;
+    flex-direction: column;
+    position: inherit; }
+    .home2-slider .live-scores .score-head {
+      max-height: 33px;
+      width: 100%;
+      justify-content: center; }
+      .home2-slider .live-scores .score-head h4 {
+        margin: 0; }
+        .home2-slider .live-scores .score-head h4 a {
+          font-size: 18px; }
+    .home2-slider .live-scores .scores-area {
+      max-height: 33px;
+      width: 100%;
+      justify-content: center; }
+      .home2-slider .live-scores .scores-area p {
+        font-size: 18px;
+        margin: 0;
+        margin-right: 10px; }
+
+  /*match-schedule-area */
+  .match-schedule-area .slider-schedule .player-img img {
+    max-width: 150px;
+    max-height: 150px; }
+  .match-schedule-area .slider-schedule .club-name h4 {
+    font-size: 22px; }
+  .match-schedule-area .slider-schedule .club-name p {
+    font-size: 18px;
+    margin: 0; }
+  .match-schedule-area .slider-schedule .playing-schedule .club-img img {
+    max-width: 60px;
+    max-height: 60px; }
+  .match-schedule-area .slider-schedule .playing-schedule span {
+    font-size: 35px; }
+
+  /* schedule-area2*/
+  .schedule-area2 .schedule-slider {
+    padding: 100px; }
+    .schedule-area2 .schedule-slider .slider-schedule .club-box h4 {
+      font-size: 22px; }
+    .schedule-area2 .schedule-slider .slider-schedule .club-box img {
+      width: 60px; }
+    .schedule-area2 .schedule-slider .slider-schedule .goal {
+      font-size: 30px; }
+
+  /*match-box*/
+  .banner-box {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 30px; }
+    .banner-box .banner-img h4 {
+      font-size: 34px; }
+    .banner-box .banner-img p {
+      display: none; }
+
+  /*comment-aera*/
+  .comment-area .comment-box .user-cmnt {
+    justify-content: space-evenly; }
+
+  /*sports section*/
+  .sport-section .recent-video {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr 1fr);
+    grid-gap: 30px; }
+    .sport-section .recent-video .highlights-bg p {
+      font-size: 22px; }
+    .sport-section .recent-video .highlights-bg .video-play-btn {
+      transform: translateX(-110px); }
+
+  /*sports area*/
+  .news-area .news-box .news-search a {
+    width: 7%; }
+  .news-area .twit-post .twit-box {
+    grid-template-columns: repeat(1, 1fr 8fr); }
+
+  .banner-img h4 {
+    font-size: 30px; }
+
+  /*recent-video*/
+  /*fixtures-area*/
+  .laliga-box .fixture-box .club-fixture {
+    grid-template-columns: repeat(1, 2fr 1fr 2fr);
+    grid-column-gap: 0px; }
+    .laliga-box .fixture-box .club-fixture .club-img {
+      margin: 0; }
+      .laliga-box .fixture-box .club-fixture .club-img img {
+        width: 60px;
+        height: 60px; }
+      .laliga-box .fixture-box .club-fixture .club-img span {
+        margin: 0 10px;
+        font-size: 16px; }
+    .laliga-box .fixture-box .club-fixture .club-schedule h5 {
+      font-size: 16px; }
+
+  /*footer-area*/
+  .footer-area .footer-box {
+    grid-template-columns: repeat(1, 1fr); }
+    .footer-area .footer-box .footer-content p {
+      margin: 0;
+      display: flex;
+      align-items: center; }
+    .footer-area .footer-box .footer-content .news-info .news-detail {
+      grid-template-columns: repeat(1, 1fr 7fr); }
+
+  /* global-styles*/
+  .pad90 {
+    padding: 50px 0; }
+
+  .xs-mt-90 {
+    margin-top: 90px; }
+
+  .xs-mt-50 {
+    margin-top: 50px; }
+
+  .xs-mt-40 {
+    margin-top: 40px; }
+
+  .xs-mt-30 {
+    margin-top: 30px; }
+
+  .xs-mt-20 {
+    margin-top: 20px; }
+
+  .mt60 {
+    margin-top: 50px; } }
+@media screen and (max-width: 767px) {
+  /*02 Navbar Styles*/
+  .navbar-toggler {
+    background: #444;
+    margin: 12px 0;
+    padding: 10px 16px; }
+    .navbar-toggler span {
+      background: #76c100; }
+
+  .nav-menu {
+    position: relative;
+    background: #000; }
+    .nav-menu .navbar-header {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-content: center; }
+      .nav-menu .navbar-header .navbar-brand {
+        display: flex;
+        align-items: center; }
+    .nav-menu .navbar {
+      background: #444; }
+      .nav-menu .navbar .navbar-nav .nav-item .nav-link {
+        line-height: 40px; }
+        .nav-menu .navbar .navbar-nav .nav-item .nav-link:before {
+          position: inherit; }
+
+  /*header-match-area*/
+  .header-match-area .social-icon {
+    justify-content: center; }
+
+  /*header-middle-aera*/
+  .header-middle-area .logo {
+    line-height: 7;
+    text-align: center; }
+
+  /*slider-area*/
+  .slider-area .sliding-item .sliding-content {
+    position: absolute;
+    display: inline-block;
+    top: 19%;
+    right: 9%; }
+    .slider-area .sliding-item .sliding-content h2 {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8); }
+    .slider-area .sliding-item .sliding-content .upcoming div {
+      width: 200px;
+      max-height: 65px; }
+      .slider-area .sliding-item .sliding-content .upcoming div .cdown {
+        font-size: 14px; }
+        .slider-area .sliding-item .sliding-content .upcoming div .cdown p {
+          font-size: 16px;
+          margin: 0; }
+  .slider-area .sliding-item .league-content {
+    top: 28%;
+    left: 9%; }
+    .slider-area .sliding-item .league-content h2 {
+      font-size: 18px; }
+    .slider-area .sliding-item .league-content .club-link {
+      margin-top: 12px; }
+      .slider-area .sliding-item .league-content .club-link a {
+        font-size: 10px;
+        padding: 2px 9px;
+        color: #fff;
+        margin-right: 6px; }
+    .slider-area .sliding-item .league-content .upcomming-match {
+      padding: 5px 10px;
+      width: 300px;
+      margin-top: 15px; }
+      .slider-area .sliding-item .league-content .upcomming-match .first-match h4 {
+        font-size: 14px;
+        color: #fff;
+        margin-bottom: 5px; }
+      .slider-area .sliding-item .league-content .upcomming-match .first-match p {
+        font-size: 14px;
+        margin: 0;
+        line-height: 17px; }
+      .slider-area .sliding-item .league-content .upcomming-match .upcoming {
+        margin-left: 10px; }
+        .slider-area .sliding-item .league-content .upcomming-match .upcoming div .cdown span {
+          font-size: 14px; }
+        .slider-area .sliding-item .league-content .upcomming-match .upcoming div .cdown p {
+          font-size: 16px;
+          margin: 0; }
+  .slider-area .sliding-item .sliding-match {
+    width: 350px; }
+    .slider-area .sliding-item .sliding-match h4 {
+      margin: 0 0; }
+      .slider-area .sliding-item .sliding-match h4 a {
+        font-size: 14px;
+        padding: 5px 10px;
+        display: inline-block; }
+    .slider-area .sliding-item .sliding-match .match-vs {
+      justify-content: space-evenly; }
+      .slider-area .sliding-item .sliding-match .match-vs li img {
+        width: 50px;
+        height: 50px; }
+      .slider-area .sliding-item .sliding-match .match-vs li span {
+        font-size: 16px;
+        margin-top: 8px; }
+      .slider-area .sliding-item .sliding-match .match-vs li.vs {
+        flex-basis: 35px; }
+        .slider-area .sliding-item .sliding-match .match-vs li.vs h4 {
+          font-size: 30px; }
+  .slider-area .owl-nav {
+    display: none; }
+
+  /*home2-slider*/
+  .home2-slider:before {
+    content: "";
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    width: 50%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    z-index: 9; }
+  .home2-slider .score-content {
+    top: 17%;
+    right: 7%; }
+    .home2-slider .score-content h2 {
+      font-size: 18px; }
+    .home2-slider .score-content .upcoming div {
+      width: 150px;
+      max-height: 60px; }
+      .home2-slider .score-content .upcoming div .cdown {
+        line-height: 18px; }
+        .home2-slider .score-content .upcoming div .cdown p {
+          margin: 0;
+          font-size: 14px; }
+        .home2-slider .score-content .upcoming div .cdown span {
+          font-size: 14px; }
+  .home2-slider .live-scores {
+    display: flex;
+    flex-direction: column;
+    position: inherit; }
+    .home2-slider .live-scores .score-head {
+      max-height: 33px;
+      width: 100%;
+      justify-content: center; }
+      .home2-slider .live-scores .score-head h4 {
+        font-size: 16px;
+        margin: 0; }
+    .home2-slider .live-scores .scores-area {
+      max-height: 33px;
+      width: 100%;
+      justify-content: center; }
+      .home2-slider .live-scores .scores-area p {
+        font-size: 16px;
+        margin: 0;
+        margin-right: 10px; }
+
+  /*match-schedule-area */
+  .match-schedule-area .slider-schedule .player-img img {
+    max-width: 90px;
+    max-height: 90px; }
+  .match-schedule-area .slider-schedule .club-name h4 {
+    font-size: 17px; }
+  .match-schedule-area .slider-schedule .club-name p {
+    font-size: 15px;
+    margin: 0; }
+  .match-schedule-area .slider-schedule .playing-schedule .club-img img {
+    max-width: 40px;
+    max-height: 40px; }
+  .match-schedule-area .slider-schedule .playing-schedule span {
+    font-size: 25px; }
+
+  /* schedule-area2*/
+  .schedule-area2 .schedule-slider {
+    padding: 0; }
+    .schedule-area2 .schedule-slider .slider-schedule .club-box h4 {
+      font-size: 18px; }
+    .schedule-area2 .schedule-slider .slider-schedule .club-box img {
+      width: 40px; }
+    .schedule-area2 .schedule-slider .slider-schedule .goal {
+      font-size: 25px; }
+
+  /*match-box*/
+  .banner-box {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 30px; }
+    .banner-box .banner-img p:before {
+      left: -93%;
+      width: 110px; }
+
+  /*match news*/
+  .match-news .news {
+    padding-left: 16px;
+    justify-content: space-around; }
+    .match-news .news p {
+      margin: 0;
+      font-size: 12px; }
+    .match-news .news h4 {
+      font-size: 15px; }
+
+  /*comment-aera*/
+  .comment-area .comment-box {
+    grid-column-gap: 20px; }
+    .comment-area .comment-box .user-cmnt h4 {
+      font-size: 14px; }
+    .comment-area .comment-box .user-cmnt .coments {
+      margin-top: 5px; }
+      .comment-area .comment-box .user-cmnt .coments a {
+        margin-right: 6px; }
+        .comment-area .comment-box .user-cmnt .coments a i {
+          margin-right: 8px; }
+
+  /*club-list-area*/
+  .club-list-area .club-history .history-img h3 {
+    font-size: 18px; }
+  .club-list-area .team-box .nav-tabs .nav-item {
+    font-size: 16px;
+    padding: 10px 23px; }
+
+  /*fixtures-area*/
+  .laliga-box .fixture-box .club-fixture {
+    grid-template-columns: repeat(1, 1fr 1fr 1fr);
+    grid-column-gap: 0px; }
+    .laliga-box .fixture-box .club-fixture .club-img {
+      margin: 0; }
+      .laliga-box .fixture-box .club-fixture .club-img img {
+        width: 40px;
+        height: 40px; }
+      .laliga-box .fixture-box .club-fixture .club-img span {
+        margin: 0 8px;
+        font-size: 14px; }
+    .laliga-box .fixture-box .club-fixture .club-schedule h5 {
+      font-size: 14px; }
+    .laliga-box .fixture-box .club-fixture .club-schedule p {
+      font-size: 14px; }
+
+  /*sports area*/
+  .news-area .news-box .news-search a {
+    width: 12%; }
+  .news-area .sports-news .sports-title h3 {
+    font-size: 20px; }
+
+  /*post-area*/
+  .post-area .banner-img h4 {
+    font-size: 18px; }
+
+  .recent-video .highlights-bg .video-play-btn {
+    transform: translateX(-134px); }
+
+  /*footer-area*/
+  .footer-area .footer-box {
+    grid-template-columns: repeat(1, 1fr); }
+
+  /* global-styles*/
+  .page-head {
+    padding: 200px 15px 150px; }
+    .page-head .section-title h3 {
+      font-size: 33px; }
+
+  .pad90 {
+    padding: 50px 0; }
+
+  .xs-mt-90 {
+    margin-top: 90px; }
+
+  .xs-mt-50 {
+    margin-top: 50px; }
+
+  .xs-mt-40 {
+    margin-top: 40px; }
+
+  .xs-mt-30 {
+    margin-top: 30px; }
+
+  .xs-mt-20 {
+    margin-top: 20px; }
+
+  .mt60 {
+    margin-top: 50px; } }
+/* 05 responsive styles */

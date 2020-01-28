@@ -1,10 +1,10 @@
 from app import db
-from app.models import Player, League
+from app.models import Player, League, Transfer, Club
 # User is the name of table that has a column name
-users = League.query.all()
+users = Transfer.query.all()
 
 for user in users:
-    print(user.name)
+    #print(user.name)
     db.session.delete(user)
 
 db.session.commit()

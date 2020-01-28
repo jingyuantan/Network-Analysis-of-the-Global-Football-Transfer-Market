@@ -34,6 +34,7 @@ class League(db.Model):
     name = db.Column(db.String, index=True)
     href = db.Column(db.String, index=True)
     clubs = db.relationship('Club', backref='league', lazy='dynamic')
+    country = db.Column(db.String)
 
     def __repr__(self):
         return '<League {}>'.format(self.name)

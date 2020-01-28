@@ -1,0 +1,2442 @@
+/* Theme Name: Men'z Saloon - HTML 5 Template
+Author: iThemesLab
+Author URI: http://ithemeslab.com
+Author Email: ithemeslab@gmail.com */
+/*
+----------Table of Content------------
+======================================
+01	Global Styles
+	1.1 global & override
+	1.2 typography
+	1.3 margins & paddings
+	1.4 backgrounds
+02	Navbar Styles
+	2.1 navbar global
+	2.2 navbar on lg screen
+	2.3 navbar on sm & xs screen
+	2.4 header area
+03	Element Styles
+    3.1 slider area
+    3.2 match-schedule-area
+    3.3 match-box
+    3.3.1 video-highlight
+
+04	Footer
+05	Responsive
+06	club list
+07	laliga
+08	result
+======================================
+*/
+/* global font */
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto:400,500,700");
+/* global font */
+/* 1.1  global & override */
+body {
+  font-family: "Roboto", sans-serif;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6em;
+  -webkit-backface-visibility: hidden;
+  outline: none;
+}
+
+::-moz-selection {
+  background: #76c100;
+  color: #fff;
+  text-shadow: none;
+  outline: none;
+}
+
+::-webkit-input-placeholder {
+  /* Chrome */
+  color: #fff;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  /* IE 10+ */
+  color: #fff;
+  opacity: 1;
+}
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #fff;
+  opacity: 1;
+}
+
+/*scrol up*/
+#back-to-top {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  cursor: pointer;
+  background: #76c100;
+}
+#back-to-top:before {
+  content: "\f01b";
+  position: absolute;
+  font-family: fontawesome;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+}
+
+/*scrol up*/
+/*preloader start*/
+.preloader {
+  background: #fff;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.loader {
+  height: 20px;
+  width: 250px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.loader--dot {
+  animation-name: loader;
+  animation-timing-function: ease-in-out;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  height: 30px;
+  width: 30px;
+  border-radius: 100%;
+  background-color: black;
+  position: absolute;
+  border: 2px solid white;
+}
+
+.loader--dot:first-child {
+  background-color: #8cc759;
+  animation-delay: 0.5s;
+}
+
+.loader--dot:nth-child(2) {
+  background-color: #8c6daf;
+  animation-delay: 0.4s;
+}
+
+.loader--dot:nth-child(3) {
+  background-color: #ef5d74;
+  animation-delay: 0.3s;
+}
+
+.loader--dot:nth-child(4) {
+  background-color: #f9a74b;
+  animation-delay: 0.2s;
+}
+
+.loader--dot:nth-child(5) {
+  background-color: #60beeb;
+  animation-delay: 0.1s;
+}
+
+.loader--dot:nth-child(6) {
+  background-color: #fbef5a;
+  animation-delay: 0s;
+}
+
+.loader--text {
+  position: absolute;
+  top: 200%;
+  left: 0;
+  right: 0;
+  width: 4rem;
+  margin: auto;
+}
+
+.loader--text:after {
+  content: "Loading";
+  font-weight: bold;
+  animation-name: loading-text;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes loader {
+  15% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(230px);
+  }
+  65% {
+    transform: translateX(230px);
+  }
+  95% {
+    transform: translateX(0);
+  }
+}
+@keyframes loading-text {
+  0% {
+    content: "Loading";
+  }
+  25% {
+    content: "Loading.";
+  }
+  50% {
+    content: "Loading..";
+  }
+  75% {
+    content: "Loading...";
+  }
+}
+/*preloader end*/
+.overlay, .overlay2 {
+  position: relative;
+}
+.overlay:before, .overlay2:before {
+  background: #000;
+  content: "";
+  height: 100%;
+  left: 0;
+  opacity: 0.3;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.overlay2:before {
+  opacity: 0.8;
+}
+
+.overlay2 .section-title h4, .overlay2 .section-title .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .overlay2 .section-title p {
+  color: #fff;
+}
+.overlay2 .section-title h4 span, .overlay2 .section-title .slider-area .sliding-item .league-content .upcomming-match .first-match p span, .slider-area .sliding-item .league-content .upcomming-match .first-match .overlay2 .section-title p span {
+  color: #fff;
+}
+
+.page-head.overlay:before, .page-head.overlay2:before {
+  background: #010528;
+  content: "";
+  opacity: 0.6;
+}
+
+.primary-overlay {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+.primary-overlay:before {
+  background: rgba(118, 193, 0, 0.6);
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: all 0.5s ease 0s;
+}
+.primary-overlay:hover:before {
+  opacity: 1;
+}
+
+.p-bg.primary-overlay:before {
+  background: rgba(118, 193, 0, 0.8);
+  opacity: 1;
+}
+
+.ovrlay {
+  color: #fff;
+  cursor: pointer;
+  position: absolute;
+  top: 45%;
+  left: 45%;
+  font-size: 30px;
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+}
+
+.bttn {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+.bttn .btn {
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #a6a6a6;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 700;
+  outline: 0 none;
+  position: relative;
+  padding: 15px 30px;
+  transition: all 0.5s ease 0s;
+}
+
+.bttn .btn:hover,
+.bttn .btn.active,
+.btn-primary:not([disabled]):not(.disabled).active,
+.btn-primary:not([disabled]):not(.disabled):active,
+.show > .btn-primary.dropdown-toggle {
+  background: #76c100;
+  color: #fff !important;
+  box-shadow: inherit;
+  border: 1px solid transparent !important;
+}
+
+.bttn .btn.active:hover {
+  background: #76c100;
+}
+
+.bold, .section-title h4, h1, h2, h3, h4, .slider-area .sliding-item .league-content .upcomming-match .first-match p, h5, h6, .slider-area .sliding-item .sliding-match .match-vs li span, .match-schedule-area .slider-schedule .playing-schedule span, .match-schedule-area .slider-schedule .club-name h4, .match-schedule-area .slider-schedule .club-name p, .scores-tab .nav-pills .nav-item .nav-link, .laliga-box .fixture-box .club-fixture .club-img span, .point-table .table.table-bordered tbody td .team-box span {
+  font-weight: 700;
+}
+
+ul {
+  list-style: outside none none;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+.breadcrumb {
+  background-color: rgba(0, 0, 0, 0);
+  justify-content: center;
+}
+.breadcrumb li {
+  color: white;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 400;
+  text-transform: capitalize;
+  margin: 0 5px;
+}
+.breadcrumb li a, .breadcrumb li .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .breadcrumb li i {
+  color: #76c100;
+}
+
+.page-head {
+  padding: 200px 100px 150px;
+}
+.page-head .section-title h3 {
+  font-size: 55px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.section-title.news-title h4, .section-title.news-title .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .section-title.news-title p {
+  font-size: 20px;
+}
+.section-title h4, .section-title .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .section-title p {
+  border-left: 8px solid #76c100;
+  margin-bottom: 20px;
+  font-size: 25px;
+  line-height: 20px;
+  font-family: "Roboto Condensed", sans-serif;
+}
+.section-title h4 span, .section-title .slider-area .sliding-item .league-content .upcomming-match .first-match p span, .slider-area .sliding-item .league-content .upcomming-match .first-match .section-title p span {
+  color: #000;
+  margin-left: 20px;
+}
+
+.wht-txt {
+  color: #fff !important;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-control {
+  padding: 17px 16px;
+  font-size: 14px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+}
+
+input {
+  border: 1px solid #6b6b6b;
+}
+input:hover, input:focus {
+  border: 2px solid #76c100 !important;
+}
+
+.form-control:hover, .form-control:focus {
+  border: 1px solid #76c100;
+  box-shadow: inherit;
+}
+
+select.form-control:not([size]):not([multiple]) {
+  height: inherit;
+}
+
+textarea {
+  height: 210px;
+}
+
+.img-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ttu, .bttn .btn, .page-head .section-title h3, .nav-menu .navbar .navbar-nav .nav-item .nav-link, .nav-menu .navbar .navbar-nav .dropdown-menu a, .nav-menu .navbar .navbar-nav .dropdown-menu .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .nav-menu .navbar .navbar-nav .dropdown-menu i, .header-match-area .live-up p span, .slider-area .sliding-item .sliding-content h2, .slider-area .sliding-item .sliding-match .match-vs li span, .slider-area .sliding-item .league-content h2, .slider-area .sliding-item .league-content .club-link a, .slider-area .sliding-item .league-content .club-link .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .club-link i, .slider-area .sliding-item .league-content .upcomming-match .first-match h4, .slider-area .sliding-item .league-content .upcomming-match .first-match p, .home2-slider .score-content h2, .match-schedule-area .slider-schedule .club-name h4 span, .match-schedule-area .slider-schedule .club-name .slider-area .sliding-item .league-content .upcomming-match .first-match p span, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-schedule-area .slider-schedule .club-name p span, .match-schedule-area .slider-schedule .club-name p, .schedule-area2 .schedule-slider .bttn a, .schedule-area2 .schedule-slider .bttn .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .schedule-area2 .schedule-slider .bttn i, .result-box .result-heading, .foot-tbl h5, .follow-us-area .link-box a, .follow-us-area .link-box .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .follow-us-area .link-box i, .scores-tab .nav-pills .nav-item .nav-link, .laliga-box h4, .laliga-box .fixture-box .club-fixture .club-schedule, .news-area .recent-news .blog-title h3 {
+  text-transform: uppercase;
+}
+
+.ttc, .section-title h4, .section-title .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .section-title p, .slider-area .sliding-item .sliding-match h4 a, .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p a, .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p i, .home2-slider .live-scores .score-head h4, .home2-slider .live-scores .scores-area h4, .home2-slider .live-scores .score-head .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .score-head p, .home2-slider .live-scores .scores-area .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .scores-area p, .home2-slider .live-scores .scores-area p, .home3-slider .owl-item.active.center .img-content p, .match-schedule-area .slider-schedule .club-name h4, .match-schedule-area .slider-schedule .club-name .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-schedule-area .slider-schedule .club-name p, .schedule-area2 .schedule-slider .slider-schedule .club-box h4, .schedule-area2 .schedule-slider .slider-schedule .club-box .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .schedule-area2 .schedule-slider .slider-schedule .club-box p, .schedule-area2 .schedule-slider p, .upmatch-box .team-date h5, .result-box .club-result .club-img span, .banner-img p, .banner-img h4, .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p, .foot-tbl .point-table .team-rank span, .post-area .blog-post h4, .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p, .post-area .blog-post .coments a, .comment-area .comment-box .user-cmnt .coments a, .comment-area .comment-box .user-cmnt .coments a i, .scores-tab .tab-content .player-box .player-dtl h4, .scores-tab .tab-content .player-box .player-dtl .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .scores-tab .tab-content .player-box .player-dtl p, .trans-news h5, .footer-area .footer-box .footer-content .ftr-title h4, .footer-area .footer-box .footer-content .ftr-title .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .footer-area .footer-box .footer-content .ftr-title p, .footer-area .footer-box .footer-content .partners a, .club-list-area .club-authority h4, .club-list-area .club-authority .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .club-list-area .club-authority p, .club-list-area .club-authority p, .club-list-area .club-authority .authority-box p, .club-list-area .team-box .nav-tabs .nav-item, .club-list-area .team-box .tab-content .team-mem h5, .club-list-area .team-box .tab-content .team-mem p, .laliga-box .fixture-box .club-fixture .club-img span, .news-area .sports-news .sports-title p span, .news-area .sports-news .news-btn a, .news-area .sports-news .sports-arrow a, .news-area .news-box .news-search input::placeholder, .sports-slider.owl-carousel .owl-nav button, .sports-slider.owl-carousel .football-gallery .gallery-slider .owl-nav .owl-next, .football-gallery .gallery-slider .sports-slider.owl-carousel .owl-nav .owl-next, .point-table .table.table-bordered tbody td .team-box span, .table-bordered td,
+.table-bordered th {
+  text-transform: capitalize;
+}
+
+.full-width {
+  width: 100%;
+}
+
+i {
+  color: #fff;
+}
+
+a, .comment-area .comment-box .user-cmnt .coments a i {
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+a:hover, .comment-area .comment-box .user-cmnt .coments a i:hover {
+  text-decoration: none;
+  color: #76c100;
+}
+a:focus, .comment-area .comment-box .user-cmnt .coments a i:focus {
+  text-decoration: none;
+  color: #ffffff;
+  outline: 0;
+}
+
+.owl-dots .owl-dot {
+  width: 5px;
+  height: 5px;
+  background: #fff !important;
+  margin-right: 10px;
+  border-radius: 50%;
+  transition: all 0.5s ease 0s;
+}
+.owl-dots .owl-dot.active, .owl-dots .owl-dot:hover {
+  transform: scale(1.6);
+  background: #76c100 !important;
+}
+
+button:focus, .football-gallery .gallery-slider .owl-nav .owl-next:focus {
+  outline: inherit;
+}
+
+.zoom {
+  overflow: hidden;
+}
+.zoom img {
+  transform: scale(1);
+  transition: all 2s ease 0s;
+}
+.zoom img:hover {
+  transform: scale(1.2);
+}
+
+.sm-img {
+  width: 80px;
+  height: 80px;
+}
+
+.xs-img {
+  width: 50px;
+  height: 50px;
+}
+
+.sml-logo {
+  width: 20px;
+  height: 20px;
+}
+
+.bb-1 {
+  border-bottom: 1px solid #bababa;
+}
+
+.bt-1 {
+  border-top: 1px solid #bababa;
+}
+
+.pagination {
+  border: 1px solid transparent;
+}
+.pagination .page-item {
+  margin-right: 10px;
+}
+.pagination .page-item .page-link {
+  padding: 10px 15px;
+  border-radius: inherit;
+  color: #444;
+  font-size: 18px;
+  background: #ddd;
+}
+.pagination .page-item:hover .page-link {
+  background: #76c100;
+  color: #fff;
+}
+
+/* 1.2  Typography */
+p {
+  font-size: 15px;
+  color: #6b6b6b;
+  line-height: 1.6rem;
+  word-spacing: 1px;
+}
+
+h1, h2, h3, h4, .slider-area .sliding-item .league-content .upcomming-match .first-match p, h5, h6 {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+}
+
+/* 1.3 Margins & Paddings */
+.mt10 {
+  margin-top: 10px;
+}
+
+.mt15 {
+  margin-top: 15px;
+}
+
+.mt60 {
+  margin-top: 60px;
+}
+
+.mt20 {
+  margin-top: 20px;
+}
+
+.mt30 {
+  margin-top: 30px;
+}
+
+.mt40 {
+  margin-top: 40px;
+}
+
+.mt50 {
+  margin-top: 50px;
+}
+
+.mt70 {
+  margin-top: 70px;
+}
+
+.mt90 {
+  margin-top: 90px;
+}
+
+.mb15 {
+  margin-bottom: 15px;
+}
+
+.mb30 {
+  margin-bottom: 30px;
+}
+
+.mb20 {
+  margin-bottom: 20px;
+}
+
+.mb40 {
+  margin-bottom: 40px;
+}
+
+.mb50 {
+  margin-bottom: 50px;
+}
+
+.mb60 {
+  margin-bottom: 60px;
+}
+
+.mb90 {
+  margin-bottom: 90px;
+}
+
+.pad80 {
+  padding: 80px 0;
+}
+
+.pad60 {
+  padding: 60px 0;
+}
+
+.pad70 {
+  padding: 70px 0;
+}
+
+.pad40 {
+  padding: 40px 0;
+}
+
+.pad30 {
+  padding: 30px 0;
+}
+
+.pad90 {
+  padding: 90px 0;
+}
+
+.pad120 {
+  padding: 120px 0;
+}
+
+.pb60 {
+  padding-bottom: 60px;
+}
+
+.pb90 {
+  padding-bottom: 90px;
+}
+
+.pt30 {
+  padding-top: 30px;
+}
+
+.pt60 {
+  padding-top: 60px;
+}
+
+.pt70 {
+  padding-top: 70px;
+}
+
+.pt90 {
+  padding-top: 90px;
+}
+
+.pt100 {
+  padding-top: 100px;
+}
+
+.pt120 {
+  padding-top: 120px;
+}
+
+.pt20 {
+  padding-top: 20px;
+}
+
+.pt40 {
+  padding-top: 40px;
+}
+
+.pt50 {
+  padding-top: 50px;
+}
+
+.no-pad {
+  padding: 0;
+}
+
+/* 1.4 Backgrounds */
+.bg1 {
+  background: url("../images/bg/bg1.jpg");
+}
+
+.bg2 {
+  background: url("../images/bg/bg2.jpg");
+}
+
+.bg3 {
+  background: url("../images/bg/bg3.jpg");
+}
+
+.bg4 {
+  background: url("../images/bg/bg4.jpg");
+}
+
+.bnr1 {
+  background: url("../images/bg-banner/result.png");
+}
+
+/*breadcrumb*/
+.bdcmb-bg1 {
+  background: url("../images/breadcrumb/1.jpg");
+}
+
+.bdcmb-bg2 {
+  background: url("../images/breadcrumb/2.jpg");
+}
+
+.bdcmb-bg3 {
+  background: url("../images/breadcrumb/3.jpg");
+}
+
+.bdcmb-bg4 {
+  background: url("../images/breadcrumb/4.jpg");
+}
+
+/*breadcrumb*/
+/*video highlights*/
+.bnr2 {
+  background: url("../images/bg-banner/tab-bnr.jpg");
+}
+
+.h-bg1 {
+  background-image: url(../images/video-img/1.jpg);
+}
+
+.h-bg2 {
+  background-image: url(../images/video-img/2.jpg);
+}
+
+.h-bg3 {
+  background-image: url(../images/video-img/3.jpg);
+}
+
+.h-bg4 {
+  background-image: url(../images/video-img/4.jpg);
+}
+
+.h-bg5 {
+  background-image: url(../images/video-img/5.jpg);
+}
+
+.h-bg6 {
+  background-image: url(../images/video-img/6.jpg);
+}
+
+.h-bg7 {
+  background-image: url(../images/video-img/7.jpg);
+}
+
+.h-bg8 {
+  background-image: url(../images/video-img/8.jpg);
+}
+
+.h-bg9 {
+  background-image: url(../images/video-img/9.jpg);
+}
+
+/*video highlights*/
+.parallax, .parallax-scrl {
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 50% 0;
+  background-size: cover;
+}
+
+.mini-bg {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  width: 100%;
+}
+
+.parallax-scrl {
+  background-attachment: scroll !important;
+}
+
+/*animation*/
+.animation {
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes slideDownIn {
+  0% {
+    -webkit-transform: translateY(-20px) scale(0);
+  }
+  100% {
+    -webkit-transform: translateY(0) scale(1.2);
+  }
+  0% {
+    -webkit-transform: translateY(-20);
+  }
+}
+@keyframes slideDownIn {
+  0% {
+    transform: translateY(-20px) scale(0);
+  }
+  100% {
+    transform: translateY(0) scale(1.2);
+  }
+  0% {
+    transform: translateY(-20px);
+  }
+}
+.slideDownIn {
+  -webkit-animation-name: slideDownIn;
+  animation-name: slideDownIn;
+}
+
+@-webkit-keyframes slideUpIn {
+  0% {
+    top: 0px;
+    transform: scale(0);
+  }
+  100% {
+    top: 10px;
+    transform: scale(1);
+  }
+}
+@keyframes slideUpIn {
+  0% {
+    top: 0px;
+    transform: scale(0);
+  }
+  100% {
+    top: 76px;
+    transform: scale(1);
+  }
+}
+.slideUpIn {
+  -webkit-animation-name: slideUpIn;
+  animation-name: slideUpIn;
+}
+
+/*animation*/
+/*02	Navbar Styles*/
+.header {
+  position: relative;
+}
+
+.nav-menu {
+  background: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.nav-menu.fixed-top {
+  animation-duration: 0.8s;
+  animation-name: fadeInDown;
+  animation-timing-function: ease-in-out;
+  background: rgba(0, 0, 0, 0.7) !important;
+  left: 0;
+  position: fixed !important;
+  right: 0 !important;
+  top: 0 !important;
+  width: 100%;
+  z-index: 99;
+}
+.nav-menu.full-black {
+  background: #000;
+  position: relative;
+}
+.nav-menu .navbar-brand {
+  line-height: 2.5;
+}
+.nav-menu .navbar {
+  padding: 0;
+}
+.nav-menu .navbar .navbar-brand {
+  padding: 0;
+}
+.nav-menu .navbar .navbar-nav .nav-item {
+  position: relative;
+}
+.nav-menu .navbar .navbar-nav .nav-item .nav-link {
+  line-height: 80px;
+  padding: 0 14px;
+  letter-spacing: 1px;
+  font-size: 15px;
+  color: #fff;
+  transition: all 0.5s ease 0s;
+}
+.nav-menu .navbar .navbar-nav .nav-item .nav-link:before {
+  position: absolute;
+  content: "";
+  background: #76c100;
+  width: 23px;
+  height: 2px;
+  top: 34%;
+  left: 38%;
+  transform: translateY(-15px);
+  transition: all 0.5s ease 0s;
+  opacity: 0;
+}
+.nav-menu .navbar .navbar-nav .nav-item .nav-link:hover {
+  color: #76c100;
+}
+.nav-menu .navbar .navbar-nav .nav-item:hover .nav-link, .nav-menu .navbar .navbar-nav .nav-item.active .nav-link {
+  color: #76c100;
+}
+.nav-menu .navbar .navbar-nav .nav-item:hover .nav-link:before, .nav-menu .navbar .navbar-nav .nav-item.active .nav-link:before {
+  transform: translateY(-10px);
+  opacity: 1;
+}
+.nav-menu .navbar .navbar-nav .dropdown-menu {
+  border-radius: inherit;
+  background: rgba(0, 0, 0, 0.7);
+}
+.nav-menu .navbar .navbar-nav .dropdown-menu a, .nav-menu .navbar .navbar-nav .dropdown-menu .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .nav-menu .navbar .navbar-nav .dropdown-menu i {
+  color: #fff;
+  padding: 4px 20px;
+  font-size: 14px;
+}
+.nav-menu .navbar .navbar-nav .dropdown-menu a:hover, .nav-menu .navbar .navbar-nav .dropdown-menu .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .nav-menu .navbar .navbar-nav .dropdown-menu i:hover {
+  color: #76c100;
+  background: transparent;
+}
+.nav-menu .icon-menu ul li {
+  display: inline-block;
+  margin: 0 5px;
+  line-height: 80px;
+}
+.nav-menu .icon-menu ul li a i, .nav-menu .icon-menu ul li .comment-area .comment-box .user-cmnt .coments a i i, .comment-area .comment-box .user-cmnt .coments a .nav-menu .icon-menu ul li i i {
+  font-size: 16px;
+}
+
+/*2.4 header-area start*/
+.header-match-area {
+  border-bottom: 1px solid #cdcdcd;
+}
+.header-match-area.yelow {
+  background: #e9c804;
+}
+.header-match-area .social-icon {
+  display: flex;
+}
+.header-match-area .social-icon a, .header-match-area .social-icon .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .header-match-area .social-icon i {
+  padding: 10px 15px;
+}
+.header-match-area .social-icon a i, .header-match-area .social-icon .comment-area .comment-box .user-cmnt .coments a i i, .comment-area .comment-box .user-cmnt .coments a .header-match-area .social-icon i i {
+  font-size: 14px;
+  color: #000;
+  transition: all 0.5s ease 0s;
+}
+.header-match-area .social-icon a:hover i, .header-match-area .social-icon .comment-area .comment-box .user-cmnt .coments a i:hover i, .comment-area .comment-box .user-cmnt .coments a .header-match-area .social-icon i:hover i {
+  color: #76c100;
+}
+.header-match-area .live-up p {
+  color: #000;
+  font-size: 14px;
+  padding: 8px 0;
+  margin: 0;
+}
+.header-match-area .live-up p span {
+  color: #fff;
+}
+.header-match-area .football-match {
+  display: flex;
+  justify-content: flex-end;
+}
+.header-match-area .football-match a, .header-match-area .football-match .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .header-match-area .football-match i {
+  padding: 10px 5px;
+  color: #000;
+  margin-left: 18px;
+  font-weight: bold;
+  transition: all 0.5s ease 0s;
+}
+.header-match-area .football-match a.active, .header-match-area .football-match .comment-area .comment-box .user-cmnt .coments a i.active, .comment-area .comment-box .user-cmnt .coments a .header-match-area .football-match i.active, .header-match-area .football-match a:hover, .header-match-area .football-match .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .header-match-area .football-match i:hover {
+  background: #76c100;
+  color: #fff;
+}
+
+/*header middle area start*/
+.header-middle-area .logo {
+  line-height: 9;
+}
+.header-middle-area .bnr-img {
+  padding: 20px 0;
+}
+
+/*header middle area end*/
+.header-bottom-area.nav-menu {
+  top: inherit;
+  left: inherit;
+  position: inherit;
+}
+
+/*2.4 header-area end*/
+/*icon-menu*/
+.search-popup {
+  position: fixed;
+  left: 0px;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  visibility: hidden;
+  opacity: 0;
+  overflow: auto;
+  transition: all 700ms ease;
+  -moz-transition: all 700ms ease;
+  -webkit-transition: all 700ms ease;
+  -ms-transition: all 700ms ease;
+  -o-transition: all 700ms ease;
+}
+.search-popup.popup-visible {
+  top: 0;
+  visibility: visible;
+  opacity: 1;
+}
+.search-popup .close-search {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+  font-size: 25px;
+  color: #ffffff;
+  padding: 10px;
+  background: #76c100;
+  cursor: pointer;
+  z-index: 5;
+  -webkit-transition: all 0.4s ease 0s;
+  transition: all 0.4s ease 0s;
+}
+.search-popup .close-search:hover {
+  opacity: 0.70;
+}
+.search-popup .search-form {
+  position: relative;
+  padding: 0px 15px 50px;
+  padding-top: 200px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.search-popup .search-form fieldset {
+  position: relative;
+  border-radius: 12px;
+}
+.search-popup .search-form fieldset input[type="search"],
+.search-popup .search-form fieldset input.form-control {
+  position: relative;
+  height: 70px;
+  padding: 20px 220px 20px 30px;
+  background: #ffffff;
+  line-height: 30px;
+  font-size: 24px;
+  color: #233145 !important;
+}
+.search-popup .search-form fieldset input[type="submit"] {
+  position: absolute;
+  display: block;
+  right: 0px;
+  top: 0px;
+  text-align: center;
+  width: 220px;
+  padding: 20px 10px 20px 10px;
+  color: #ffffff;
+  cursor: pointer;
+  background: #76c100;
+  line-height: 30px;
+  height: 70px;
+  -webkit-transition: all 0.4s ease 0s;
+  transition: all 0.4s ease 0s;
+  font-size: 20px;
+  text-transform: uppercase;
+  border-radius: 0px 7px 7px 0px;
+  border: none;
+}
+.search-popup .search-form fieldset input[type="submit"]:hover {
+  background: #76c100;
+  color: #ffffff;
+}
+
+/*icon-menu*/
+/*02	Navbar Styles*/
+/*3.1 slider area start*/
+.slider-area {
+  width: 100%;
+  position: relative;
+}
+.slider-area .owl-nav button, .slider-area .football-gallery .gallery-slider .owl-nav .owl-next, .football-gallery .gallery-slider .slider-area .owl-nav .owl-next {
+  position: absolute;
+  top: 45%;
+  left: 1%;
+  font-size: 60px !important;
+  transition: all 0.5s ease 0s;
+}
+.slider-area .owl-nav button:focus, .slider-area .football-gallery .gallery-slider .owl-nav .owl-next:focus, .football-gallery .gallery-slider .slider-area .owl-nav .owl-next:focus {
+  outline: inherit;
+}
+.slider-area .owl-nav button:hover, .slider-area .football-gallery .gallery-slider .owl-nav .owl-next:hover, .football-gallery .gallery-slider .slider-area .owl-nav .owl-next:hover {
+  transform: scale(1.5);
+}
+.slider-area .owl-nav .owl-next {
+  position: absolute;
+  left: inherit;
+  right: 1%;
+}
+.slider-area .sliding-item {
+  position: relative;
+}
+.slider-area .sliding-item .sliding-content {
+  position: absolute;
+  display: inline-block;
+  top: 30%;
+  right: 20%;
+}
+.slider-area .sliding-item .sliding-content h2 {
+  font-size: 65px;
+  color: #fff;
+}
+.slider-area .sliding-item .sliding-content .upcoming {
+  margin: 0;
+}
+.slider-area .sliding-item .sliding-content .upcoming div {
+  background: rgba(0, 0, 0, 0.5);
+  width: 400px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100px;
+  margin-top: 20px;
+}
+.slider-area .sliding-item .sliding-content .upcoming div .cdown {
+  line-height: 30px;
+  width: 25%;
+  font-size: 18px;
+  color: #fff;
+  text-align: center;
+  background: transparent;
+}
+.slider-area .sliding-item .sliding-content .upcoming div .cdown p {
+  color: #fff;
+  font-size: 20px;
+}
+.slider-area .sliding-item .tonight-match {
+  display: flex;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+}
+.slider-area .sliding-item .sliding-match {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 600px;
+}
+.slider-area .sliding-item .sliding-match h4, .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.slider-area .sliding-item .sliding-match h4 a, .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p a, .slider-area .sliding-item .sliding-match h4 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .sliding-match h4 i, .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p i {
+  font-size: 16px;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background: #76c100;
+  transition: all 0.5s ease 0s;
+}
+.slider-area .sliding-item .sliding-match h4 a:hover, .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p a:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p a:hover, .slider-area .sliding-item .sliding-match h4 .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .sliding-match h4 i:hover, .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .sliding-match .league-content .upcomming-match .first-match p i:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match p i:hover {
+  background: #fff;
+  color: #76c100;
+}
+.slider-area .sliding-item .sliding-match .match-vs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.slider-area .sliding-item .sliding-match .match-vs li {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.slider-area .sliding-item .sliding-match .match-vs li img {
+  max-height: 202px;
+}
+.slider-area .sliding-item .sliding-match .match-vs li span {
+  font-size: 30px;
+  margin-top: 30px;
+}
+.slider-area .sliding-item .sliding-match .match-vs li.vs {
+  justify-content: center;
+}
+.slider-area .sliding-item .sliding-match .match-vs li.vs h4, .slider-area .sliding-item .sliding-match .match-vs li.vs .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .sliding-match .match-vs li.vs p {
+  font-size: 100px;
+}
+.slider-area .sliding-item .league-content {
+  position: absolute;
+  width: 600px;
+  top: 35%;
+  left: 15%;
+  direction: flex;
+  flex-direction: column;
+}
+.slider-area .sliding-item .league-content h2 {
+  font-size: 65px;
+}
+.slider-area .sliding-item .league-content .club-link {
+  display: flex;
+  width: 80%;
+  margin-top: 20px;
+}
+.slider-area .sliding-item .league-content .club-link a, .slider-area .sliding-item .league-content .club-link .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .club-link i {
+  font-size: 18px;
+  padding: 14px 70px;
+  color: #fff;
+  margin-right: 20px;
+}
+.slider-area .sliding-item .league-content .club-link a.liverpool, .slider-area .sliding-item .league-content .club-link .comment-area .comment-box .user-cmnt .coments a i.liverpool, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .club-link i.liverpool {
+  background: #76c100;
+}
+.slider-area .sliding-item .league-content .club-link a.barcelona, .slider-area .sliding-item .league-content .club-link .comment-area .comment-box .user-cmnt .coments a i.barcelona, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .club-link i.barcelona {
+  background: #F1D010;
+}
+.slider-area .sliding-item .league-content .upcomming-match {
+  display: flex;
+  flex-direction: row;
+  padding: 22px 30px;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  width: 471px;
+  margin-top: 20px;
+}
+.slider-area .sliding-item .league-content .upcomming-match .first-match h4, .slider-area .sliding-item .league-content .upcomming-match .first-match p {
+  font-size: 20px;
+  color: #fff;
+}
+.slider-area .sliding-item .league-content .upcomming-match .first-match p {
+  font-weight: normal;
+}
+.slider-area .sliding-item .league-content .upcomming-match .upcoming {
+  margin-left: 58px;
+  display: flex;
+  align-items: center;
+}
+.slider-area .sliding-item .league-content .upcomming-match .upcoming div {
+  display: flex;
+  flex-direction: row;
+}
+.slider-area .sliding-item .league-content .upcomming-match .upcoming div span {
+  width: 60px;
+  text-align: center;
+  font-size: 20px;
+  line-height: 1.5;
+}
+.slider-area .sliding-item .league-content .upcomming-match .upcoming div span p {
+  color: #fff;
+  font-size: 18px;
+  margin: 0;
+}
+
+/*home2 slider start*/
+.home2-slider {
+  position: relative;
+}
+.home2-slider .slider-area .owl-nav {
+  display: none;
+}
+.home2-slider .live-scores {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: flex-end;
+  z-index: 9;
+}
+.home2-slider .live-scores:before {
+  position: absolute;
+  content: "";
+  width: 50%;
+  height: 100%;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: -1;
+}
+.home2-slider .live-scores .score-head, .home2-slider .live-scores .scores-area {
+  width: 50%;
+  background: #76c100;
+  display: flex;
+  justify-content: flex-end;
+  height: 60px;
+  align-items: center;
+}
+.home2-slider .live-scores .score-head h4, .home2-slider .live-scores .scores-area h4, .home2-slider .live-scores .score-head .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .score-head p, .home2-slider .live-scores .scores-area .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .scores-area p {
+  margin-right: 20px;
+}
+.home2-slider .live-scores .score-head h4 a, .home2-slider .live-scores .scores-area h4 a, .home2-slider .live-scores .score-head .slider-area .sliding-item .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .score-head p a, .home2-slider .live-scores .scores-area .slider-area .sliding-item .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .scores-area p a, .home2-slider .live-scores .score-head h4 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .home2-slider .live-scores .score-head h4 i, .home2-slider .live-scores .scores-area h4 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .home2-slider .live-scores .scores-area h4 i, .home2-slider .live-scores .score-head .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .home2-slider .live-scores .score-head .slider-area .sliding-item .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .score-head p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .score-head p i, .home2-slider .live-scores .scores-area .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .home2-slider .live-scores .scores-area .slider-area .sliding-item .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .scores-area p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .home2-slider .live-scores .scores-area p i {
+  color: #fff;
+}
+.home2-slider .live-scores .scores-area {
+  background: #01050d;
+  justify-content: flex-start;
+}
+.home2-slider .live-scores .scores-area p {
+  margin: 0;
+  margin-left: 20px;
+  color: #fff;
+  font-size: 18px;
+}
+.home2-slider .score-content {
+  position: absolute;
+  display: inline-block;
+  top: 30%;
+  right: 15%;
+  z-index: 9;
+}
+.home2-slider .score-content h2 {
+  font-size: 65px;
+  color: #fff;
+}
+.home2-slider .score-content .upcoming {
+  margin: 0;
+}
+.home2-slider .score-content .upcoming div {
+  background: rgba(0, 0, 0, 0.5);
+  width: 400px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100px;
+  margin-top: 20px;
+}
+.home2-slider .score-content .upcoming div .cdown {
+  line-height: 40px;
+  width: 25%;
+  font-size: 18px;
+  color: #fff;
+  text-align: center;
+  background: transparent;
+}
+.home2-slider .score-content .upcoming div .cdown p {
+  color: #fff;
+  font-size: 20px;
+}
+
+/*home3 slider start*/
+.home3-slider {
+  margin: 10px 0;
+}
+.home3-slider .owl-item .img-content {
+  background: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  bottom: -30%;
+  padding: 20px 30px;
+  transition: all 0.5s ease 0s;
+  width: 100%;
+  opacity: 0;
+}
+.home3-slider .owl-item.active.center .overlay, .home3-slider .owl-item.active.center .overlay2 {
+  transition: all 0.5s ease 0s;
+}
+.home3-slider .owl-item.active.center .overlay:before, .home3-slider .owl-item.active.center .overlay2:before {
+  opacity: 0;
+}
+.home3-slider .owl-item.active.center .img-content {
+  bottom: 0;
+  opacity: 1;
+}
+.home3-slider .owl-item.active.center .img-content p {
+  color: #fff;
+}
+.home3-slider .owl-item.active.center .img-content p span {
+  color: #76c100;
+}
+.home3-slider .owl-item.active.center .img-content h4, .home3-slider .owl-item.active.center .img-content .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .home3-slider .owl-item.active.center .img-content p {
+  font-size: 18px;
+}
+
+/*home3 slider end*/
+/*3.1 slider area end*/
+/*3.2 match-schedule-area start*/
+.match-schedule-area .slider-schedule {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.match-schedule-area .slider-schedule .club-box {
+  display: flex;
+  justify-content: space-between;
+  flex-grow: .4;
+  align-items: center;
+  flex-direction: column;
+}
+.match-schedule-area .slider-schedule .playing-schedule {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+.match-schedule-area .slider-schedule .playing-schedule .club-img img {
+  width: 80px;
+}
+.match-schedule-area .slider-schedule .playing-schedule span {
+  display: flex;
+  justify-content: center;
+  font-size: 50px;
+  color: #000;
+}
+.match-schedule-area .slider-schedule .club-name {
+  margin-top: 15px;
+}
+.match-schedule-area .slider-schedule .club-name h4, .match-schedule-area .slider-schedule .club-name .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-schedule-area .slider-schedule .club-name p {
+  font-size: 25px;
+  color: #000;
+}
+.match-schedule-area .slider-schedule .club-name p {
+  font-size: 16px;
+}
+
+.schedule-area2 .schedule-slider {
+  padding: 0 100px;
+}
+.schedule-area2 .schedule-slider .slider-schedule .club-box {
+  justify-content: space-evenly;
+  flex-direction: row;
+  flex-basis: 150px;
+}
+.schedule-area2 .schedule-slider .slider-schedule .club-box h4, .schedule-area2 .schedule-slider .slider-schedule .club-box .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .schedule-area2 .schedule-slider .slider-schedule .club-box p {
+  color: #000;
+  font-size: 30px;
+  font-family: "Roboto Condensed", sans-serif;
+}
+.schedule-area2 .schedule-slider .slider-schedule .club-box img {
+  width: 80px;
+}
+.schedule-area2 .schedule-slider .slider-schedule .goal {
+  font-size: 60px;
+  color: #000;
+  font-family: "Roboto Condensed", sans-serif;
+}
+.schedule-area2 .schedule-slider p {
+  font-size: 14px;
+  color: #000;
+}
+.schedule-area2 .schedule-slider .bttn {
+  display: inline-block;
+}
+.schedule-area2 .schedule-slider .bttn a, .schedule-area2 .schedule-slider .bttn .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .schedule-area2 .schedule-slider .bttn i {
+  background: #fff;
+  padding: 12px 20px;
+  border-radius: 30px;
+  color: #000;
+  transition: all 0.5s ease 0s;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.schedule-area2 .schedule-slider .bttn a:hover, .schedule-area2 .schedule-slider .bttn .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .schedule-area2 .schedule-slider .bttn i:hover {
+  color: #fff;
+  background: #76c100;
+  box-shadow: 0px 2px 1px 0px #000;
+}
+
+/*3.2 match-schedule-area end*/
+/*============================
+3.3 match-box start==========*/
+/*3.3.1 video-highlight*/
+.highlights-bg {
+  height: 200px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.highlights-bg .video-play-btn {
+  position: absolute;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  padding: 10px 16px;
+  transform: translateY(-21px);
+}
+.highlights-bg p {
+  position: absolute;
+  color: #fff;
+  font-size: 16px;
+  transform: translateY(37px);
+}
+
+.recent-video .highlights-bg {
+  min-height: 241px;
+}
+.recent-video .highlights-bg .video-play-btn {
+  transform: translateX(-170px);
+}
+.recent-video .highlights-bg p {
+  font-size: 18px;
+  font-weight: bold;
+  bottom: 25%;
+  left: 9%;
+}
+
+.upmatch-box {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+.upmatch-box img {
+  min-height: 430px;
+}
+.upmatch-box .team-date {
+  position: absolute;
+  left: 5%;
+  bottom: 10%;
+}
+.upmatch-box .team-date h5 {
+  color: #fff;
+  font-size: 20px;
+}
+.upmatch-box .team-date p {
+  font-size: 15px;
+  color: #fff;
+}
+
+.upmatches-slider .owl-dots {
+  position: absolute;
+  bottom: 7%;
+  left: 5%;
+}
+
+/*result-box start*/
+.score-slider .owl-dots {
+  bottom: 0%;
+  padding: 4px 0;
+  width: 100%;
+  text-align: center;
+}
+
+.result-box .result-heading {
+  text-align: center;
+  color: #76c100;
+  padding: 20px;
+  font-size: 13px;
+}
+.result-box .club-result {
+  display: grid;
+  background: #35383f;
+  padding: 8px 5px;
+  grid-template-columns: repeat(1, 3fr 2fr 3fr);
+  margin-bottom: 10px;
+  transition: all 0.5s ease 0s;
+}
+.result-box .club-result.active, .result-box .club-result:hover {
+  background: #76c100;
+}
+.result-box .club-result .club-img {
+  display: flex;
+  justify-content: space-around;
+}
+.result-box .club-result .club-img img {
+  width: 20px;
+  height: 20px;
+}
+.result-box .club-result .club-img span {
+  margin: 0 4px;
+}
+.result-box .club-result .score {
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+}
+.result-box .club-result .score span {
+  padding: 0px 9px;
+  background: #fff;
+  color: #000;
+  font-weight: bold;
+}
+
+/*result-box end*/
+/*banner-box start*/
+.banner-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 30px;
+}
+
+.banner-img {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+.banner-img img {
+  transition: all 0.5s ease 0s;
+}
+.banner-img:hover img {
+  transform: scale(1.1) rotate(2deg);
+}
+.banner-img p {
+  position: absolute;
+  bottom: 30%;
+  left: 10%;
+  display: block;
+  color: #76c100;
+  font-size: 14px;
+  z-index: 9;
+}
+.banner-img p:before {
+  position: absolute;
+  content: "";
+  width: 100px;
+  height: 27px;
+  background: #fff;
+  left: -66%;
+  bottom: 0;
+  transform: scaleX(0);
+  z-index: -1;
+  transform-origin: 0 0;
+  transition: all 0.5s ease 0s;
+}
+.banner-img h4, .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p {
+  position: absolute;
+  bottom: 8%;
+  left: 10%;
+  display: block;
+  font-size: 18px;
+}
+.banner-img h4 a, .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p a, .banner-img h4 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .banner-img h4 i, .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p i {
+  color: #fff;
+  transition: all 0.5s ease 0s;
+}
+.banner-img h4 a:hover, .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p a:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p a:hover, .banner-img h4 .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .banner-img h4 i:hover, .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p i:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .banner-img p i:hover {
+  color: #76c100;
+}
+.banner-img:hover p:before {
+  transform: scaleX(1);
+}
+
+/*banner-box end*/
+/*football-table-area start*/
+.foot-tbl {
+  display: grid;
+  grid-row-gap: 4px;
+}
+.foot-tbl h5 {
+  font-size: 16px;
+  padding: 20px;
+  color: #76c100;
+}
+.foot-tbl .point-table {
+  background: #35383f;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  transition: all 0.5s ease 0s;
+}
+.foot-tbl .point-table .team-rank span {
+  margin-left: 5px;
+}
+.foot-tbl .point-table.active, .foot-tbl .point-table:hover {
+  background: #76c100;
+}
+
+/*football-table-area end*/
+/*foolow us area start*/
+.follow-us-area .link-box {
+  display: grid;
+  grid-row-gap: 20px;
+}
+.follow-us-area .link-box a, .follow-us-area .link-box .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .follow-us-area .link-box i {
+  background: #2e2e2e;
+  padding: 10px 20px;
+  font-size: 18px;
+  display: flex;
+  color: #fff;
+  font-weight: normal;
+  transition: all 0.5s ease 0s;
+}
+.follow-us-area .link-box a i, .follow-us-area .link-box .comment-area .comment-box .user-cmnt .coments a i i, .comment-area .comment-box .user-cmnt .coments a .follow-us-area .link-box i i {
+  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  margin-right: 20px;
+  color: #000;
+  text-align: center;
+  line-height: 18px;
+  margin-top: 2px;
+  transition: all 0.5s ease 0s;
+}
+.follow-us-area .link-box a:hover, .follow-us-area .link-box .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .follow-us-area .link-box i:hover {
+  color: #76c100;
+}
+.follow-us-area .link-box a:hover i, .follow-us-area .link-box .comment-area .comment-box .user-cmnt .coments a i:hover i, .comment-area .comment-box .user-cmnt .coments a .follow-us-area .link-box i:hover i {
+  background: #76c100;
+}
+
+/*foolow us area end*/
+/*post-area start*/
+.post-area .banner-img p {
+  font-size: 16px;
+  bottom: 40%;
+}
+.post-area .banner-img p:before {
+  width: 120px;
+  left: -83%;
+}
+.post-area .banner-img h4, .post-area .banner-img .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .banner-img p {
+  font-size: 30px;
+}
+.post-area .blog-post h4, .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p {
+  color: #000;
+  font-size: 20px;
+}
+.post-area .blog-post h4 a, .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p a, .post-area .blog-post h4 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .post-area .blog-post h4 i, .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p i {
+  color: #444;
+}
+.post-area .blog-post h4 a:hover, .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p a:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p a:hover, .post-area .blog-post h4 .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .post-area .blog-post h4 i:hover, .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .post-area .blog-post .slider-area .sliding-item .league-content .upcomming-match .first-match p i:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .post-area .blog-post p i:hover {
+  color: #76c100;
+}
+.post-area .blog-post .coments a, .post-area .blog-post .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .post-area .blog-post .coments a i {
+  color: #6b6b6b;
+  font-size: 15px;
+  margin-right: 15px;
+}
+.post-area .blog-post .coments a i, .post-area .blog-post .comment-area .comment-box .user-cmnt .coments a i i, .comment-area .comment-box .user-cmnt .post-area .blog-post .coments a i i {
+  font-size: 15px;
+  color: #6b6b6b;
+  margin-right: 10px;
+}
+.post-area .blog-post .coments a:hover, .post-area .blog-post .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .post-area .blog-post .coments a i:hover {
+  color: #76c100;
+}
+
+.comment-area {
+  display: grid;
+  grid-row-gap: 40px;
+}
+.comment-area .comment-box {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr 4fr);
+  grid-column-gap: 30px;
+}
+.comment-area .comment-box .user-cmnt {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.comment-area .comment-box .user-cmnt h4, .comment-area .comment-box .user-cmnt .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .comment-area .comment-box .user-cmnt p {
+  color: #000;
+  font-size: 18px;
+}
+.comment-area .comment-box .user-cmnt h4 a, .comment-area .comment-box .user-cmnt .slider-area .sliding-item .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .comment-area .comment-box .user-cmnt p a, .comment-area .comment-box .user-cmnt h4 .coments a i, .comment-area .comment-box .user-cmnt .coments a h4 i, .comment-area .comment-box .user-cmnt .slider-area .sliding-item .league-content .upcomming-match .first-match p .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .comment-area .comment-box .user-cmnt p .coments a i, .slider-area .sliding-item .league-content .upcomming-match .first-match .comment-area .comment-box .user-cmnt .coments a p i {
+  color: #444;
+}
+.comment-area .comment-box .user-cmnt h4 a:hover, .comment-area .comment-box .user-cmnt .slider-area .sliding-item .league-content .upcomming-match .first-match p a:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .comment-area .comment-box .user-cmnt p a:hover, .comment-area .comment-box .user-cmnt h4 .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a h4 i:hover, .comment-area .comment-box .user-cmnt .slider-area .sliding-item .league-content .upcomming-match .first-match p .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match p i:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .comment-area .comment-box .user-cmnt p .coments a i:hover, .slider-area .sliding-item .league-content .upcomming-match .first-match .comment-area .comment-box .user-cmnt .coments a p i:hover {
+  color: #76c100;
+}
+.comment-area .comment-box .user-cmnt .coments a, .comment-area .comment-box .user-cmnt .coments a i {
+  color: #6b6b6b;
+  font-size: 14px;
+  margin-right: 10px;
+}
+.comment-area .comment-box .user-cmnt .coments a:hover, .comment-area .comment-box .user-cmnt .coments a i:hover {
+  color: #76c100;
+}
+
+.match-news {
+  display: grid;
+  background: #F1F1F1;
+  grid-template-columns: repeat(1, 2fr 4fr);
+}
+.match-news .news {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding-left: 30px;
+}
+.match-news .news p {
+  color: #76c100;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+.match-news .news p.nws {
+  color: #6b6b6b;
+  line-height: 1.5;
+}
+.match-news .news h4, .match-news .news .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-news .news p {
+  font-size: 18px;
+  color: #000;
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 10px;
+  color: #Fff;
+}
+.match-news .news h4 a, .match-news .news .slider-area .sliding-item .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-news .news p a, .match-news .news h4 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .match-news .news h4 i, .match-news .news .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .match-news .news .slider-area .sliding-item .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-news .news p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .match-news .news p i {
+  color: #444;
+}
+.match-news .news:hover h4 a, .match-news .news:hover .slider-area .sliding-item .league-content .upcomming-match .first-match p a, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-news .news:hover p a, .match-news .news:hover h4 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .match-news .news:hover h4 i, .match-news .news:hover .slider-area .sliding-item .league-content .upcomming-match .first-match p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .match-news .news:hover .slider-area .sliding-item .league-content .upcomming-match .first-match p i, .slider-area .sliding-item .league-content .upcomming-match .first-match .match-news .news:hover p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .slider-area .sliding-item .league-content .upcomming-match .first-match .match-news .news:hover p i {
+  color: #76c100;
+}
+
+.post-slider .owl-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.post-slider .owl-nav button, .post-slider .football-gallery .gallery-slider .owl-nav .owl-next, .football-gallery .gallery-slider .post-slider .owl-nav .owl-next {
+  font-size: 21px !important;
+  position: absolute;
+  top: -60px;
+  right: 22px;
+  background: #dddddd !important;
+  width: 20px;
+  height: 20px;
+  line-height: 20px !important;
+  text-align: center;
+  transition: all 0.5s ease 0s;
+}
+.post-slider .owl-nav button:hover, .post-slider .football-gallery .gallery-slider .owl-nav .owl-next:hover, .football-gallery .gallery-slider .post-slider .owl-nav .owl-next:hover {
+  background: #76c100 !important;
+}
+.post-slider .owl-nav button:focus, .post-slider .football-gallery .gallery-slider .owl-nav .owl-next:focus, .football-gallery .gallery-slider .post-slider .owl-nav .owl-next:focus {
+  outline: inherit;
+}
+.post-slider .owl-nav .owl-next {
+  right: 0px;
+}
+
+/*post-area end*/
+/*scores-tab start*/
+.scores-tab .nav-pills {
+  background: #35383F;
+  display: grid;
+  grid-template-columns: repeat(1, 2fr 1fr 2fr);
+}
+.scores-tab .nav-pills .nav-item .nav-link {
+  text-align: center;
+  color: #fff;
+  font-size: 16px;
+  padding: 16px 0;
+  border-radius: inherit;
+}
+.scores-tab .nav-pills .nav-item .nav-link.active, .scores-tab .nav-pills .nav-item .nav-link:hover {
+  background: #76c100;
+}
+.scores-tab .tab-content {
+  padding: 0px 25px;
+}
+.scores-tab .tab-content .player-box {
+  display: flex;
+  padding: 15px 0;
+}
+.scores-tab .tab-content .player-box img {
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  transform: rotateY(0deg);
+  transition: all 0.5s ease 0s;
+}
+.scores-tab .tab-content .player-box:hover img {
+  transform: rotateY(180deg);
+}
+.scores-tab .tab-content .player-box .player-dtl {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: 20px;
+}
+.scores-tab .tab-content .player-box .player-dtl h4, .scores-tab .tab-content .player-box .player-dtl .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .scores-tab .tab-content .player-box .player-dtl p {
+  font-size: 18px;
+}
+.scores-tab .tab-content .player-box .player-dtl p {
+  font-size: 14px;
+  color: #76c100;
+}
+
+/*scores-tab end*/
+/*============================
+3.3 match-box end==========*/
+/*===========================
+blog & news start
+============================*/
+.trans-news {
+  display: inline-block;
+}
+.trans-news h5 {
+  font-size: 18px;
+  color: #000;
+  font-family: "Roboto", sans-serif;
+}
+.trans-news h5 a, .trans-news h5 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .trans-news h5 i {
+  color: #444;
+}
+.trans-news h5 a:hover, .trans-news h5 .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .trans-news h5 i:hover {
+  color: #76c100;
+}
+.trans-news p {
+  color: #6b6b6b;
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.trans-news.nws2 h5 {
+  font-size: 20px;
+}
+.trans-news.nws2 h5 a, .trans-news.nws2 h5 .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .trans-news.nws2 h5 i {
+  color: #fff;
+}
+.trans-news.nws2 h5 a:hover, .trans-news.nws2 h5 .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .trans-news.nws2 h5 i:hover {
+  color: #76c100;
+}
+.trans-news.nws2 p {
+  color: #fff;
+}
+
+/*twit-area start*/
+.twit-area {
+  display: grid;
+  grid-row-gap: 10px;
+}
+.twit-area .twit-box {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr 4fr);
+}
+.twit-area .twit-box i {
+  margin-top: 8px;
+  font-size: 35px;
+  color: aqua;
+}
+.twit-area .twit-box .twitted p {
+  font-size: 14px;
+  margin: 0;
+}
+.twit-area .twit-box:hover .twitted a, .twit-area .twit-box:hover .twitted .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .twit-area .twit-box:hover .twitted i {
+  color: #76c100;
+}
+
+/*twit-area end*/
+/*===========================
+blog & news end
+============================*/
+/*===========================
+features video start
+============================*/
+.features-vdo-area .highlights-bg .video-play-btn {
+  position: absolute;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  padding: 10px 16px;
+  transform: translateY(3px);
+}
+
+/*===========================
+features video end
+============================*/
+/*features area2 start*/
+.football-gallery .gallery-slider .owl-dots {
+  text-align: center;
+  position: absolute;
+  bottom: -4%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot {
+  width: 55px;
+  height: 60px;
+  border-radius: inherit;
+  transform: scale(1.4);
+  margin: 0 18px;
+  background-size: cover !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 0.5s ease 0s;
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot:before {
+  position: absolute;
+  content: "";
+  background: rgba(118, 193, 0, 0.4);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot.active, .football-gallery .gallery-slider .owl-dots .owl-dot:hover {
+  transform: scale(1.2);
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot.active:before, .football-gallery .gallery-slider .owl-dots .owl-dot:hover:before {
+  background: inherit;
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot:nth-child(1) {
+  background-image: url("../images/gallery/1.jpg") !important;
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot:nth-child(2) {
+  background-image: url("../images/gallery/2.jpg") !important;
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot:nth-child(3) {
+  background-image: url("../images/gallery/3.jpg") !important;
+}
+.football-gallery .gallery-slider .owl-dots .owl-dot:nth-child(4) {
+  background-image: url("../images/gallery/4.jpg") !important;
+}
+.football-gallery .gallery-slider .owl-nav button, .football-gallery .gallery-slider .owl-nav .owl-next {
+  position: absolute;
+  font-size: 50px !important;
+  bottom: 2%;
+  left: 4%;
+  z-index: 1;
+}
+.football-gallery .gallery-slider .owl-nav .owl-next {
+  left: inherit;
+  right: 4%;
+}
+
+/*=================
+features area2 end
+=================*/
+/*===========================
+04 footer start
+============================*/
+.footer-area .subscribe {
+  position: relative;
+  display: block;
+}
+.footer-area .subscribe input {
+  width: 100%;
+  height: 60px;
+  outline: inherit;
+  border: 1px solid #fff;
+  padding: 5px 25px;
+  color: #fff;
+  background: transparent;
+}
+.footer-area .subscribe a, .footer-area .subscribe .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .footer-area .subscribe i {
+  position: absolute;
+  right: 0%;
+  padding: 18px 27px;
+  top: 0;
+  background: #fff;
+}
+.footer-area .subscribe a i, .footer-area .subscribe .comment-area .comment-box .user-cmnt .coments a i i, .comment-area .comment-box .user-cmnt .coments a .footer-area .subscribe i i {
+  color: #000;
+  font-size: 20px;
+  line-height: 20px;
+}
+.footer-area .footer-box {
+  display: grid;
+  grid-template-columns: repeat(1, 3fr 2fr 3fr 2fr 2fr);
+  grid-column-gap: 30px;
+}
+.footer-area .footer-box .footer-content .ftr-title h4, .footer-area .footer-box .footer-content .ftr-title .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .footer-area .footer-box .footer-content .ftr-title p {
+  font-size: 22px;
+}
+.footer-area .footer-box .footer-content p {
+  color: #fff;
+  font-size: 14px;
+}
+.footer-area .footer-box .footer-content.add p {
+  border-bottom: 1px solid #6b6b6b;
+  padding-bottom: 20px;
+  margin: 0;
+}
+.footer-area .footer-box .footer-content .add-info {
+  padding-top: 20px;
+}
+.footer-area .footer-box .footer-content .add-info p {
+  border: inherit;
+  padding-bottom: 2px;
+}
+.footer-area .footer-box .footer-content .add-info p a, .footer-area .footer-box .footer-content .add-info p .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .footer-area .footer-box .footer-content .add-info p i {
+  margin-right: 15px;
+}
+.footer-area .footer-box .footer-content .partners {
+  display: grid;
+  grid-row-gap: 15px;
+}
+.footer-area .footer-box .footer-content .partners a, .footer-area .footer-box .footer-content .partners .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .footer-area .footer-box .footer-content .partners i {
+  font-size: 14px;
+  color: #fff;
+  transition: all 0.5s ease 0s;
+}
+.footer-area .footer-box .footer-content .partners a:hover, .footer-area .footer-box .footer-content .partners .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .footer-area .footer-box .footer-content .partners i:hover {
+  color: #76c100;
+}
+.footer-area .footer-box .footer-content .news-info {
+  display: grid;
+  grid-row-gap: 15px;
+}
+.footer-area .footer-box .footer-content .news-info .news-detail {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr 3fr);
+}
+.footer-area .footer-box .footer-content .news-info .news-detail img {
+  width: 50px;
+  height: 50px;
+}
+
+.copyright {
+  background: #01050D;
+}
+.copyright h4, .copyright .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .copyright p {
+  color: #fff;
+  font-size: 15px;
+  text-transform: capitalize;
+  font-family: "Roboto", sans-serif;
+}
+.copyright h4 span, .copyright .slider-area .sliding-item .league-content .upcomming-match .first-match p span, .slider-area .sliding-item .league-content .upcomming-match .first-match .copyright p span {
+  color: #76c100;
+}
+
+/*===========================
+footer  end
+============================*/
+/*06 club list start*/
+.club-list-area .club-authority h4, .club-list-area .club-authority .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .club-list-area .club-authority p {
+  font-size: 25px;
+  color: #000;
+  font-family: "Roboto Condensed", sans-serif;
+}
+.club-list-area .club-authority .authority-box p {
+  font-size: 14px;
+}
+.club-list-area .club-authority .authority-box p strong {
+  color: #000;
+}
+.club-list-area .club-history .history-img h3 {
+  font-size: 25px;
+  color: #000;
+}
+.club-list-area .team-box .nav-tabs {
+  border: inherit;
+  background: #f3f3f3;
+  display: inline-flex;
+}
+.club-list-area .team-box .nav-tabs .nav-item {
+  color: #000;
+  font-size: 18px;
+  padding: 18px 40px;
+  border: inherit;
+  border-radius: inherit;
+  margin: 0;
+}
+.club-list-area .team-box .nav-tabs .nav-item.active, .club-list-area .team-box .nav-tabs .nav-item:hover {
+  background: #76c100;
+  color: #fff;
+}
+.club-list-area .team-box .tab-content .team-mem h5 {
+  font-size: 20px;
+  color: #000;
+}
+
+/*07 club list end*/
+/*08 laliga start*/
+.laliga-box h4, .laliga-box .slider-area .sliding-item .league-content .upcomming-match .first-match p, .slider-area .sliding-item .league-content .upcomming-match .first-match .laliga-box p {
+  font-size: 25px;
+  background: #76c100;
+  padding: 15px 0;
+  font-family: "Roboto Condensed", sans-serif;
+}
+.laliga-box .fixture-box {
+  padding: 20px 0;
+}
+.laliga-box .fixture-box .club-fixture {
+  display: grid;
+  grid-template-columns: repeat(1, 3fr 2fr 3fr);
+  grid-column-gap: 40px;
+  padding: 20px 0;
+  transition: all 0.5s ease 0s;
+}
+.laliga-box .fixture-box .club-fixture.active, .laliga-box .fixture-box .club-fixture:hover {
+  background: #f3f3f3;
+}
+.laliga-box .fixture-box .club-fixture .club-img {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 10px 20px;
+}
+.laliga-box .fixture-box .club-fixture .club-img span {
+  color: #000;
+  margin: 0 20px;
+  font-size: 25px;
+  font-family: "Roboto Condensed", sans-serif;
+}
+.laliga-box .fixture-box .club-fixture div:nth-child(3) {
+  display: flex;
+  justify-content: flex-end;
+}
+.laliga-box .fixture-box .club-fixture .club-schedule {
+  font-size: 22px;
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.laliga-box .fixture-box .club-fixture .club-schedule p {
+  margin: 0;
+}
+
+/*07 laliga end*/
+/*08 result start*/
+.result-box .fixture-box .club-schedule h5 {
+  font-size: 40px;
+}
+
+/*08 result end*/
+/*sports start*/
+.news-area .sports-news .sports-img {
+  position: relative;
+}
+.news-area .sports-news .sports-img:before {
+  position: absolute;
+  content: "";
+  background: rgba(118, 193, 0, 0.6);
+  width: 25%;
+  height: 55%;
+  bottom: 0;
+  right: 0;
+  z-index: 9;
+  border-radius: 50%;
+  transform: scale(0) translate3d(191%, 196%, 0);
+  transition: all 1s cubic-bezier(0.4, 0, 1, 1) 0s;
+}
+.news-area .sports-news .sports-img:hover:before {
+  transform: scale(1) translate3d(-398%, -171%, 0);
+  opacity: 1;
+}
+.news-area .sports-news .sports-title h3 {
+  font-size: 25px;
+  color: #000;
+  font-weight: 500;
+}
+.news-area .sports-news .sports-title p {
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
+}
+.news-area .sports-news .sports-title p span {
+  color: #76c100;
+}
+.news-area .sports-news .news-btn {
+  display: block;
+}
+.news-area .sports-news .news-btn a, .news-area .sports-news .news-btn .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .news-area .sports-news .news-btn i {
+  padding: 10px 15px;
+  color: #fff;
+  background: #76c100;
+}
+.news-area .sports-news .news-btn a:hover, .news-area .sports-news .news-btn .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .news-area .sports-news .news-btn i:hover {
+  background: #DDD;
+  color: #76c100;
+}
+.news-area .sports-news .highlights-bg {
+  height: 400px;
+}
+.news-area .sports-news .highlights-bg .video-play-btn {
+  position: absolute;
+  border-radius: 50%;
+  padding: inherit;
+  border: inherit;
+  font-size: 70px;
+  transform: inherit;
+}
+.news-area .sports-news .highlights-bg .video-play-btn i {
+  color: rgba(255, 255, 255, 0.6);
+}
+.news-area .sports-news .sports-arrow {
+  display: flex;
+  justify-content: space-between;
+}
+.news-area .sports-news .sports-arrow a, .news-area .sports-news .sports-arrow .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .news-area .sports-news .sports-arrow i {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  padding: 12px 25px;
+  background: #76c100;
+}
+.news-area .news-box .news-search {
+  position: relative;
+}
+.news-area .news-box .news-search input {
+  outline: inherit;
+  border: 2px solid #6b6b6b;
+  height: 50px;
+  width: 100%;
+  padding: 8px 0 8px 50px;
+}
+.news-area .news-box .news-search input::placeholder {
+  color: #6b6b6b;
+}
+.news-area .news-box .news-search a, .news-area .news-box .news-search .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .news-area .news-box .news-search i {
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+  height: 100%;
+}
+.news-area .news-box .news-search a i, .news-area .news-box .news-search .comment-area .comment-box .user-cmnt .coments a i i, .comment-area .comment-box .user-cmnt .coments a .news-area .news-box .news-search i i {
+  color: #76c100;
+  font-size: 20px;
+}
+.news-area .recent-news .blog-title h3 {
+  font-size: 20px;
+  color: #000;
+  font-weight: 500;
+}
+.news-area .recent-news .comment-box {
+  display: grid;
+  grid-template-columns: repeat(1, 70px 3fr);
+  grid-column-gap: 21px;
+}
+.news-area .recent-news .comment-box img {
+  width: 75px;
+  height: 75px;
+  transition: all 0.5s ease 0s;
+  border: 2px solid transparent;
+}
+.news-area .recent-news .comment-box .user-cmnt a, .news-area .recent-news .comment-area .comment-box .user-cmnt .coments a i, .comment-area .news-area .recent-news .comment-box .user-cmnt .coments a i {
+  font-size: 13px;
+  color: #000;
+  font-weight: 700;
+  line-height: 1.4em;
+  transition: all 0.5s ease 0s;
+  display: inline-block;
+}
+.news-area .recent-news .comment-box .user-cmnt p {
+  font-size: 12px;
+  line-height: 16px;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+.news-area .recent-news .comment-box:hover .user-cmnt a, .news-area .recent-news .comment-area .comment-box:hover .user-cmnt .coments a i, .comment-area .news-area .recent-news .comment-box:hover .user-cmnt .coments a i {
+  color: #76c100;
+}
+.news-area .recent-news .comment-box:hover img {
+  border: 2px solid #76c100;
+}
+.news-area .twit-post .twit-box {
+  grid-template-columns: repeat(1, 1fr 5fr);
+}
+.news-area .twit-post .twit-box i {
+  color: #76c100;
+  font-size: 28px;
+}
+.news-area .twit-post .twit-box .twitted a, .news-area .twit-post .twit-box .twitted .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .news-area .twit-post .twit-box .twitted i {
+  color: #76c100;
+}
+.news-area .twit-post .twit-box .twitted p {
+  font-size: 14px;
+}
+.news-area .twit-post .twit-box .twitted p.sml {
+  font-size: 10px;
+  color: #76c100;
+}
+.news-area .link-box a, .news-area .link-box .comment-area .comment-box .user-cmnt .coments a i, .comment-area .comment-box .user-cmnt .coments a .news-area .link-box i {
+  background: #f6f6f6;
+  color: #444;
+  padding: 12px 20px;
+  font-weight: 500;
+}
+.news-area .link-box a i, .news-area .link-box .comment-area .comment-box .user-cmnt .coments a i i, .comment-area .comment-box .user-cmnt .coments a .news-area .link-box i i {
+  background: #000;
+  color: #fff;
+}
+.news-area .link-box a:hover, .news-area .link-box .comment-area .comment-box .user-cmnt .coments a i:hover, .comment-area .comment-box .user-cmnt .coments a .news-area .link-box i:hover {
+  background: #76c100;
+  color: #fff;
+}
+.news-area .link-box a:hover i, .news-area .link-box .comment-area .comment-box .user-cmnt .coments a i:hover i, .comment-area .comment-box .user-cmnt .coments a .news-area .link-box i:hover i {
+  background: #fff;
+  color: #000;
+}
+
+/*sports-slider start*/
+.sports-slider.owl-carousel .owl-nav button, .sports-slider.owl-carousel .football-gallery .gallery-slider .owl-nav .owl-next, .football-gallery .gallery-slider .sports-slider.owl-carousel .owl-nav .owl-next {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: 16px;
+  padding: 14px 45px !important;
+  background: #76c100;
+}
+.sports-slider.owl-carousel .owl-nav button.owl-next, .sports-slider.owl-carousel .football-gallery .gallery-slider .owl-nav .owl-next, .football-gallery .gallery-slider .sports-slider.owl-carousel .owl-nav .owl-next {
+  right: 0;
+  left: auto;
+}
+
+/*sports-slider end*/
+/*08 sports end*/
+/*09 point table start*/
+.point-table {
+  color: #fff;
+}
+.point-table .table {
+  color: #000;
+}
+.point-table .table.table-bordered {
+  font-family: "Roboto Condensed", sans-serif;
+}
+.point-table .table.table-bordered thead {
+  background: #76c100;
+  line-height: 2;
+  font-size: 18px;
+}
+.point-table .table.table-bordered thead th {
+  text-align: center;
+}
+.point-table .table.table-bordered thead tr td,
+.point-table .table.table-bordered thead tr th {
+  color: #fff;
+  border: inherit;
+}
+.point-table .table.table-bordered tbody tr {
+  border-top: 1px solid #bababa;
+  border-bottom: 1px solid #bababa;
+}
+.point-table .table.table-bordered tbody tr:nth-child(even) {
+  background: #f1f1f1;
+}
+.point-table .table.table-bordered tbody th {
+  text-align: center;
+  line-height: 85px;
+  font-size: 20px;
+}
+.point-table .table.table-bordered tbody td {
+  text-align: center;
+  line-height: 80px;
+  font-size: 20px;
+}
+.point-table .table.table-bordered tbody td.team {
+  text-align: left;
+}
+.point-table .table.table-bordered tbody td .team-box span {
+  color: #000;
+  font-size: 25px;
+  font-family: "Roboto Condensed", sans-serif;
+  margin-left: 20px;
+}
+.point-table .table.table-bordered tr th {
+  color: #000;
+}
+
+.table-bordered td,
+.table-bordered th {
+  border: inherit;
+}
+
+/*09 point table end*/

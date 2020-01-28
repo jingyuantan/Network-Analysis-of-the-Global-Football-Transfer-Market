@@ -2,15 +2,94 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>My First Dashboard</title>
+    <title>Football Transfer Network</title>
+    <!--All Css Here-->
+
+    <!--Bootstrap Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <!--Font-Awesome Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    <!--Owl-Carousel Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+    <!--Animate Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+    <!--magnific popup Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+    <!--Jquery Ui Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+    <!--Style Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!--Responsive Css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <style>
+        #loader {
+          border: 16px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 16px solid blue;
+          border-bottom: 16px solid blue;
+          width: 120px;
+          height: 120px;
+          -webkit-animation: spin 2s linear infinite;
+          animation: spin 2s linear infinite;
+            display: none;
+            position: absolute;
+            z-index: 99;
+            top: 62%;
+            left: 45%;
+            margin-top: -100px;
+            margin-left: -100px;
+        }
+
+        @-webkit-keyframes spin {
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+    </style>
+
 </head>
 <body>
 <div>
-    Microblog:
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('explore') }}">Explore</a>
+    <header>
+        <div class="nav-menu full-black" id="sticky-menu">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="navbar-header">
+                                <a class="navbar-brand" href="index.html"><img src=""  alt="Test_Logo"></a>
+								<button class="navbar-toggler d-md-inlline d-xl-none" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+									<span class="fa fa-bars"></span>
+								</button>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <nav class="navbar navbar-expand-lg">
+                                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link" href="{{ url_for('index') }}">home</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ url_for('explore') }}">explore</a>
+                                        </li>
+                                        <li class="nav-item ">
+                                            <a class="nav-link " href="#">more</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </header>
 </div>
 {% block content %}{% endblock %}
 </body>
