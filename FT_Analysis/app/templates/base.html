@@ -21,9 +21,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!--Responsive Css-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/datatables.min.css') }}" >
 
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+
     <style>
         #loader {
           border: 16px solid #f3f3f3;
