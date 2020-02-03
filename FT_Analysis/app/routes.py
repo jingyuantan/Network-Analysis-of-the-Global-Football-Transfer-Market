@@ -2,35 +2,47 @@ from flask import Flask, render_template, request
 import plotly
 import plotly.graph_objs as go
 import networkx as nx
-from flask import Blueprint
-from flask_paginate import Pagination, get_page_parameter
-from webweb import Web
 from flask_table import Table, Col
-from app import db
 from app.models import Player, League, Club, Transfer
 import pandas as pd
-import numpy as np
 import json
-from sqlalchemy import func
-from app import app
+from app import app, cache
+from flask_caching import Cache
 
 
 @app.route('/')
 @app.route('/index')
+@cache.cached(timeout=50)
 def index():
     return render_template('index.html')
 
 
 @app.route('/explore/')
+@cache.cached(timeout=50)
 def explore():
+    season = 'all'
     leagueid = 'premier-leaguetransferswettbewerbGB1'
     country = 'all'
-    bar = create_plot(leagueid, country)
+    position = 'all'
+    nationality = 'all'
+    ageFrom = 'all'
+    ageTo = 'all'
+    valueFrom = 'all'
+    valueTo = 'all'
+    dateFrom = 'all'
+    dateTo = 'all'
+
+    bar = create_plot(season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+                      dateFrom, dateTo)
     table1 = create_table1()
-    leagues = League.query.all()
+
     league_lists = []
     country_list = []
+    season_list = []
+    position_list = []
+    nationality_list = []
 
+    leagues = League.query.all()
     for league in leagues:
         temp = dict()
         temp.update({'id': league.id})
@@ -38,14 +50,29 @@ def explore():
         country_list.append(league.country)
         league_lists.append(temp)
 
+    transfers = Transfer.query.all()
+    for transfer in transfers:
+        season_list.append(transfer.season)
+
+    players = Player.query.all()
+    for player in players:
+        position_list.append(player.position)
+        nationality_list.append(player.nationality)
+
     country_list = list(dict.fromkeys(country_list))
-    return render_template('explore.html', plot=bar, leagues=league_lists, countries=country_list, table1=table1)
+    season_list = list(dict.fromkeys(season_list))
+    position_list = list(dict.fromkeys(position_list))
+    nationality_list = list(dict.fromkeys(nationality_list))
+
+    return render_template('explore.html', plot=bar, seasons=season_list, leagues=league_lists, countries=country_list,
+                           positions=position_list, nationalities=nationality_list, table1=table1)
 
 
+@cache.memoize(50)
 def create_table1():
     # Declare your table
     class ItemTable(Table):
-        table_id = 'dtBasicExample'
+        table_id = 'main_table'
         classes = ['table', 'table-bordered', 'table-striped']
         name = Col('Club Name')
         transfer_in = Col('Transfer In')
@@ -100,7 +127,8 @@ def create_table1():
     return table
 
 
-def create_plot(leagueid, country):
+@cache.memoize(50)
+def create_plot(season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
     transfers = Transfer.query.all()
     pair_clubs = []
 
@@ -110,6 +138,8 @@ def create_plot(leagueid, country):
         value = transfer.value
         country_from = clubFrom.country
         country_to = clubTo.country
+        player_position = Player.query.filter_by(id=transfer.playerId).first().position
+        player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
 
         if leagueid != 'all':
             if clubFrom.leagueId != leagueid or clubTo.leagueId != leagueid:
@@ -117,6 +147,14 @@ def create_plot(leagueid, country):
 
         if country != 'all':
             if country_from != country or country_to != country:
+                continue
+
+        if position != 'all':
+            if player_position != position:
+                continue
+
+        if nationality != 'all':
+            if player_nationality != nationality:
                 continue
 
         if value[-1] == 'k':
@@ -147,6 +185,7 @@ def create_plot(leagueid, country):
     return graphJSON
 
 
+@cache.memoize(50)
 def create_plot_one(clicked):
     transfers = Transfer.query.all()
     pair_clubs = []
@@ -189,6 +228,7 @@ def create_plot_one(clicked):
     return graphJSON
 
 
+@cache.memoize(50)
 def plot(df):
     G = nx.Graph()
     for i in range(len(df)):
@@ -302,16 +342,26 @@ def plot(df):
 
 @app.route('/bar', methods=['GET', 'POST'])
 def change_features():
+    season = request.args['season']
     league = request.args['league']
     country = request.args['country']
-    graphJSON = create_plot(league, country)
+    position = request.args['position']
+    nationality = request.args['nationality']
+    ageFrom = request.args['ageFrom']
+    ageTo = request.args['ageTo']
+    valueFrom = request.args['valueFrom']
+    valueTo = request.args['valueTo']
+    dateFrom = request.args['dateFrom']
+    dateTo = request.args['dateTo']
 
+    graphJSON = create_plot(season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+                            dateFrom, dateTo)
     return graphJSON
 
 
 @app.route('/one', methods=['GET', 'POST'])
 def change_features_one():
     clicked = request.args['clicked']
-    graphJSON = create_plot_one(clicked)
 
+    graphJSON = create_plot_one(clicked)
     return graphJSON

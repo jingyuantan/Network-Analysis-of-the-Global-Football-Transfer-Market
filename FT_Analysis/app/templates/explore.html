@@ -7,7 +7,13 @@
         <div class="">
             <label> Filter</label>
             <div>
-                <select class="form-control" id ='first_cat'>
+                <select class="form-control" id ='season'>
+                    <option value="all">-Select Season-</option>
+                    {% for season in seasons %}
+                    <option value="{{ season }}">{{ season }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control" id ='league'>
                     <option value="all">-Select League-</option>
                     {% for league in leagues %}
                     <option value="{{ league.id }}">{{ league.name }}</option>
@@ -19,7 +25,31 @@
                     <option value="{{ country }}">{{ country }}</option>
                     {% endfor %}
                 </select>
-                <button onclick="myFunction()">Generate</button>
+                <select class="form-control" id ='position'>
+                    <option value="all">-Select Position-</option>
+                    {% for position in positions %}
+                    <option value="{{ position }}">{{ position }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control" id ='nationality'>
+                    <option value="all">-Select Nationality-</option>
+                    {% for nationality in nationalities %}
+                    <option value="{{ nationality }}">{{ nationality }}</option>
+                    {% endfor %}
+                </select>
+                <div style="width:100%">
+                    <input type="text" placeholder="-Age Range From-" id="ageFrom" class="textbox">
+                    <input type="text" placeholder="-Age Range To-" id="ageTo" class="textbox">
+                </div>
+                <div style="width:100%">
+                    <input type="text" placeholder="-Value Range From-" id="valueFrom" class="textbox">
+                    <input type="text" placeholder="-Value Range To-" id="valueTo" class="textbox">
+                </div>
+                <div style="width:100%">
+                    <input type="date" placeholder="-Date From-" id="dateFrom" class="textbox" min="2017-10-01" max="2019-09-31">
+                    <input type="date" placeholder="-Date To-" id="dateTo" class="textbox" min="2017-10-01" max="2019-09-31">
+                </div>
+                <button onclick="generateGraph()">Generate</button>
             </div>
         </div>
 

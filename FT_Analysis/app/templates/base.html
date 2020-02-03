@@ -29,6 +29,20 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
 
     <style>
+        ::-webkit-input-placeholder { /* Edge */
+          color: #495057;
+        }
+
+        :-ms-input-placeholder { /* Internet Explorer */
+          color: #495057;
+        }
+
+        ::placeholder {
+          color: #495057;
+        }
+        .textbox{
+            padding-left: 16px;
+        }
         #loader {
           border: 16px solid #f3f3f3;
           border-radius: 50%;
