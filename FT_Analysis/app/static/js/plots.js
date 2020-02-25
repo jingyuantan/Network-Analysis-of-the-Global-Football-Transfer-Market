@@ -1,3 +1,19 @@
+$(document).ready(function () {
+  $('#main_table').DataTable({
+    "pagingType": "first_last_numbers",
+      'columns': [
+                {"data": "name"},
+                {"data": "transfer_in"},
+                {"data": "transfer_out"},
+                {"data": "total_transfer"},
+                {"data": "spent"},
+                {"data": "received"},
+                {"data": "net"}
+                ]
+  });
+  $('.dataTables_length').addClass('bs-select');
+});
+
 function generateGraph() {
   document.getElementById("loader").style.display = "block";
     $.ajax({
@@ -34,7 +50,7 @@ myPlot.on('plotly_click', function(eventData){
       for(var i=0; i < eventData.points.length; i++){
           clicked = eventData.points[i].text
       };
-    alert(clicked)
+    //alert(clicked)
     document.getElementById("loader").style.display = "block";
     $.ajax({
         url: "/one",
@@ -47,15 +63,23 @@ myPlot.on('plotly_click', function(eventData){
         success: function (data) {
             //myPlot.removeAllListeners('plotly_click')
             Plotly.react('bargraph', data );
+            /*var table = $('#main_table').DataTable();
+            table.search(clicked).draw();*/
+            //document.getElementById("loader").style.display = "none";
+        }
+    });
+    $.ajax({
+        url: "/personalized_table",
+        type: "GET",
+        contentType: 'application/json;charset=UTF-8',
+        data: {
+            'clicked': clicked
+        },
+        dataType:"json",
+        success: function (data) {
+            $('#main_table').DataTable().clear().rows.add(data.data).draw();
             document.getElementById("loader").style.display = "none";
         }
     });
     console.log('out')
-});
-
-$(document).ready(function () {
-  $('#main_table').DataTable({
-    "pagingType": "first_last_numbers" // "simple" option for 'Previous' and 'Next' buttons only
-  });
-  $('.dataTables_length').addClass('bs-select');
 });
