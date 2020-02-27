@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="csi420-01-vm7.ucd.ie">
+    <serverData>
+      <paths name="csi420-01-vm7.ucd.ie">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/student/FT_Analysis" local="$PROJECT_DIR$" web="http://csi420-01-vm7.ucd.ie" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

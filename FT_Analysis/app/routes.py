@@ -11,6 +11,7 @@ from app import app, cache
 from flask_caching import Cache
 from sqlalchemy import or_, and_
 
+
 @app.route('/')
 @app.route('/index')
 @cache.cached(timeout=50)
