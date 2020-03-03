@@ -18,7 +18,6 @@ from sqlalchemy import or_, and_
 def index():
     return render_template('index.html')
 
-
 @app.route('/explore/')
 @cache.cached(timeout=50)
 def explore():
@@ -663,9 +662,9 @@ def create_table1():
     items = []
 
     for clubName in df['name']:
-        spent = '£' + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
-        received = '£' + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
-        net = '£' + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
+        spent = '&#163;' + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
+        received = '&#163;' + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
+        net = '&#163;' + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
 
         items.append(dict(name=df['name'][clubName], transfer_in=df['transfer_in'][clubName],
                           transfer_out=df['transfer_out'][clubName], total_transfer=df['total_transfer'][clubName],
@@ -720,9 +719,9 @@ def ego_table():
     items = []
     records = 0
     for clubName in df['name']:
-        spent = '£' + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
-        received = '£' + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
-        net = '£' + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
+        spent = '&#163;' + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
+        received = '&#163;' + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
+        net = '&#163;' + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
 
         items.append(dict(name=df['name'][clubName], transfer_in=df['transfer_in'][clubName],
                           transfer_out=df['transfer_out'][clubName], total_transfer=df['total_transfer'][clubName],
