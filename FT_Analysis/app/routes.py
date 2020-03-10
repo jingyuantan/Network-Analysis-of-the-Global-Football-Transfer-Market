@@ -61,16 +61,19 @@ def explore():
     position_list = list(dict.fromkeys(position_list))
     nationality_list = list(dict.fromkeys(nationality_list))
 
-    bar = create_plot(season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
-                      dateFrom, dateTo)
-    table1 = create_table1()
+    bar_table = create_plot('explore', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+                            dateFrom, dateTo)
+
+    bar = bar_table[0]
+    table1 = bar_table[1]
 
     return render_template('explore.html', plot=bar, seasons=season_list, leagues=league_lists, countries=country_list,
                            positions=position_list, nationalities=nationality_list, table1=table1)
 
 
-@cache.memoize(50)
-def create_plot(season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+# @cache.memoize(50)
+def create_plot(page, season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
     transfers = Transfer.query.all()
     pair_clubs = []
     s17_18 = []
@@ -148,6 +151,24 @@ def create_plot(season, leagueid, country, position, nationality, ageFrom, ageTo
         pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
         pair_clubs.append(pair)
 
+        # df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
+        # df_table.set_index('name')
+        if clubFrom.name in df_table.values:
+            df_table.loc[df_table.name == clubFrom.name, 'transfer_out'] += 1
+            df_table.loc[df_table.name == clubFrom.name, 'total_transfer'] += 1
+            df_table.loc[df_table.name == clubFrom.name, 'received'] += value
+            df_table.loc[df_table.name == clubFrom.name, 'net'] -= value
+        else:
+            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value]
+
+        if clubTo.name in df_table.values:
+            df_table.loc[df_table.name == clubTo.name, 'transfer_in'] += 1
+            df_table.loc[df_table.name == clubTo.name, 'total_transfer'] += 1
+            df_table.loc[df_table.name == clubTo.name, 'spent'] += value
+            df_table.loc[df_table.name == clubTo.name, 'net'] += value
+        else:
+            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value]
+
     if pair_clubs:
         df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
     else:
@@ -192,11 +213,26 @@ def create_plot(season, leagueid, country, position, nationality, ageFrom, ageTo
                 }
         df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
 
-    """df["Occ"] = df.groupby(['From', 'To']).cumcount() + 1
-    df['Total_Value'] = df.groupby(['From', 'To'])['Value'].cumsum()
-    df = df.sort_values(by=['Total_Value'])"""
-    graphJSON = plot(df, df17_18, df18_19, df19_20)
-    return graphJSON
+    if page == 'explore':
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 'init')
+        myTable = create_table1(df_table, 'init')
+        return graphJSON, myTable
+    elif page == 'explore2':
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 're')
+        myTable = create_table1(df_table, 're')
+        return graphJSON, myTable
+    elif page == 'statistics':
+        bet = stats_table(df, 'betweenness', 'init')
+        deg = stats_table(df, 'degree', 'init')
+        clo = stats_table(df, 'closeness', 'init')
+        eig = stats_table(df, 'eigenvector', 'init')
+        return bet, deg, clo, eig
+    elif page == 'statistics2':
+        bet = stats_table(df, 'betweenness', 're')
+        deg = stats_table(df, 'degree', 're')
+        clo = stats_table(df, 'closeness', 're')
+        eig = stats_table(df, 'eigenvector', 're')
+        return deg, bet, clo, eig
 
 
 @cache.memoize(50)
@@ -326,7 +362,7 @@ def create_plot_ego(clicked):
 
 
 @cache.memoize(50)
-def plot(df, df17_18, df18_19, df19_20):
+def plot(df, df17_18, df18_19, df19_20, status):
     G = assign_nodes_edges(df)
     G17_18 = assign_nodes_edges(df17_18)
     G18_19 = assign_nodes_edges(df18_19)
@@ -356,22 +392,6 @@ def plot(df, df17_18, df18_19, df19_20):
 
     for node in G19_20.nodes:
         G19_20.nodes[node]['pos'] = list(pos_19_20[node])
-
-    pos = nx.get_node_attributes(G, 'pos')
-    pos_17_18 = nx.get_node_attributes(G17_18, 'pos')
-    pos_18_19 = nx.get_node_attributes(G18_19, 'pos')
-    pos_19_20 = nx.get_node_attributes(G19_20, 'pos')
-
-    """dmin = 1
-    ncenter = 0
-    for n in pos:
-        x, y = pos[n]
-        d = (x - 0.5) ** 2 + (y - 0.5) ** 2
-        if d < dmin:
-            ncenter = n
-            dmin = d
-
-    p = nx.single_source_shortest_path_length(G, ncenter)"""
 
     # Create Edges
     edge_trace = create_edge_scatter()
@@ -548,7 +568,12 @@ def plot(df, df17_18, df18_19, df19_20):
     fig.update_layout(
         sliders=sliders
     )
-    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    if status == 'init':
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    else:
+        graphJSON = fig
+
     return graphJSON
 
 
@@ -613,10 +638,8 @@ def create_node_scatter(node_sizes):
     return node_trace
 
 
-
 @app.route('/table')
-@cache.memoize(50)
-def create_table1():
+def create_table1(df, status):
     # Declare your table
     class ItemTable(Table):
         table_id = 'main_table'
@@ -629,56 +652,32 @@ def create_table1():
         received = Col('Total transfer fee received')
         net = Col('Net Spent')
 
-    df = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
-    df.set_index('name')
-    transfers = Transfer.query.all()
-
-    for transfer in transfers:
-        clubFrom = Club.query.filter_by(id=transfer.fromId).first().name
-        clubTo = Club.query.filter_by(id=transfer.toId).first().name
-        value = transfer.value
-        if value[-1] == 'k':
-            value = float(value[1:-1]) / 1000
-        else:
-            value = float(value[1:-1])
-
-        if clubFrom in df['name']:
-            df['transfer_out'][clubFrom] += 1
-            df['total_transfer'][clubFrom] += 1
-            df['received'][clubFrom] += value
-            df['net'][clubFrom] -= value
-        else:
-            df.loc[clubFrom] = [clubFrom, 0, 1, 1, 0, value, -value]
-
-        if clubTo in df['name']:
-            df['transfer_in'][clubTo] += 1
-            df['total_transfer'][clubTo] += 1
-            df['spent'][clubTo] += value
-            df['net'][clubTo] += value
-        else:
-            df.loc[clubTo] = [clubTo, 1, 0, 1, value, 0, value]
-
     # Populate the table
     items = []
 
     for clubName in df['name']:
-        spent = '&#163;' + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
-        received = '&#163;' + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
-        net = '&#163;' + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
+        spent = u"\xA3" + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
+        received = u"\xA3" + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
+        net = u"\xA3" + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
 
         items.append(dict(name=df['name'][clubName], transfer_in=df['transfer_in'][clubName],
                           transfer_out=df['transfer_out'][clubName], total_transfer=df['total_transfer'][clubName],
                           spent=spent, received=received, net=net))
 
-    table = ItemTable(items)
-    return table
+    if status == 'init':
+        table = ItemTable(items)
+        return table
+    elif status == 're':
+        proper_json = dict(data=items)
+        return proper_json
+        # return json.dumps(proper_json)
 
 
 @app.route('/personalized_table',  methods=['GET', 'POST'])
 def ego_table():
     clicked = request.args['clicked']
-    df = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
-    df.set_index('name')
+    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
+    df_table.set_index('name')
     transfers = Transfer.query.filter(or_(Transfer.fromId == clicked, Transfer.toId == clicked))
     alter_id = []
 
@@ -691,40 +690,41 @@ def ego_table():
         else:
             continue
 
-        clubFrom = Club.query.filter_by(id=transfer.fromId).first().name
-        clubTo = Club.query.filter_by(id=transfer.toId).first().name
+        clubFrom = Club.query.filter_by(id=transfer.fromId).first()
+        clubTo = Club.query.filter_by(id=transfer.toId).first()
         value = transfer.value
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
         else:
             value = float(value[1:-1])
 
-        if clubFrom in df['name']:
-            df['transfer_out'][clubFrom] += 1
-            df['total_transfer'][clubFrom] += 1
-            df['received'][clubFrom] += value
-            df['net'][clubFrom] -= value
+        if clubFrom.name in df_table.values:
+            df_table.loc[df_table.name == clubFrom.name, 'transfer_out'] += 1
+            df_table.loc[df_table.name == clubFrom.name, 'total_transfer'] += 1
+            df_table.loc[df_table.name == clubFrom.name, 'received'] += value
+            df_table.loc[df_table.name == clubFrom.name, 'net'] -= value
         else:
-            df.loc[clubFrom] = [clubFrom, 0, 1, 1, 0, value, -value]
+            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value]
 
-        if clubTo in df['name']:
-            df['transfer_in'][clubTo] += 1
-            df['total_transfer'][clubTo] += 1
-            df['spent'][clubTo] += value
-            df['net'][clubTo] += value
+        if clubTo.name in df_table.values:
+            df_table.loc[df_table.name == clubTo.name, 'transfer_in'] += 1
+            df_table.loc[df_table.name == clubTo.name, 'total_transfer'] += 1
+            df_table.loc[df_table.name == clubTo.name, 'spent'] += value
+            df_table.loc[df_table.name == clubTo.name, 'net'] += value
         else:
-            df.loc[clubTo] = [clubTo, 1, 0, 1, value, 0, value]
+            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value]
 
     # Populate the table
     items = []
     records = 0
-    for clubName in df['name']:
-        spent = '&#163;' + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
-        received = '&#163;' + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
-        net = '&#163;' + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
+    for clubName in df_table['name']:
+        spent = u"\xA3" + str(float("{0:.2f}".format(df_table['spent'][clubName]))) + 'm'
+        received = u"\xA3" + str(float("{0:.2f}".format(df_table['received'][clubName]))) + 'm'
+        net = u"\xA3" + str(float("{0:.2f}".format(df_table['net'][clubName]))) + 'm'
 
-        items.append(dict(name=df['name'][clubName], transfer_in=df['transfer_in'][clubName],
-                          transfer_out=df['transfer_out'][clubName], total_transfer=df['total_transfer'][clubName],
+        items.append(dict(name=df_table['name'][clubName], transfer_in=df_table['transfer_in'][clubName],
+                          transfer_out=df_table['transfer_out'][clubName],
+                          total_transfer=df_table['total_transfer'][clubName],
                           spent=spent, received=received, net=net))
         records += 1
 
@@ -733,7 +733,7 @@ def ego_table():
     return json.dumps(proper_json)
 
 
-@app.route('/bar', methods=['GET', 'POST'])
+@app.route('/explore_filter_1', methods=['GET', 'POST'])
 def change_features():
     season = request.args['season']
     league = request.args['league']
@@ -747,9 +747,9 @@ def change_features():
     dateFrom = request.args['dateFrom']
     dateTo = request.args['dateTo']
 
-    graphJSON = create_plot(season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+    graphJSON = create_plot('explore2', season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
                             dateFrom, dateTo)
-    return graphJSON
+    return json.dumps(graphJSON, cls=plotly.utils.PlotlyJSONEncoder)
 
 
 @app.route('/one', methods=['GET', 'POST'])
@@ -760,3 +760,111 @@ def change_features_ego():
     return graphJSON
 
 
+@app.route('/statistics/')
+def statistics():
+    season = 'all'
+    leagueid = 'premier-leaguetransferswettbewerbGB1'
+    country = 'all'
+    position = 'all'
+    nationality = 'all'
+    ageFrom = ''
+    ageTo = ''
+    valueFrom = ''
+    valueTo = ''
+    dateFrom = ''
+    dateTo = ''
+
+    league_lists = []
+    country_list = []
+    season_list = []
+    position_list = []
+    nationality_list = []
+
+    leagues = League.query.all()
+    for league in leagues:
+        temp = dict()
+        temp.update({'id': league.id})
+        temp.update({'name': league.name})
+        country_list.append(league.country)
+        league_lists.append(temp)
+
+    transfers = Transfer.query.all()
+    for transfer in transfers:
+        season_list.append(transfer.season)
+
+    players = Player.query.all()
+    for player in players:
+        position_list.append(player.position)
+        nationality_list.append(player.nationality)
+
+    country_list = list(dict.fromkeys(country_list))
+    season_list = list(dict.fromkeys(season_list))
+    position_list = list(dict.fromkeys(position_list))
+    nationality_list = list(dict.fromkeys(nationality_list))
+
+    tables = create_plot('statistics', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+                         dateFrom, dateTo)
+    bet = tables[0]
+    deg = tables[1]
+    clo = tables[2]
+    eig = tables[3]
+
+    return render_template('statistics.html', bet=bet, deg=deg, clo=clo, eig=eig, seasons=season_list,
+                           leagues=league_lists, countries=country_list,
+                           positions=position_list, nationalities=nationality_list)
+
+
+@app.route('/re_statistics/')
+def re_statistics():
+    season = request.args['season']
+    league = request.args['league']
+    country = request.args['country']
+    position = request.args['position']
+    nationality = request.args['nationality']
+    ageFrom = request.args['ageFrom']
+    ageTo = request.args['ageTo']
+    valueFrom = request.args['valueFrom']
+    valueTo = request.args['valueTo']
+    dateFrom = request.args['dateFrom']
+    dateTo = request.args['dateTo']
+
+    tables = create_plot('statistics2', season, league, country, position, nationality, ageFrom, ageTo, valueFrom,
+                         valueTo, dateFrom, dateTo)
+
+    return json.dumps(tables)
+
+
+def stats_table(df, centrality_type, status):
+    # Declare your table
+    cen = centrality_type + " Centrality"
+
+    class degree(Table):
+        table_id = centrality_type
+        classes = ['table', 'table-bordered', 'table-striped']
+        name = Col('Name')
+        centrality = Col(cen)
+
+    # Populate the table
+    items = []
+    G = assign_nodes_edges(df)
+    ctype = dict()
+    if centrality_type == 'betweenness':
+        ctype = nx.betweenness_centrality(G)
+    elif centrality_type == 'closeness':
+        ctype = nx.closeness_centrality(G)
+    elif centrality_type == 'eigenvector':
+        ctype = nx.eigenvector_centrality(G)
+    elif centrality_type == 'degree':
+        for node in G.degree:
+            items.append(dict(name=node[0], centrality=node[1]))
+
+    if ctype:
+        for name in ctype:
+            items.append(dict(name=name, centrality=ctype[name]))
+
+    if status == 'init':
+        table = degree(items)
+        return table
+    elif status == 're':
+        table = dict(data=items)
+        return table

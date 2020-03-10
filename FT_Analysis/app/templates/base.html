@@ -40,9 +40,6 @@
         ::placeholder {
           color: #495057;
         }
-        .textbox{
-            padding-left: 16px;
-        }
         #loader {
           border: 16px solid #f3f3f3;
           border-radius: 50%;
@@ -69,6 +66,31 @@
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+
+        #loading-img {
+            background: url(http://preloaders.net/preloaders/360/Velocity.gif) center center no-repeat;
+            height: 100%;
+            z-index: 999;
+        }
+
+        .overlay {
+            background: #e9e9e9;
+            z-index: 99;
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.5;
+        }
+        .textbox2{
+            padding: 17px 16px;
+        }
+        .textboxout{
+            padding: 0 15px;
+            width:100%;
         }
     </style>
 
@@ -98,7 +120,7 @@
                                             <a class="nav-link" href="{{ url_for('explore') }}">explore</a>
                                         </li>
                                         <li class="nav-item ">
-                                            <a class="nav-link " href="#">more</a>
+                                            <a class="nav-link " href="{{ url_for('statistics') }}">statistics</a>
                                         </li>
                                     </ul>
                                 </div>
