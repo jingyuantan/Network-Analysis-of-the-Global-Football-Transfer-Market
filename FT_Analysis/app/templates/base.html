@@ -27,6 +27,7 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
 
     <style>
         ::-webkit-input-placeholder { /* Edge */
@@ -113,11 +114,17 @@
                             <nav class="navbar navbar-expand-lg">
                                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                                     <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item dropdown">
+                                        <li class="nav-item">
                                             <a class="nav-link" href="{{ url_for('index') }}">home</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="{{ url_for('explore') }}">explore</a>
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="javascript:;" onclick='dropdown();' data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">explore</a>
+                                            <div id='dropdownmenuid' class="dropdown-menu animation  slideUpIn" style="display: none;">
+                                                <a class="dropdown-item" href="{{ url_for('explore') }}">by clubs</a>
+                                                <a class="dropdown-item" href="{{ url_for('explore_league') }}">by leagues</a>
+                                                <a class="dropdown-item" href="{{ url_for('explore_country') }}">by countries</a>
+                                                <a class="dropdown-item" href="#">by players</a>
+                                            </div>
                                         </li>
                                         <li class="nav-item ">
                                             <a class="nav-link " href="{{ url_for('statistics') }}">statistics</a>

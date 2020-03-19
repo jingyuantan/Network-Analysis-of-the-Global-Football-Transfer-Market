@@ -28,12 +28,11 @@ function generateGraph() {
   //document.getElementById("loader").style.display = "block";
   $(".overlay").show();
     $.ajax({
-        url: "/explore_filter_1",
+        url: "/explore_league_filter",
         type: "GET",
         contentType: 'application/json;charset=UTF-8',
         data: {
             'season': document.getElementById('season').value,
-            'league': document.getElementById('league').value,
             'country': document.getElementById('country').value,
             'position': document.getElementById('position').value,
             'nationality': document.getElementById('nationality').value,
@@ -64,11 +63,21 @@ myPlot.on('plotly_click', function(eventData){
     //document.getElementById("loader").style.display = "block";
     $(".overlay").show();
     $.ajax({
-        url: "/one",
+        url: "/league_one",
         type: "GET",
         contentType: 'application/json;charset=UTF-8',
         data: {
-            'clicked': clicked
+            'clicked': clicked,
+            'season': document.getElementById('season').value,
+            'country': document.getElementById('country').value,
+            'position': document.getElementById('position').value,
+            'nationality': document.getElementById('nationality').value,
+            'ageFrom': document.getElementById("ageFrom").value,
+            'ageTo': document.getElementById("ageTo").value,
+            'valueFrom': document.getElementById("valueFrom").value,
+            'valueTo': document.getElementById("valueTo").value,
+            'dateFrom': document.getElementById("dateFrom").value,
+            'dateTo': document.getElementById("dateTo").value
         },
         dataType:"json",
         success: function (data) {
@@ -76,35 +85,6 @@ myPlot.on('plotly_click', function(eventData){
             $('#main_table').DataTable().clear().rows.add(data[1].data).draw();
             $(".overlay").hide();
         }
-    })
+    });
     console.log('out')
 });
-
-function change_tables() {
-    $(".overlay").show();
-  //document.getElementById("loader").style.display = "block";
-    $.ajax({
-        url: "/re_statistics",
-        type: "GET",
-        contentType: 'application/json;charset=UTF-8',
-        data: {
-            'season': document.getElementById('season').value,
-            'league': document.getElementById('league').value,
-            'country': document.getElementById('country').value,
-            'position': document.getElementById('position').value,
-            'nationality': document.getElementById('nationality').value,
-            'valueFrom': document.getElementById("valueFrom").value,
-            'valueTo': document.getElementById("valueTo").value,
-            'ageFrom': document.getElementById("ageFrom").value,
-            'ageTo': document.getElementById("ageTo").value,
-            'dateFrom': document.getElementById("dateFrom").value,
-            'dateTo': document.getElementById("dateTo").value
-        },
-        dataType:"json",
-        success: function (data) {
-            $('#centrality').DataTable().clear().rows.add(data.data).draw();
-            //document.getElementById("loader").style.display = "none";
-            $(".overlay").hide();
-        }
-    });
-}

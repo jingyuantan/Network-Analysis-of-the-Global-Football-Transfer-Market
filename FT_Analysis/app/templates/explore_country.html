@@ -16,14 +16,6 @@
                 </select>
             </div>
             <div class="col-6">
-                <select class="form-control" id ='league'>
-                    <option value="all">-Select League-</option>
-                    {% for league in leagues %}
-                    <option value="{{ league.id }}">{{ league.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-6">
                 <select class="form-control" id ='country'>
                     <option value="all">-Select Country-</option>
                     {% for country in countries %}
@@ -76,6 +68,6 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/plots.js') }}"></script>
+<script src="{{ url_for('static', filename='js/plot_country.js') }}"></script>
 
 {% endblock %}
