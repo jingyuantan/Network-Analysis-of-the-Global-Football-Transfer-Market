@@ -11,17 +11,8 @@ $(document).ready(function () {
                 {"data": "net"}
                 ]
   });
-  $('#centrality').DataTable({
-    "pagingType": "first_last_numbers",
-      'columns': [
-                {"data": "name"},
-                {"data": "deg"},
-                {"data": "bet"},
-                {"data": "clo"},
-                {"data": "eig"},
-                ]
-  });
   $('.dataTables_length').addClass('bs-select');
+  document.getElementById("title").innerHTML = 'Network by Leagues (Filter by Country: England)';
 });
 
 function generateGraph() {
@@ -48,6 +39,7 @@ function generateGraph() {
             console.log(data)
             Plotly.react('bargraph', data[0]);
             $('#main_table').DataTable().clear().rows.add(data[1].data).draw();
+            document.getElementById("title").innerHTML = 'Network by Leagues (Based on user input)';
             $(".overlay").hide();
             //document.getElementById("loader").style.display = "none";
         }
@@ -83,6 +75,7 @@ myPlot.on('plotly_click', function(eventData){
         success: function (data) {
             Plotly.react('bargraph', data[0]);
             $('#main_table').DataTable().clear().rows.add(data[1].data).draw();
+            document.getElementById("title").innerHTML = 'Network by Leagues (Ego Network)';
             $(".overlay").hide();
         }
     });

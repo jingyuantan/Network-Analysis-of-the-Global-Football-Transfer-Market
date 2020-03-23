@@ -4,50 +4,34 @@ import networkx as nx
 import pandas as pd
 from app.models import Transfer, Club, Player
 
-G = nx.Graph()
-leagueid = 'premier-leaguetransferswettbewerbGB1'
+df_table = pd.DataFrame(columns=['player_nationality', 'destination', 'total_transfer'])
 transfers = Transfer.query.all()
-pair_clubs = []
-df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
+nationality = 'Brazil'
+s17_18 = []
+s18_19 = []
+s19_20 = []
+pair_playerCountry = []
+
 for transfer in transfers:
     clubFrom = Club.query.filter_by(id=transfer.fromId).first()
     clubTo = Club.query.filter_by(id=transfer.toId).first()
     value = transfer.value
-    country_from = clubFrom.country
     country_to = clubTo.country
     player_position = Player.query.filter_by(id=transfer.playerId).first().position
     player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
     player_age = Player.query.filter_by(id=transfer.playerId).first().age
     date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
 
-    if leagueid != 'all':
-        if clubFrom.leagueId != leagueid or clubTo.leagueId != leagueid:
+    if nationality != 'all':
+        if player_nationality != nationality:
             continue
 
-    if value[-1] == 'k':
-        value = float(value[1:-1]) / 1000
+    if not df_table.loc[(df_table['player_nationality'] == player_nationality) & (df_table['destination'] == country_to)].empty:
+        df_table.loc[(df_table['player_nationality'] == player_nationality) & (df_table['destination'] == country_to), 'total_transfer'] += 1
     else:
-        value = float(value[1:-1])
+        temp_df = pd.DataFrame([[player_nationality, country_to, 1]], columns=['player_nationality', 'destination', 'total_transfer'])
+        df_table = pd.concat([df_table, temp_df])
 
-    pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
-    pair_clubs.append(pair)
-    df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-
-    for i in range(len(df)):
-        f = df["From"][i]
-        t = df["To"][i]
-        # p = df["Total_Value"][i]
-        G.add_node(f, id=df['From Id'][i])
-        G.add_node(t, id=df['To Id'][i])
-        G.add_edge(f, t)
-
-"""print(nx.betweenness_centrality(G))
-print(nx.closeness_centrality(G))
-print(nx.eigenvector_centrality(G))
-print(G.number_of_nodes())
-for node in G.degree:
-    print(node[0], " + ", node[1])"""
-
-bet = nx.betweenness_centrality(G)
-for a in bet:
-    print(a, " + ", bet[a])
+print(df_table)
+asd = df_table.to_dict(orient='records')
+print(asd)

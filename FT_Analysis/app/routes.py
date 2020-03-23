@@ -1,9 +1,10 @@
+from abc import ABC
 from datetime import datetime
 from flask import Flask, render_template, request
 import plotly
 import plotly.graph_objs as go
 import networkx as nx
-from flask_table import Table, Col
+from flask_table import Table, Col, LinkCol
 from app.models import Player, League, Club, Transfer
 import pandas as pd
 import json
@@ -53,7 +54,16 @@ def explore():
 
     players = Player.query.all()
     for player in players:
-        position_list.append(player.position)
+        if player.position == '':
+            continue
+        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
+            position_list.append('Forward')
+        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
+            position_list.append('Defender')
+        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
+            position_list.append('Midfielder')
+        else:
+            position_list.append(player.position)
         nationality_list.append(player.nationality)
 
     country_list = list(dict.fromkeys(country_list))
@@ -73,7 +83,8 @@ def explore():
 
 # @cache.memoize(50)
 def create_plot(page, season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
-    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
+    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net',
+                                     'link'])
     transfers = Transfer.query.all()
     pair_clubs = []
     s17_18 = []
@@ -151,15 +162,13 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
         pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
         pair_clubs.append(pair)
 
-        # df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
-        # df_table.set_index('name')
         if clubFrom.name in df_table.values:
             df_table.loc[df_table.name == clubFrom.name, 'transfer_out'] += 1
             df_table.loc[df_table.name == clubFrom.name, 'total_transfer'] += 1
             df_table.loc[df_table.name == clubFrom.name, 'received'] += value
             df_table.loc[df_table.name == clubFrom.name, 'net'] -= value
         else:
-            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value]
+            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value, clubFrom.id]
 
         if clubTo.name in df_table.values:
             df_table.loc[df_table.name == clubTo.name, 'transfer_in'] += 1
@@ -167,7 +176,7 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
             df_table.loc[df_table.name == clubTo.name, 'spent'] += value
             df_table.loc[df_table.name == clubTo.name, 'net'] += value
         else:
-            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value]
+            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value, clubTo.id]
 
     if pair_clubs:
         df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
@@ -214,11 +223,11 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
         df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
 
     if page == 'explore':
-        graphJSON = plot(df, df17_18, df18_19, df19_20, 'init')
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', False)
         myTable = create_table1(df_table, 'init')
         return graphJSON, myTable
     elif page == 'explore2':
-        graphJSON = plot(df, df17_18, df18_19, df19_20, 're')
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
         myTable = create_table1(df_table, 're')
         return graphJSON, myTable
     elif page == 'statistics':
@@ -346,13 +355,13 @@ def create_plot_ego(clicked):
 
         df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
 
-    graphJSON = plot(df, df17_18, df18_19, df19_20, 're')
+    graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
     egotab = ego_table(clicked)
     return graphJSON, egotab
 
 
 @cache.memoize(50)
-def plot(df, df17_18, df18_19, df19_20, status):
+def plot(df, df17_18, df18_19, df19_20, status, isBipartite):
     G = assign_nodes_edges(df)
     G17_18 = assign_nodes_edges(df17_18)
     G18_19 = assign_nodes_edges(df18_19)
@@ -365,10 +374,16 @@ def plot(df, df17_18, df18_19, df19_20, status):
     node_sizes_19_20 = adjust_node_size(G19_20)
 
     # get a x,y position for each node
-    pos = nx.circular_layout(G)
-    pos_17_18 = nx.circular_layout(G17_18)
-    pos_18_19 = nx.circular_layout(G18_19)
-    pos_19_20 = nx.circular_layout(G19_20)
+    if isBipartite:
+        pos = nx.bipartite_layout(G, df['From'].tolist())
+        pos_17_18 = nx.bipartite_layout(G17_18, df17_18['From'].tolist())
+        pos_18_19 = nx.bipartite_layout(G18_19, df18_19['From'].tolist())
+        pos_19_20 = nx.bipartite_layout(G19_20, df19_20['From'].tolist())
+    else:
+        pos = nx.circular_layout(G)
+        pos_17_18 = nx.circular_layout(G17_18)
+        pos_18_19 = nx.circular_layout(G18_19)
+        pos_19_20 = nx.circular_layout(G19_20)
 
     # add a pos attribute to each node
     for node in G.nodes:
@@ -484,7 +499,7 @@ def plot(df, df17_18, df18_19, df19_20, status):
 
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
-                        title='<br>Football Transfer Network',
+                        # title='<br>Football Transfer Network',
                         titlefont=dict(size=16),
                         showlegend=False,
                         hovermode='closest',
@@ -572,11 +587,9 @@ def assign_nodes_edges(df):
     for i in range(len(df)):
         f = df["From"][i]
         t = df["To"][i]
-        # p = df["Total_Value"][i]
         G.add_node(f, id=df['From Id'][i])
         G.add_node(t, id=df['To Id'][i])
         G.add_edge(f, t)
-        # G.add_weighted_edges_from([(f, t, p)])
     return G
 
 
@@ -631,16 +644,19 @@ def create_node_scatter(node_sizes):
 @app.route('/table')
 def create_table1(df, status):
     # Declare your table
-    class ItemTable(Table):
+    hyperlink = 'https://www.transfermarkt.co.uk'
+
+    """class ItemTable(Table):
         table_id = 'main_table'
         classes = ['table', 'table-bordered', 'table-striped']
-        name = Col('Club Name')
+        # name = Col('Club Name')
+        name = LinkCol('Name', 'statistics', attr='name', url_kwargs=dict(id='link'), anchor_attrs={'href': hyperlink, 'target': '_blank'})
         transfer_in = Col('Transfer In')
         transfer_out = Col('Transfer Out')
         total_transfer = Col('Total Transfer')
         spent = Col('Total transfer fee spent')
         received = Col('Total transfer fee received')
-        net = Col('Net Spent')
+        net = Col('Net Spent')"""
 
     # Populate the table
     items = []
@@ -649,21 +665,21 @@ def create_table1(df, status):
         spent = u"\xA3" + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
         received = u"\xA3" + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
         net = u"\xA3" + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
-
-        items.append(dict(name=df['name'][clubName], transfer_in=df['transfer_in'][clubName],
+        tempLink = hyperlink + df['link'][clubName]
+        items.append(dict(name=df['name'][clubName], link=tempLink, transfer_in=df['transfer_in'][clubName],
                           transfer_out=df['transfer_out'][clubName], total_transfer=df['total_transfer'][clubName],
                           spent=spent, received=received, net=net))
 
     if status == 'init':
-        table = ItemTable(items)
-        return table
+        # table = ItemTable(items)
+        # return table
+        # proper_json = dict(data=items)
+        return items
     elif status == 're':
         proper_json = dict(data=items)
         return proper_json
-        # return json.dumps(proper_json)
 
 
-# @app.route('/personalized_table',  methods=['GET', 'POST'])
 def ego_table(clicked):
     # clicked = request.args['clicked']
     df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
@@ -718,10 +734,8 @@ def ego_table(clicked):
                           spent=spent, received=received, net=net))
         records += 1
 
-    # proper_json = dict(draw=1, recordsTotal=records, recordsFiltered=records, data=items)
     proper_json = dict(data=items)
     return proper_json
-    #return json.dumps(proper_json)
 
 
 @app.route('/explore_filter_1', methods=['GET', 'POST'])
@@ -751,6 +765,7 @@ def change_features_ego():
     return json.dumps(graphJSON, cls=plotly.utils.PlotlyJSONEncoder)
 
 
+# --------------Stats table-----------------------------------------------------------------
 @app.route('/statistics/')
 def statistics():
     season = 'all'
@@ -832,20 +847,15 @@ def stats_table(df, status):
         clo = Col('Closeness Centrality')
         eig = Col('Eigenvector Centrality')
 
-
     # Populate the table
     items = []
     G = assign_nodes_edges(df)
-    bc = dict()
-    cc = dict()
-    ec = dict()
 
     bc = nx.betweenness_centrality(G)
     cc = nx.closeness_centrality(G)
     ec = nx.eigenvector_centrality(G)
     for node in G.degree:
         items.append(dict(name=node[0], deg=node[1], bet=bc[node[0]], clo=cc[node[0]], eig=ec[node[0]]))
-
 
     if status == 'init':
         table = degree(items)
@@ -854,7 +864,8 @@ def stats_table(df, status):
         table = dict(data=items)
         return table
 
-# ------------------------------------------------------------------------------------------
+
+# --------------------------league level----------------------------------------------------
 # ------------------------------------------------------------------------------------------
 @app.route('/explore_league/')
 @cache.cached(timeout=50)
@@ -885,7 +896,16 @@ def explore_league():
 
     players = Player.query.all()
     for player in players:
-        position_list.append(player.position)
+        if player.position == '':
+            continue
+        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
+            position_list.append('Forward')
+        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
+            position_list.append('Defender')
+        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
+            position_list.append('Midfielder')
+        else:
+            position_list.append(player.position)
         nationality_list.append(player.nationality)
 
     country_list = list(dict.fromkeys(country_list))
@@ -904,7 +924,7 @@ def explore_league():
 
 
 def create_plot_league(page, season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
-    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
+    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net', 'link'])
     transfers = Transfer.query.all()
     s17_18 = []
     s18_19 = []
@@ -986,7 +1006,7 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
             df_table.loc[df_table.name == LeagueFrom.name, 'received'] += value
             df_table.loc[df_table.name == LeagueFrom.name, 'net'] -= value
         else:
-            df_table.loc[LeagueFrom.name] = [LeagueFrom.name, 0, 1, 1, 0, value, -value]
+            df_table.loc[LeagueFrom.name] = [LeagueFrom.name, 0, 1, 1, 0, value, -value, LeagueFrom.href]
 
         if LeagueTo.name in df_table.values:
             df_table.loc[df_table.name == LeagueTo.name, 'transfer_in'] += 1
@@ -994,7 +1014,7 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
             df_table.loc[df_table.name == LeagueTo.name, 'spent'] += value
             df_table.loc[df_table.name == LeagueTo.name, 'net'] += value
         else:
-            df_table.loc[LeagueTo.name] = [LeagueTo.name, 1, 0, 1, value, 0, value]
+            df_table.loc[LeagueTo.name] = [LeagueTo.name, 1, 0, 1, value, 0, value, LeagueTo.href]
 
     if pair_leagues:
         df = pd.DataFrame(pair_leagues, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
@@ -1041,11 +1061,11 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
         df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
 
     if page == 'explore_league':
-        graphJSON = plot(df, df17_18, df18_19, df19_20, 'init')
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', False)
         myTable = create_table1(df_table, 'init')
         return graphJSON, myTable
     elif page == 'explore_league2':
-        graphJSON = plot(df, df17_18, df18_19, df19_20, 're')
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
         myTable = create_table1(df_table, 're')
         return graphJSON, myTable
 
@@ -1291,6 +1311,444 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
                           spent=spent, received=received, net=net))
         records += 1
 
-    graphJSON = plot(df, df17_18, df18_19, df19_20, 're')
+    graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
     proper_json = dict(data=items)
     return graphJSON, proper_json
+
+
+# ------------------------country level-----------------------------------------------------
+# ------------------------------------------------------------------------------------------
+@app.route('/explore_country/')
+@cache.cached(timeout=50)
+def explore_country():
+    season = 'all'
+    position = 'Forward'
+    nationality = 'England'
+    ageFrom = ''
+    ageTo = ''
+    valueFrom = ''
+    valueTo = ''
+    dateFrom = ''
+    dateTo = ''
+
+    season_list = []
+    position_list = []
+    nationality_list = []
+
+    transfers = Transfer.query.all()
+    for transfer in transfers:
+        season_list.append(transfer.season)
+
+    players = Player.query.all()
+    for player in players:
+        if player.position == '':
+            continue
+        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
+            position_list.append('Forward')
+        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
+            position_list.append('Defender')
+        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
+            position_list.append('Midfielder')
+        else:
+            position_list.append(player.position)
+        nationality_list.append(player.nationality)
+
+    season_list = list(dict.fromkeys(season_list))
+    position_list = list(dict.fromkeys(position_list))
+    nationality_list = list(dict.fromkeys(nationality_list))
+
+    bar_table = create_plot_country('explore_country', season, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+                                    dateFrom, dateTo)
+
+    bar = bar_table[0]
+    table1 = bar_table[1]
+
+    return render_template('explore_country.html', plot=bar, seasons=season_list,
+                           positions=position_list, nationalities=nationality_list, table1=table1)
+
+
+def create_plot_country(page, season, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net', 'link'])
+    transfers = Transfer.query.all()
+    s17_18 = []
+    s18_19 = []
+    s19_20 = []
+    pair_countries = []
+
+    for transfer in transfers:
+        clubFrom = Club.query.filter_by(id=transfer.fromId).first()
+        clubTo = Club.query.filter_by(id=transfer.toId).first()
+        value = transfer.value
+        country_from = clubFrom.country
+        country_to = clubTo.country
+        player_position = Player.query.filter_by(id=transfer.playerId).first().position
+        player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
+        player_age = Player.query.filter_by(id=transfer.playerId).first().age
+        date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
+
+        if position != 'all':
+            if player_position != position:
+                continue
+
+        if nationality != 'all':
+            if player_nationality != nationality:
+                continue
+
+        if ageFrom != '':
+            if player_age < ageFrom:
+                continue
+
+        if ageTo != '':
+            if player_age > ageTo:
+                continue
+
+        if value[-1] == 'k':
+            value = float(value[1:-1]) / 1000
+        else:
+            value = float(value[1:-1])
+
+        if valueFrom != '':
+            if value < float(valueFrom):
+                continue
+
+        if valueTo != '':
+            if value > float(valueTo):
+                continue
+
+        temp = [country_from, country_to, value, 1, 1]
+        if transfer.season == '2017/2018':
+            s17_18.append(temp)
+        elif transfer.season == '2018/2019':
+            s18_19.append(temp)
+        elif transfer.season == '2019/2020':
+            s19_20.append(temp)
+
+        if dateFrom != '':
+            if date < dateFrom:
+                continue
+
+        if dateTo != '':
+            if date > dateTo:
+                continue
+
+        if season != 'all':
+            if transfer.season != season:
+                continue
+
+        pair = [country_from, country_to, value, 1, 1]
+        pair_countries.append(pair)
+
+        if country_from in df_table.values:
+            df_table.loc[df_table.name == country_from, 'transfer_out'] += 1
+            df_table.loc[df_table.name == country_from, 'total_transfer'] += 1
+            df_table.loc[df_table.name == country_from, 'received'] += value
+            df_table.loc[df_table.name == country_from, 'net'] -= value
+        else:
+            df_table.loc[country_from] = [country_from, 0, 1, 1, 0, value, -value, '#']
+
+        if country_to in df_table.values:
+            df_table.loc[df_table.name == country_to, 'transfer_in'] += 1
+            df_table.loc[df_table.name == country_to, 'total_transfer'] += 1
+            df_table.loc[df_table.name == country_to, 'spent'] += value
+            df_table.loc[df_table.name == country_to, 'net'] += value
+        else:
+            df_table.loc[country_to] = [country_to, 1, 0, 1, value, 0, value, '#']
+
+    if pair_countries:
+        df = pd.DataFrame(pair_countries, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s17_18:
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s18_19:
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s19_20:
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if page == 'explore_country':
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', False)
+        myTable = create_table1(df_table, 'init')
+        return graphJSON, myTable
+    elif page == 'explore_country2':
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
+        myTable = create_table1(df_table, 're')
+        return graphJSON, myTable
+
+
+@app.route('/explore_country_filter', methods=['GET', 'POST'])
+def change_features_country():
+    season = request.args['season']
+    position = request.args['position']
+    nationality = request.args['nationality']
+    ageFrom = request.args['ageFrom']
+    ageTo = request.args['ageTo']
+    valueFrom = request.args['valueFrom']
+    valueTo = request.args['valueTo']
+    dateFrom = request.args['dateFrom']
+    dateTo = request.args['dateTo']
+
+    graphJSON = create_plot_country('explore_country2', season, position, nationality, ageFrom, ageTo, valueFrom,
+                                    valueTo, dateFrom, dateTo)
+    return json.dumps(graphJSON, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+@app.route('/explore_player')
+@cache.cached(timeout=50)
+def explore_player():
+    season = 'all'
+    position = 'all'
+    nationality = 'Brazil'
+    ageFrom = ''
+    ageTo = ''
+    valueFrom = ''
+    valueTo = ''
+    dateFrom = ''
+    dateTo = ''
+    country = 'all'
+
+    country_list = []
+    season_list = []
+    position_list = []
+    nationality_list = []
+
+    leagues = League.query.all()
+    for league in leagues:
+        country_list.append(league.country)
+
+    transfers = Transfer.query.all()
+    for transfer in transfers:
+        season_list.append(transfer.season)
+
+    players = Player.query.all()
+    for player in players:
+        if player.position == '':
+            continue
+        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
+            position_list.append('Forward')
+        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
+            position_list.append('Defender')
+        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
+            position_list.append('Midfielder')
+        else:
+            position_list.append(player.position)
+        nationality_list.append(player.nationality)
+
+    country_list = list(dict.fromkeys(country_list))
+    season_list = list(dict.fromkeys(season_list))
+    position_list = list(dict.fromkeys(position_list))
+    nationality_list = list(dict.fromkeys(nationality_list))
+
+    bar_table = create_plot_player('explore_player', season, country, position, nationality, ageFrom, ageTo, valueFrom,
+                                   valueTo,
+                                   dateFrom, dateTo)
+
+    bar = bar_table[0]
+    table1 = bar_table[1]
+
+    return render_template('explore_player.html', plot=bar, seasons=season_list, countries=country_list,
+                           positions=position_list, nationalities=nationality_list, table1=table1)
+
+
+def create_plot_player(page, season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+    df_table = pd.DataFrame(columns=['player_nationality', 'destination', 'total_transfer'])
+    transfers = Transfer.query.all()
+    s17_18 = []
+    s18_19 = []
+    s19_20 = []
+    pair_playerCountry = []
+
+    for transfer in transfers:
+        # clubFrom = Club.query.filter_by(id=transfer.fromId).first()
+        clubTo = Club.query.filter_by(id=transfer.toId).first()
+        value = transfer.value
+        # country_from = clubFrom.country
+        country_to = clubTo.country
+        player_position = Player.query.filter_by(id=transfer.playerId).first().position
+        player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
+        player_age = Player.query.filter_by(id=transfer.playerId).first().age
+        date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
+
+        if country != 'all':
+            if country_to != country:
+                continue
+
+        if position != 'all':
+            if player_position != position:
+                continue
+
+        if nationality != 'all':
+            if player_nationality != nationality:
+                continue
+
+        if ageFrom != '':
+            if player_age < ageFrom:
+                continue
+
+        if ageTo != '':
+            if player_age > ageTo:
+                continue
+
+        if value[-1] == 'k':
+            value = float(value[1:-1]) / 1000
+        else:
+            value = float(value[1:-1])
+
+        if valueFrom != '':
+            if value < float(valueFrom):
+                continue
+
+        if valueTo != '':
+            if value > float(valueTo):
+                continue
+
+        pval = player_nationality + ' - player'
+        dval = country_to + ' - destination'
+        temp = [pval, dval, value, '#', '#']
+        if transfer.season == '2017/2018':
+            s17_18.append(temp)
+        elif transfer.season == '2018/2019':
+            s18_19.append(temp)
+        elif transfer.season == '2019/2020':
+            s19_20.append(temp)
+
+        if dateFrom != '':
+            if date < dateFrom:
+                continue
+
+        if dateTo != '':
+            if date > dateTo:
+                continue
+
+        if season != 'all':
+            if transfer.season != season:
+                continue
+
+        pval = player_nationality + ' - player'
+        dval = country_to + ' - destination'
+
+        pair = [pval, dval, value, '#', '#']
+        pair_playerCountry.append(pair)
+        if not df_table.loc[(df_table['player_nationality'] == player_nationality) & (df_table['destination'] == country_to)].empty:
+            df_table.loc[(df_table['player_nationality'] == player_nationality) & (
+                        df_table['destination'] == country_to), 'total_transfer'] += 1
+        else:
+            temp_df = pd.DataFrame([[player_nationality, country_to, 1]],
+                                   columns=['player_nationality', 'destination', 'total_transfer'])
+            df_table = pd.concat([df_table, temp_df])
+
+    if pair_playerCountry:
+        df = pd.DataFrame(pair_playerCountry, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s17_18:
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s18_19:
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s19_20:
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if page == 'explore_player':
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', True)
+        myTable = create_table_player(df_table, 'init')
+        return graphJSON, myTable
+    elif page == 'explore_player2':
+        graphJSON = plot(df, df17_18, df18_19, df19_20, 're', True)
+        myTable = create_table_player(df_table, 're')
+        return graphJSON, myTable
+
+
+def create_table_player(df, status):
+    # Populate the table
+    items = df.to_dict(orient='records')
+
+    if status == 'init':
+        return items
+    elif status == 're':
+        proper_json = dict(data=items)
+        return proper_json
+
+
+@app.route('/explore_player_filter', methods=['GET', 'POST'])
+def change_features_player():
+    season = request.args['season']
+    country = request.args['country']
+    position = request.args['position']
+    nationality = request.args['nationality']
+    ageFrom = request.args['ageFrom']
+    ageTo = request.args['ageTo']
+    valueFrom = request.args['valueFrom']
+    valueTo = request.args['valueTo']
+    dateFrom = request.args['dateFrom']
+    dateTo = request.args['dateTo']
+
+    graphJSON = create_plot_player('explore_player2', season, country, position, nationality, ageFrom, ageTo, valueFrom,
+                                   valueTo, dateFrom, dateTo)
+    return json.dumps(graphJSON, cls=plotly.utils.PlotlyJSONEncoder)

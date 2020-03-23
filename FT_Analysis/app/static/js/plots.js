@@ -22,6 +22,7 @@ $(document).ready(function () {
                 ]
   });
   $('.dataTables_length').addClass('bs-select');
+  document.getElementById("title").innerHTML = 'Network by Clubs (Filter by League: English Premier League)';
 });
 
 function generateGraph() {
@@ -49,6 +50,7 @@ function generateGraph() {
             console.log(data)
             Plotly.react('bargraph', data[0]);
             $('#main_table').DataTable().clear().rows.add(data[1].data).draw();
+            document.getElementById("title").innerHTML = 'Network by Clubs (Based on user input)';
             $(".overlay").hide();
             //document.getElementById("loader").style.display = "none";
         }
@@ -74,6 +76,7 @@ myPlot.on('plotly_click', function(eventData){
         success: function (data) {
             Plotly.react('bargraph', data[0]);
             $('#main_table').DataTable().clear().rows.add(data[1].data).draw();
+            document.getElementById("title").innerHTML = 'Network by Clubs (Ego Network)';
             $(".overlay").hide();
         }
     })

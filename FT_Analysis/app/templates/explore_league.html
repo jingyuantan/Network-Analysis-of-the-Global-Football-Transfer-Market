@@ -55,6 +55,8 @@
         </div>
 
         <div class="">
+            <div style="height: 40px"></div>
+            <p style="font-size: 20px" id="title"></p>
             <div class="chart" id="bargraph">
                 <script>
                     var graphs = {{plot | safe}};
@@ -64,7 +66,15 @@
         </div>
     </div>
     <div class="row" style="color:black" id="table1">
-        {{ table1 }}
+        <table class="table table-bordered table-striped dataTable no-footer" id="main_table">
+        <thead>
+            <tr><th>Name</th><th>Transfer In</th><th>Transfer Out</th><th>Total Transfer</th><th>Total transfer fee spent</th><th>Total transfer fee received</th><th>Net Spent</th></tr></thead>
+        <tbody>
+        {% for item in table1 %}
+            <tr><td><a href={{ item.link  }} target="_blank">{{ item.name }}</a></td><td>{{ item.transfer_in }}</td><td>{{ item.transfer_out }}</td><td>{{ item.total_transfer }}</td><td>{{ item.spent }}</td><td>{{ item.received }}</td><td>{{ item.net }}</td></tr>
+        {% endfor %}
+        </tbody>
+        </table>
     </div>
 </div>
 
