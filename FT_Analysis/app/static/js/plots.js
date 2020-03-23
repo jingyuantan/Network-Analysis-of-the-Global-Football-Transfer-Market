@@ -96,6 +96,7 @@ function change_tables() {
             'country': document.getElementById('country').value,
             'position': document.getElementById('position').value,
             'nationality': document.getElementById('nationality').value,
+            'level': document.getElementById('level').value,
             'valueFrom': document.getElementById("valueFrom").value,
             'valueTo': document.getElementById("valueTo").value,
             'ageFrom': document.getElementById("ageFrom").value,

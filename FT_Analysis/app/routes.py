@@ -1,4 +1,3 @@
-from abc import ABC
 from datetime import datetime
 from flask import Flask, render_template, request
 import plotly
@@ -11,13 +10,37 @@ import json
 from app import app, cache
 from flask_caching import Cache
 from sqlalchemy import or_, and_
+from collections import Counter
 
 
 @app.route('/')
 @app.route('/index')
 @cache.cached(timeout=50)
 def index():
-    return render_template('index.html')
+    playerss = Player.query.all()
+    transfers = Transfer.query.all()
+
+    dates = []
+
+    for transfer in transfers:
+        dates.append(int(transfer.timestamp))
+
+    dates.sort()
+    num_occurence = Counter(dates).values()  # counts the elements' frequency
+
+    unique_list = []
+    # traverse for all elements
+    for x in dates:
+        # check if exists in unique_list or not
+        dt_object = datetime.fromtimestamp(x).date()
+        # dt_object = datetime.fromtimestamp(x)
+        if dt_object not in unique_list:
+            unique_list.append(dt_object)
+
+    fig = json.dumps(go.Figure(data=go.Scatter(x=unique_list, y=list(num_occurence))), cls=plotly.utils.PlotlyJSONEncoder)
+
+    return render_template('index.html', plot=fig)
+
 
 @app.route('/explore/')
 @cache.cached(timeout=50)
@@ -559,7 +582,7 @@ def plot(df, df17_18, df18_19, df19_20, status, isBipartite):
                     xanchor="left",
                     currentvalue={
                         "font": {"size": 20},
-                        "prefix": "Year:",
+                        "prefix": "Season:",
                         "visible": True,
                         "xanchor": "right"
                     },
@@ -823,6 +846,7 @@ def re_statistics():
     country = request.args['country']
     position = request.args['position']
     nationality = request.args['nationality']
+    level = request.args['level']
     ageFrom = request.args['ageFrom']
     ageTo = request.args['ageTo']
     valueFrom = request.args['valueFrom']
@@ -830,8 +854,15 @@ def re_statistics():
     dateFrom = request.args['dateFrom']
     dateTo = request.args['dateTo']
 
-    tables = create_plot('statistics2', season, league, country, position, nationality, ageFrom, ageTo, valueFrom,
-                         valueTo, dateFrom, dateTo)
+    if level == 'club':
+        tables = create_plot('statistics2', season, league, country, position, nationality, ageFrom, ageTo, valueFrom,
+                             valueTo, dateFrom, dateTo)
+    elif level == 'league':
+        tables = create_plot_league('statistics2', season, country, position, nationality, ageFrom, ageTo, valueFrom,
+                                    valueTo, dateFrom, dateTo)
+    else:
+        tables = create_plot_country('statistics2', season, position, nationality, ageFrom, ageTo, valueFrom,
+                                     valueTo, dateFrom, dateTo)
 
     return json.dumps(tables)
 
@@ -1068,6 +1099,9 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
         graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
         myTable = create_table1(df_table, 're')
         return graphJSON, myTable
+    elif page == 'statistics2':
+        cen = stats_table(df, 're')
+        return cen
 
 
 @app.route('/explore_league_filter', methods=['GET', 'POST'])
@@ -1506,6 +1540,9 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
         graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
         myTable = create_table1(df_table, 're')
         return graphJSON, myTable
+    elif page == 'statistics2':
+        cen = stats_table(df, 're')
+        return cen
 
 
 @app.route('/explore_country_filter', methods=['GET', 'POST'])

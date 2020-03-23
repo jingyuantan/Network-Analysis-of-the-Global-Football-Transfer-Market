@@ -25,7 +25,7 @@
             </div>
             <div class="col-6">
                 <select class="form-control" id ='position'>
-                    <option value="all">-Select Position-</option>
+                    <option value="all">-Select Player's Position-</option>
                     {% for position in positions %}
                     <option value="{{ position }}">{{ position }}</option>
                     {% endfor %}
@@ -33,21 +33,24 @@
             </div>
             <div class="col-6">
                 <select class="form-control" id ='nationality'>
-                    <option value="all">-Select Nationality-</option>
+                    <option value="all">-Select Player's Nationality-</option>
                     {% for nationality in nationalities %}
                     <option value="{{ nationality }}">{{ nationality }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="textboxout">
+                <p>Player's age range (Eg Players between age 15 and 25)</p>
                 <input type="text" placeholder="-Age Range From-" id="ageFrom" class="textbox2">
                 <input type="text" placeholder="-Age Range To-" id="ageTo" class="textbox2">
             </div>
             <div class="textboxout">
+                <p>Player's transfer value range (Eg Players that cost between 10m to 20m, unit is million (m)) </p>
                 <input type="text" placeholder="-Value Range From-" id="valueFrom" class="textbox2">
                 <input type="text" placeholder="-Value Range To-" id="valueTo" class="textbox2">
             </div>
             <div class="textboxout">
+                <p>Transfer's date range (Eg all the transfers between 01/07/2019 to 01/12/2019, format = dd/mm/yyyy)</p>
                 <input type="date" placeholder="-Date From-" id="dateFrom" class="textbox2" min="2017-10-01" max="2019-09-31">
                 <input type="date" placeholder="-Date To-" id="dateTo" class="textbox2" min="2017-10-01" max="2019-09-31">
             </div>
@@ -71,7 +74,7 @@
             <tr><th>Name</th><th>Transfer In</th><th>Transfer Out</th><th>Total Transfer</th><th>Total transfer fee spent</th><th>Total transfer fee received</th><th>Net Spent</th></tr></thead>
         <tbody>
         {% for item in table1 %}
-            <tr><td><a href={{ item.link  }} target="_blank">{{ item.name }}</a></td><td>{{ item.transfer_in }}</td><td>{{ item.transfer_out }}</td><td>{{ item.total_transfer }}</td><td>{{ item.spent }}</td><td>{{ item.received }}</td><td>{{ item.net }}</td></tr>
+            <tr><td>{{ item.name }}</td><td>{{ item.transfer_in }}</td><td>{{ item.transfer_out }}</td><td>{{ item.total_transfer }}</td><td>{{ item.spent }}</td><td>{{ item.received }}</td><td>{{ item.net }}</td></tr>
         {% endfor %}
         </tbody>
         </table>

@@ -1,23 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>This is home page</div>
-    <div id="test"></div>
+<div class="news-area pad60">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-lg-9">
+                <div class="sports-news">
+                    <div class="sports-title mb20">
+                        <h3>Welcome to Football Transfer Analysis Web App!</h3>
+                    </div>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ea id, voluptate, iusto, ullam quos maiores animi quo tempore laboriosam laborum magni aliquam molestias aperiam ut libero ipsam sequi harum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ipsum excepturi, ad unde laudantium voluptatum fugiat molestiae in tempore, deserunt hic quibusdam, non nam quaerat eligendi ipsam laboriosam. Facilis, excepturi.</p>
+                </div>
+                <div class="sports-news mb60">
+                    <div class="">
+                        <div class="chart" id="bargraph">
+                            <script>
+                                var graphs = {{plot | safe}};
+                                Plotly.plot('bargraph',graphs,{});
+                            </script>
+                        </div>
+                    </div>
+                    <div class="sports-title mb20">
+                        <h3>Available Networks</h3>
+                    </div>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ea id, voluptate, iusto, ullam quos maiores animi quo tempore laboriosam laborum magni aliquam molestias aperiam ut libero ipsam sequi harum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ipsum excepturi, ad unde laudantium voluptatum fugiat molestiae in tempore, deserunt hic quibusdam, non nam quaerat eligendi ipsam laboriosam. Facilis, excepturi.</p>
+                    <div class="sports-title">
+                        <p>Link to Network by <span><a href="#">Clubs</a></span>, <span><a href="#">Leagues</a></span>, <span><a href="#">Country</a></span>, <span><a href="#">Players</a></span></p>
+                    </div>
+                </div>
+                <div class="sports-news mb60">
+                    <div class="sports-title mb20">
+                        <h3>Centrality Measures</h3>
+                    </div>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ea id, voluptate, iusto, ullam quos maiores animi quo tempore laboriosam laborum magni aliquam molestias aperiam ut libero ipsam sequi harum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ipsum excepturi, ad unde laudantium voluptatum fugiat molestiae in tempore, deserunt hic quibusdam, non nam quaerat eligendi ipsam laboriosam. Facilis, excepturi.</p>
+                    <div class="sports-title">
+                        <p>Link to <span><a href="#">Centrality Measurement Page</a></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script type="text/javascript">
-var wwdata = {
-    "display":{"attachWebwebToElementWithId":"myElement"},
-    "networks":{"webweb":{"layers":[{"edgeList":[[0,1],[1,2],[2,3],[3,4],[4,5]],"metadata":null,"nodes":{}}]}},
-    "title":"webweb"};
-wwdata.display.attachWebwebToElementWithId = "test";
-
-
-
-
-wwdata.display.w = 250;
-
-
-wwdata.display.h = 250;
 
 </script>
 {% endblock %}
