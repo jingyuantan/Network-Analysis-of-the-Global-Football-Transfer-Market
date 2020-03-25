@@ -33,7 +33,6 @@ def index():
     for x in dates:
         # check if exists in unique_list or not
         dt_object = datetime.fromtimestamp(x).date()
-        # dt_object = datetime.fromtimestamp(x)
         if dt_object not in unique_list:
             unique_list.append(dt_object)
 
@@ -834,9 +833,10 @@ def statistics():
     table = create_plot('statistics', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
                          dateFrom, dateTo)
 
-    return render_template('statistics.html', table=table, seasons=season_list,
+    return render_template('statistics.html', table=table[0], seasons=season_list,
                            leagues=league_lists, countries=country_list,
-                           positions=position_list, nationalities=nationality_list)
+                           positions=position_list, nationalities=nationality_list, numer=table[1], denom=table[2],
+                           reciprocity=table[3])
 
 
 @app.route('/re_statistics/')
@@ -888,12 +888,23 @@ def stats_table(df, status):
     for node in G.degree:
         items.append(dict(name=node[0], deg=node[1], bet=bc[node[0]], clo=cc[node[0]], eig=ec[node[0]]))
 
+    numer = 0
+    denom = 0
+    for i in range(len(df)):
+        x = df['From'][i]
+        y = df['To'][i]
+        denom += 1
+        if not df.loc[(df['From'] == y) & (df['To'] == x)].empty:
+            numer += 1
+
+    reciprocity = numer/denom
+
     if status == 'init':
         table = degree(items)
-        return table
+        return table, numer, denom, reciprocity
     elif status == 're':
         table = dict(data=items)
-        return table
+        return table, numer, denom, reciprocity
 
 
 # --------------------------league level----------------------------------------------------

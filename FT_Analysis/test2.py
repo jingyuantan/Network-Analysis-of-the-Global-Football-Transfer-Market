@@ -29,24 +29,18 @@ plclubs= Club.query.filter_by(leagueId=leagueid)
 
 numer = 0
 denom = 0
+for i in range(len(df)):
+    x = df['From'][i]
+    y = df['To'][i]
+    denom += 1
+    if not df.loc[(df['From'] == y) & (df['To'] == x)].empty:
+        numer += 1
 
-for x in plclubs:
-    for y in plclubs:
-        if not df.loc[(df['From'] == x.name) & (df['To'] == y.name)].empty:
-            denom += 1
-            if not df.loc[(df['From'] == y.name) & (df['To'] == x.name)].empty:
-                denom += 1
-                numer += 2
 
+print(len(df))
 print(numer)
 print(denom)
 print(numer/denom)
-
-
-
-
-
-
 
 
 

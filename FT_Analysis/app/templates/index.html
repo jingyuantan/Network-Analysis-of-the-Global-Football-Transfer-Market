@@ -104,16 +104,16 @@
                         <p>This measurement is widely used to analyse the football transfer network because it can provide
                         us with some information about how important a specific club is for other clubs to connect to
                         each other indirectly. The main explanation for this measurement is: nodes that occur on many
-                        shortest paths between other nodes in the network have a high betweenness centrality score[10].
+                        shortest paths between other nodes in the network have a high betweenness centrality score.
                         The club that has a high betweenness centrality will be known as a link, a bridge, a broker or
                         a heavy trader in the transfer market because by passing through the club is very effective for
-                        arriving at the other club[6]. This measurement is very important especially in transfer market as
+                        arriving at the other club. This measurement is very important especially in transfer market as
                         sometimes young players want to find the best club to join and develop themselves at that club
                         before having the best chance to move to their preferred club(s) in the future.</p>
                     </div>
                     <div class="mb40">
                         <p><b>iii) Closeness Centrality</b>
-                            <br>Closeness centrality measures the proximity of a node to the other nodes in the network[13]. A
+                            <br>Closeness centrality measures the proximity of a node to the other nodes in the network. A
                             mean distance need to be obtained from a set of chosen nodes (clubs that we are interested)
                             and the closeness of a specific node is the inverse of the mean distance we obtained. Closeness
                             Centrality can be represented by this equation:</p>
@@ -129,7 +129,7 @@
                             <br>CEigenvector centrality measures how connected a node is and how much direct influence it might
                             have over other connected nodes in the network. It can be represented by this equation:</p>
                         <p><img src="{{ url_for('static', filename='img/eigenvector.png') }}" alt="\mathbf{Ax} = \lambda \mathbf{x}"></p>
-                        <p>A is the adjacency matrix of the graph G with eigenvalue .</p>
+                        <p>A is the adjacency matrix of the graph G with eigenvalue &lambda;.</p>
                         <p>This measurement can provide us with some information about the relationship of a club with
                         other big clubs. This measurement is very important especially for a lower-rated clubs as they
                         need supports from bigger clubs in terms of team strength or maybe even financial supports. For
@@ -137,6 +137,19 @@
                         in the top division if they have good relationship. A feeder club is a club that will be receiving
                         talented players on loan and financial supports from parent club and in return the feeder club will
                         provide match experiences for the received players.</p>
+                    </div>
+                    <div class="mb40">
+                        <p><b>Extra: Reciprocity</b>
+                            <br>To achieve success, clubs must have a really good two ways relationships with other successful
+                            clubs as well. So, besides centrality measurement, reciprocity can be used to discover the two
+                            way relationships between clubs. Reciprocity is the tendency of edges in a directed network to be
+                            reciprocated can tell us interesting things about the nature of the network. It is a measure of
+                            the fraction of reciprocated edges in a directed network. For example, the ratio of the number of
+                            edges pointing in both directions to the total number of edges in the graph.</p>
+                        <p>To measure the reciprocity of this network, we take the number of edges that are pointing in
+                        both directions and divide by the total number of edges in the network.This measurement can clearly shows
+                        how well connected a group of clubs we are interested. For example, we may use leagues, countries,
+                        or top 50 clubs in the world as a group and discover the relationships between those clubs.</p>
                     </div>
                     <div class="sports-title">
                         <p>Link to <span><a href="#">Centrality Measurement Page</a></span></p>

@@ -70,11 +70,18 @@
             </div>
         <div style="padding-left: 15px;"><button onclick="change_tables()">Generate</button></div>
     </div>
-    <div class="" style="color:black" id="cen">
+    <div style="margin-top:40px"><p style="font-size: 20px" id="title"></p></div>
+    <div class="mb60" style="color:black" id="cen">
         {{ table }}
+    </div>
+    <div>
+        <p style="font-size: 20px">Reciprocity</p>
+        <p id="denom">Number of tconnections in the network: {{ denom }}</p>
+        <p id="numer">Number of two way connections in the network: {{ numer }}</p>
+        <p id="reciprocity">Reciprocity of the network: {{ reciprocity }}</p>
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/plots.js') }}"></script>
+<script src="{{ url_for('static', filename='js/plot_stats.js') }}"></script>
 
 {% endblock %}
