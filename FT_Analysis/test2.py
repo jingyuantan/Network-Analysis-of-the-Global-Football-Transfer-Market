@@ -2,10 +2,65 @@ from datetime import datetime
 
 import networkx as nx
 import pandas as pd
-from app.models import Transfer, Club, Player
+from app.models import Transfer, Club, Player, League
 
-df_table = pd.DataFrame(columns=['player_nationality', 'destination', 'total_transfer'])
+#df = pd.DataFrame(columns=['from', 'to'])
+leagueid = 'premier-leaguetransferswettbewerbGB1'
 transfers = Transfer.query.all()
+
+clubs = []
+leagues = []
+countries =[]
+
+for transfer in transfers:
+    clubFrom = Club.query.filter_by(id=transfer.fromId).first()
+    clubTo = Club.query.filter_by(id=transfer.toId).first()
+    LeagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
+    LeagueTo = League.query.filter_by(id=clubTo.leagueId).first()
+
+    if clubFrom.leagueId != leagueid or clubTo.leagueId != leagueid:
+        continue
+
+    temp = [clubFrom.name, clubTo.name]
+    clubs.append(temp)
+
+df = pd.DataFrame(clubs, columns=['From', 'To'])
+plclubs= Club.query.filter_by(leagueId=leagueid)
+
+numer = 0
+denom = 0
+
+for x in plclubs:
+    for y in plclubs:
+        if not df.loc[(df['From'] == x.name) & (df['To'] == y.name)].empty:
+            denom += 1
+            if not df.loc[(df['From'] == y.name) & (df['To'] == x.name)].empty:
+                denom += 1
+                numer += 2
+
+print(numer)
+print(denom)
+print(numer/denom)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""df_table = pd.DataFrame(columns=['player_nationality', 'destination', 'total_transfer'])
+transfers = Transfer.query.all()
+clubs = Club.query.all()
+players = Player.query.all()
+leagues = League.query.all()
 nationality = 'Brazil'
 s17_18 = []
 s18_19 = []
@@ -35,3 +90,7 @@ for transfer in transfers:
 print(df_table)
 asd = df_table.to_dict(orient='records')
 print(asd)
+print("Transfers: " + str(len(transfers)))
+print("Clubs: " + str(len(clubs)))
+print("Players: " + str(len(players)))
+print("Leagues: " + str(len(leagues)))"""

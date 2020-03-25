@@ -9,7 +9,21 @@
                     <div class="sports-title mb20">
                         <h3>Welcome to Football Transfer Analysis Web App!</h3>
                     </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ea id, voluptate, iusto, ullam quos maiores animi quo tempore laboriosam laborum magni aliquam molestias aperiam ut libero ipsam sequi harum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ipsum excepturi, ad unde laudantium voluptatum fugiat molestiae in tempore, deserunt hic quibusdam, non nam quaerat eligendi ipsam laboriosam. Facilis, excepturi.</p>
+                    <p>Football is a game of beauty. It is the most popular sports in the world and it unites everyone in
+                    the world. Everyone that watch football will have at least one favourite team in their heart that
+                    they support throughout their life. The most important element of a football club is the players, so to achieve
+                    success, besides having a good management and board as well as good financial status, it is all about the ability
+                    to assemble a squad of great players to become one of the best team in the world, so players transfers between clubs is a common
+                    activity to happen every year. With this web application, we are able to observe the transfer activities made
+                    by football clubs all around the world and discuss about the trends and flows of the
+                    transfer patterns that happened, with the dataset of player transfer records from 1st of October
+                    2017 to 31st of January 2020, consists of 4091 transfer records, 3797 players and 1348 clubs involved and 196
+                    leagues across the world (After data cleaning, eg Free transfers are excluded).</p>
+                    <p>Below is an <b>interactive line chart</b> showing the transfer records overtime throughout the dataset collected. You can zoom in to see a more specific timeline.</p>
+                    <p>(Note: we can clearly see that there are 5 significant peak, and the months
+                    during those peak are either January or July. This is because the winter transfer windows opens
+                    on 1st of January every year and the summer transfer windows opens on 1st of July every year. A
+                    transfer window is the period where football clubs can transfer and register players officially.)</p>
                 </div>
                 <div class="sports-news mb60">
                     <div class="">
@@ -23,16 +37,107 @@
                     <div class="sports-title mb20">
                         <h3>Available Networks</h3>
                     </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ea id, voluptate, iusto, ullam quos maiores animi quo tempore laboriosam laborum magni aliquam molestias aperiam ut libero ipsam sequi harum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ipsum excepturi, ad unde laudantium voluptatum fugiat molestiae in tempore, deserunt hic quibusdam, non nam quaerat eligendi ipsam laboriosam. Facilis, excepturi.</p>
-                    <div class="sports-title">
-                        <p>Link to Network by <span><a href="#">Clubs</a></span>, <span><a href="#">Leagues</a></span>, <span><a href="#">Country</a></span>, <span><a href="#">Players</a></span></p>
+                    <p>This web application provides 4 types of football transfer networks for us to explore, they are Network by:</p>
+                    <p><b>i) Clubs</b>
+                        <br>This network will take the <b>football clubs</b> as the nodes of the network and the transfer activities between them will be represented by the edges of the networks.
+                        We are able to explore the <b>clubs</b> that we are interested using the filtering function.
+                        We can filter the network based on the league of the clubs, country where the clubs are based, player's position, nationality and age range, as well as transfer value range , season or/and date rage where the transfer activities are completed.
+                        <br>For example, we can choose to explore the English Premier League (league), to observe how many Spanish Defenders (players' nationality & position) between age 18 to 25 (age range) that cost around 30m to 50m (transfer value range) in 2019/2020 season (season) or during the latest winter transfer window, which is from 1st of January to 31st of January 2020 (date range).
+                    </p>
+                    <div class="sports-title mb40">
+                        <p><span><a href="{{ url_for('explore') }}">Link</a></span> to Network by Clubs</p>
+                    </div>
+                    <p><b>ii) League</b>
+                        <br>This network will take the <b>football leagues</b> as the nodes of the network and the transfer activities between them will be represented by the edges of the networks.
+                        We are able to explore the <b>leagues</b> that we are interested using the filtering function.
+                        We can filter the network based on the country of the leagues are based, and the rest of the filtering function are similar as the previous network. The only function that is not available is we cannot filter the network based on league because we are using leagues as the nodes of the network. If we are allow to use that filter, then only one node (the one we selected) will appear on the network graph, and it provides no information for us to analyse.
+                    </p>
+                    <div class="sports-title mb40">
+                        <p><span><a href="{{ url_for('explore_league') }}">Link</a></span> to Network by Leagues</p>
+                    </div>
+                    <p><b>iii) Countries</b>
+                        <br>This network will take the <b>countries </b> around the world as the nodes of the network and the transfer activities between them will be represented by the edges of the networks.
+                        We are able to explore the <b>countries</b> that we are interested using the filtering function.
+                        The filtering function are similar as the previous network. The functions that are not available are the filter based on leagues and countries. The reason is the same as explained previously.
+                    </p>
+                    <div class="sports-title mb40">
+                        <p><span><a href="{{ url_for('explore_country') }}">Link</a></span> to Network by Countries</p>
+                    </div>
+                    <p><b>iv) Players</b>
+                        <br>This is a bipartite network and will take the <b>players</b> and <b>countries</b> as the nodes of the network and the transfers of players to any countries will be represented by the edges of the networks.
+                        We are able to explore the preferred destination of <b>players</b> using the filtering function.
+                        We can filter the network based on the country where the players are transferred to, player's position, nationality and age range, as well as transfer value range, season or/and date rage where the transfer activities are completed.
+                        <br>For example, we can choose to observe what is the preferred destination for Brazilian Goalkeepers (players' nationality & position) between age 18 to 25 (age range) that cost around 30m to 50m (transfer value range) in 2019/2020 season (season) or during the latest winter transfer window, which is from 1st of January to 31st of January 2020 (date range).
+                    </p>
+                    <div class="sports-title mb20">
+                        <p><span><a href="{{ url_for('explore_player') }}">Link</a></span> to Network by Players</p>
                     </div>
                 </div>
                 <div class="sports-news mb60">
                     <div class="sports-title mb20">
                         <h3>Centrality Measures</h3>
                     </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ea id, voluptate, iusto, ullam quos maiores animi quo tempore laboriosam laborum magni aliquam molestias aperiam ut libero ipsam sequi harum! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ipsum excepturi, ad unde laudantium voluptatum fugiat molestiae in tempore, deserunt hic quibusdam, non nam quaerat eligendi ipsam laboriosam. Facilis, excepturi.</p>
+                    <p>Four centrality measures are used to measure the importance of clubs / leagues / countries based on
+                    the area of interest that will be explained below:</p>
+                    <div class="mb40">
+                        <p><b>i) Degree Centrality</b>
+                        <br>Degree centrality measures how connected a node is by counting the number of direct links each
+                        node has to others in the network. The degree centrality of a node v can be measured by the
+                        equation:</p>
+                        <p><img src="{{ url_for('static', filename='img/degree.png') }}" alt="CD(v) = deg(v)"></p>
+                        <p>where deg(v) is the degree of node v.
+                        This measurement can provide us with some information about how much a club is connected to
+                        other clubs.
+                        </p>
+                    </div>
+                    <div class="mb40">
+                        <p><b>ii) Betweenness Centrality</b>
+                            <br>Which club(s) is a heavy trader in the football transfer network? Which club(s) is a central
+                            point that provides players opportunity to join bigger clubs? Betweeness centrality will solve these
+                            questions. Betweenness centrality measures the number of paths that pass through each node.
+                            Betweenness centrality of a node v is the sum of the fraction of all-pairs shortest paths that pass
+                            through v and has the equation:</p>
+                        <p><img src="{{ url_for('static', filename='img/betweenness.png') }}" alt="c_B(v) =\sum_{s,t \in V} \frac{\sigma(s, t|v)}{\sigma(s, t)}"></p>
+                        <p>Here g(i) is the betweenness centrality of a
+                        node i, where &sigma;ab is the total number of the shortest paths from a node a to b, and &sigma;ab(i) is the
+                        number of those paths that pass through i.</p>
+                        <p>This measurement is widely used to analyse the football transfer network because it can provide
+                        us with some information about how important a specific club is for other clubs to connect to
+                        each other indirectly. The main explanation for this measurement is: nodes that occur on many
+                        shortest paths between other nodes in the network have a high betweenness centrality score[10].
+                        The club that has a high betweenness centrality will be known as a link, a bridge, a broker or
+                        a heavy trader in the transfer market because by passing through the club is very effective for
+                        arriving at the other club[6]. This measurement is very important especially in transfer market as
+                        sometimes young players want to find the best club to join and develop themselves at that club
+                        before having the best chance to move to their preferred club(s) in the future.</p>
+                    </div>
+                    <div class="mb40">
+                        <p><b>iii) Closeness Centrality</b>
+                            <br>Closeness centrality measures the proximity of a node to the other nodes in the network[13]. A
+                            mean distance need to be obtained from a set of chosen nodes (clubs that we are interested)
+                            and the closeness of a specific node is the inverse of the mean distance we obtained. Closeness
+                            Centrality can be represented by this equation:</p>
+                        <p><img src="{{ url_for('static', filename='img/closeness.png') }}" alt="C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},"></p>
+                        <p>where x is the node we are interested to measure the closeness centrality, and d(y,x) is the distance between node y and x.</p>
+                        <p>This measurement can provide us with some information about how close a specific club is to all
+                        other chosen nodes in a network, directly or indirectly. This is also a very important measurement
+                        to observe the relationships between clubs around the world, as the closer the club is to other club,
+                        the easier the way to connect to other clubs.</p>
+                    </div>
+                    <div class="mb40">
+                        <p><b>iv) Eigenvector Centrality</b>
+                            <br>CEigenvector centrality measures how connected a node is and how much direct influence it might
+                            have over other connected nodes in the network. It can be represented by this equation:</p>
+                        <p><img src="{{ url_for('static', filename='img/eigenvector.png') }}" alt="\mathbf{Ax} = \lambda \mathbf{x}"></p>
+                        <p>A is the adjacency matrix of the graph G with eigenvalue .</p>
+                        <p>This measurement can provide us with some information about the relationship of a club with
+                        other big clubs. This measurement is very important especially for a lower-rated clubs as they
+                        need supports from bigger clubs in terms of team strength or maybe even financial supports. For
+                        example, a club in a lower division will get to form feeder / parent club relationship with a big club
+                        in the top division if they have good relationship. A feeder club is a club that will be receiving
+                        talented players on loan and financial supports from parent club and in return the feeder club will
+                        provide match experiences for the received players.</p>
+                    </div>
                     <div class="sports-title">
                         <p>Link to <span><a href="#">Centrality Measurement Page</a></span></p>
                     </div>
