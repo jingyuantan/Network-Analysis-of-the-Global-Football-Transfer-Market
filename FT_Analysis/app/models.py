@@ -7,7 +7,6 @@ class Player(db.Model):
     position = db.Column(db.String)
     age = db.Column(db.String)
     nationality = db.Column(db.String)
-    #href = db.Column(db.String)
     img_href = db.Column(db.String)
     transfers = db.relationship('Transfer', backref='player', lazy='dynamic')
 
@@ -20,10 +19,8 @@ class Club(db.Model):
     name = db.Column(db.String, index=True)
     country = db.Column(db.String)
     leagueId = db.Column(db.String, db.ForeignKey('league.id'))
-    #href = db.Column(db.String, index=True)
     country_img_href = db.Column(db.String, index=True)
     club_img_href = db.Column(db.String, index=True)
-    #transfers = db.relationship('Transfer', backref='club', lazy='dynamic')
 
     def __repr__(self):
         return '<Club {}>'.format(self.name)
@@ -45,12 +42,17 @@ class Transfer(db.Model):
     playerId = db.Column(db.String, db.ForeignKey('player.id'))
     fromId = db.Column(db.String, db.ForeignKey('club.id'))
     toId = db.Column(db.String, db.ForeignKey('club.id'))
-    #href = db.Column(db.String)
+    fromLeagueId = db.Column(db.String, db.ForeignKey('league.id'))
+    toLeagueId = db.Column(db.String, db.ForeignKey('league.id'))
+    fromCountry = db.Column(db.String)
+    toCountry = db.Column(db.String)
     value = db.Column(db.String)
     timestamp = db.Column(db.String)
     season = db.Column(db.String)
     fromClubs = db.relationship('Club', foreign_keys=[fromId])
     toClubs = db.relationship('Club', foreign_keys=[toId])
+    fromLeagues = db.relationship('League', foreign_keys=[fromLeagueId])
+    toLeagues = db.relationship('League', foreign_keys=[toLeagueId])
 
     def __repr__(self):
         return '<Transfer {}>'.format(self.id)

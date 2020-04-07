@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 6050971323cb
+Revision ID: d4f381062c63
 Revises: 
-Create Date: 2020-01-13 12:43:21.727522
+Create Date: 2020-04-07 16:08:52.835126
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6050971323cb'
+revision = 'd4f381062c63'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,9 +22,10 @@ def upgrade():
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('href', sa.String(), nullable=True),
+    sa.Column('country', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_league_href'), 'league', ['href'], unique=True)
+    op.create_index(op.f('ix_league_href'), 'league', ['href'], unique=False)
     op.create_index(op.f('ix_league_name'), 'league', ['name'], unique=False)
     op.create_table('player',
     sa.Column('id', sa.String(), nullable=False),
@@ -53,12 +54,18 @@ def upgrade():
     sa.Column('playerId', sa.String(), nullable=True),
     sa.Column('fromId', sa.String(), nullable=True),
     sa.Column('toId', sa.String(), nullable=True),
+    sa.Column('fromLeagueId', sa.String(), nullable=True),
+    sa.Column('toLeagueId', sa.String(), nullable=True),
+    sa.Column('fromCountry', sa.String(), nullable=True),
+    sa.Column('toCountry', sa.String(), nullable=True),
     sa.Column('value', sa.String(), nullable=True),
     sa.Column('timestamp', sa.String(), nullable=True),
     sa.Column('season', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['fromId'], ['club.id'], ),
+    sa.ForeignKeyConstraint(['fromLeagueId'], ['league.id'], ),
     sa.ForeignKeyConstraint(['playerId'], ['player.id'], ),
     sa.ForeignKeyConstraint(['toId'], ['club.id'], ),
+    sa.ForeignKeyConstraint(['toLeagueId'], ['league.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

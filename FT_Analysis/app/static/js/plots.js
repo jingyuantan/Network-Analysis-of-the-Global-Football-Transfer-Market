@@ -60,7 +60,18 @@ myPlot.on('plotly_click', function(eventData){
         type: "GET",
         contentType: 'application/json;charset=UTF-8',
         data: {
-            'clicked': clicked
+            'clicked': clicked,
+            'season': document.getElementById('season').value,
+            'league': document.getElementById('league').value,
+            'country': document.getElementById('country').value,
+            'position': document.getElementById('position').value,
+            'nationality': document.getElementById('nationality').value,
+            'ageFrom': document.getElementById("ageFrom").value,
+            'ageTo': document.getElementById("ageTo").value,
+            'valueFrom': document.getElementById("valueFrom").value,
+            'valueTo': document.getElementById("valueTo").value,
+            'dateFrom': document.getElementById("dateFrom").value,
+            'dateTo': document.getElementById("dateTo").value
         },
         dataType:"json",
         success: function (data) {

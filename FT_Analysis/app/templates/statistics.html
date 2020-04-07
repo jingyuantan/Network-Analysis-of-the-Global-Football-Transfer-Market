@@ -72,7 +72,15 @@
     </div>
     <div style="margin-top:40px"><p style="font-size: 20px" id="title"></p></div>
     <div class="mb60" style="color:black" id="cen">
-        {{ table }}
+        <table class="table table-bordered table-striped dataTable no-footer" id="main_table">
+        <thead>
+            <tr><th>Name</th><th>Degree Centrality</th><th>Betweenness Centrality</th><th>Closeness Centrality</th><th>Eigenvector Centrality</th></tr></thead>
+        <tbody>
+        {% for item in table %}
+            <tr><td>{{ item.name }}</td><td>{{ item.deg }}</td><td>{{ item.bet }}</td><td>{{ item.clo }}</td><td>{{ item.eig }}</td></tr>
+        {% endfor %}
+        </tbody>
+        </table>
     </div>
     <div>
         <p style="font-size: 20px">Reciprocity</p>

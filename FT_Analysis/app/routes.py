@@ -17,7 +17,7 @@ from collections import Counter
 @app.route('/index')
 @cache.cached(timeout=50)
 def index():
-    playerss = Player.query.all()
+    players = Player.query.all()
     transfers = Transfer.query.all()
 
     dates = []
@@ -88,10 +88,11 @@ def explore():
             position_list.append(player.position)
         nationality_list.append(player.nationality)
 
-    country_list = list(dict.fromkeys(country_list))
-    season_list = list(dict.fromkeys(season_list))
-    position_list = list(dict.fromkeys(position_list))
-    nationality_list = list(dict.fromkeys(nationality_list))
+    league_lists = sorted(league_lists, key=str)
+    country_list = sorted(list(dict.fromkeys(country_list)), key=str)
+    season_list = sorted(list(dict.fromkeys(season_list)), key=str)
+    position_list = sorted(list(dict.fromkeys(position_list)), key=str)
+    nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
     bar_table = create_plot('explore', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
                             dateFrom, dateTo)
@@ -107,7 +108,34 @@ def explore():
 def create_plot(page, season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
     df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net',
                                      'link'])
-    transfers = Transfer.query.all()
+    transfers = Transfer.query
+    if leagueid != 'all':
+        transfers = transfers.filter(and_(Transfer.fromLeagueId == leagueid, Transfer.toLeagueId == leagueid))
+    if country != 'all':
+        transfers = transfers.filter(and_(Transfer.fromCountry == country, Transfer.toCountry == country))
+    # position
+    if position != 'all':
+        transfers = transfers.join(Player).filter(Player.position == position)
+    # nationality
+    if nationality != 'all':
+        if position != 'all':
+            transfers = transfers.filter(Player.nationality == nationality)
+        else:
+            transfers = transfers.join(Player).filter(Player.nationality == nationality)
+
+    # age
+    if ageFrom != '':
+        if position != 'all' or nationality != 'all':
+            transfers = transfers.filter(Player.age >= ageFrom)
+        else:
+            transfers = transfers.join(Player).filter(Player.age >= ageFrom)
+
+    if ageTo != '':
+        if position != 'all' or nationality != 'all' or ageFrom != '':
+            transfers = transfers.filter(Player.age <= ageTo)
+        else:
+            transfers = transfers.join(Player).filter(Player.age <= ageTo)
+
     pair_clubs = []
     s17_18 = []
     s18_19 = []
@@ -117,14 +145,14 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
         clubFrom = Club.query.filter_by(id=transfer.fromId).first()
         clubTo = Club.query.filter_by(id=transfer.toId).first()
         value = transfer.value
-        country_from = clubFrom.country
+        """country_from = clubFrom.country
         country_to = clubTo.country
         player_position = Player.query.filter_by(id=transfer.playerId).first().position
         player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age
+        player_age = Player.query.filter_by(id=transfer.playerId).first().age"""
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
 
-        if leagueid != 'all':
+        """if leagueid != 'all':
             if clubFrom.leagueId != leagueid or clubTo.leagueId != leagueid:
                 continue
 
@@ -146,7 +174,7 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
 
         if ageTo != '':
             if player_age > ageTo:
-                continue
+                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -258,128 +286,6 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
     elif page == 'statistics2':
         cen = stats_table(df, 're')
         return cen
-
-
-@cache.memoize(50)
-def create_plot_ego(clicked):
-    transfers = Transfer.query.filter(or_(Transfer.fromId == clicked, Transfer.toId == clicked))
-    pair_clubs = []
-    alter_id = []
-    s17_18 = []
-    s18_19 = []
-    s19_20 = []
-
-    for transfer in transfers:
-        if clicked == transfer.fromId:
-            alter_id.append(transfer.toId)
-
-        elif clicked == transfer.toId:
-            alter_id.append(transfer.fromId)
-        else:
-            continue
-
-        clubFrom = Club.query.filter_by(id=transfer.fromId).first()
-        clubTo = Club.query.filter_by(id=transfer.toId).first()
-        value = transfer.value
-
-        if value[-1] == 'k':
-            value = float(value[1:-1]) / 1000
-        else:
-            value = float(value[1:-1])
-
-        temp = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
-        if transfer.season == '2017/2018':
-            s17_18.append(temp)
-        elif transfer.season == '2018/2019':
-            s18_19.append(temp)
-        elif transfer.season == '2019/2020':
-            s19_20.append(temp)
-
-        pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
-        pair_clubs.append(pair)
-
-    for i in range(len(alter_id)):
-        alterAsFrom = Transfer.query.filter_by(fromId=alter_id[i])
-        for a in alterAsFrom:
-            if a.toId in alter_id:
-                clubFrom = Club.query.filter_by(id=alter_id[i]).first()
-                clubTo = Club.query.filter_by(id=a.toId).first()
-                value = alterAsFrom.value
-                temp = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
-                if transfer.season == '2017/2018':
-                    s17_18.append(temp)
-                elif transfer.season == '2018/2019':
-                    s18_19.append(temp)
-                elif transfer.season == '2019/2020':
-                    s19_20.append(temp)
-                pair = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
-                pair_clubs.append(pair)
-
-        alterAsTo = Transfer.query.filter_by(toId=alter_id[i])
-        for a in alterAsTo:
-            if a.fromId in alter_id:
-                clubFrom = Club.query.filter_by(id=a.fromId).first()
-                clubTo = Club.query.filter_by(id=alter_id[i]).first()
-                value = alterAsFrom.value
-                temp = [clubFrom.name, clubTo.name, value, a.toId, alter_id[i]]
-                if transfer.season == '2017/2018':
-                    s17_18.append(temp)
-                elif transfer.season == '2018/2019':
-                    s18_19.append(temp)
-                elif transfer.season == '2019/2020':
-                    s19_20.append(temp)
-                pair = [clubFrom.name, clubTo.name, value, a.toId, alter_id[i]]
-                pair_clubs.append(pair)
-
-    if pair_clubs:
-        df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-    else:
-        data = {'From': ['Invalid Filter'],
-                'To': ['Invalid Filter'],
-                'Value': [500],
-                'From Id': '-',
-                'To Id': '-'
-                }
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-
-    if s17_18:
-        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-    else:
-        data = {'From': ['Invalid Filter'],
-                'To': ['Invalid Filter'],
-                'Value': [500],
-                'From Id': '-',
-                'To Id': '-'
-                }
-        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-
-    if s18_19:
-        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-    else:
-        data = {'From': ['Invalid Filter'],
-                'To': ['Invalid Filter'],
-                'Value': [500],
-                'From Id': '-',
-                'To Id': '-'
-                }
-        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-
-    if s19_20:
-        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-    else:
-        data = {'From': ['Invalid Filter'],
-                'To': ['Invalid Filter'],
-                'Value': [500],
-                'From Id': '-',
-                'To Id': '-'
-                }
-        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
-
-    graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
-    egotab = ego_table(clicked)
-    return graphJSON, egotab
 
 
 @cache.memoize(50)
@@ -665,7 +571,6 @@ def create_node_scatter(node_sizes):
 
 @app.route('/table')
 def create_table1(df, status):
-    # Declare your table
     hyperlink = 'https://www.transfermarkt.co.uk'
 
     """class ItemTable(Table):
@@ -698,8 +603,8 @@ def create_table1(df, status):
         # proper_json = dict(data=items)
         return items
     elif status == 're':
-        proper_json = dict(data=items)
-        return proper_json
+        table = dict(data=items)
+        return table
 
 
 def ego_table(clicked):
@@ -782,9 +687,190 @@ def change_features():
 @app.route('/one', methods=['GET', 'POST'])
 def change_features_ego():
     clicked = request.args['clicked']
+    season = request.args['season']
+    league = request.args['league']
+    country = request.args['country']
+    position = request.args['position']
+    nationality = request.args['nationality']
+    ageFrom = request.args['ageFrom']
+    ageTo = request.args['ageTo']
+    valueFrom = request.args['valueFrom']
+    valueTo = request.args['valueTo']
+    dateFrom = request.args['dateFrom']
+    dateTo = request.args['dateTo']
 
-    graphJSON = create_plot_ego(clicked)
+    graphJSON = create_plot_ego(clicked, season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo)
     return json.dumps(graphJSON, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+@cache.memoize(50)
+def create_plot_ego(clicked, season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+    transfers = Transfer.query.filter(or_(Transfer.fromId == clicked, Transfer.toId == clicked))
+    if league != 'all':
+        transfers = transfers.filter(or_(Transfer.fromLeagueId == league, Transfer.toLeagueId == league))
+
+    if country != 'all':
+        transfers = transfers.filter(or_(Transfer.fromCountry == country, Transfer.toCountry == country))
+
+    if position != 'all':
+        transfers = transfers.join(Player).filter(Player.position == position)
+
+    if nationality != 'all':
+        if position != 'all':
+            transfers = transfers.filter(Player.nationality == nationality)
+        else:
+            transfers = transfers.join(Player).filter(Player.nationality == nationality)
+
+    if ageFrom != '':
+        if position != 'all' or nationality != 'all':
+            transfers = transfers.filter(Player.age >= ageFrom)
+        else:
+            transfers = transfers.join(Player).filter(Player.age >= ageFrom)
+
+    if ageTo != '':
+        if position != 'all' or nationality != 'all' or ageFrom != '':
+            transfers = transfers.filter(Player.age <= ageTo)
+        else:
+            transfers = transfers.join(Player).filter(Player.age <= ageTo)
+
+    pair_clubs = []
+    alter_id = []
+    s17_18 = []
+    s18_19 = []
+    s19_20 = []
+
+    for transfer in transfers:
+        clubFrom = Club.query.filter_by(id=transfer.fromId).first()
+        clubTo = Club.query.filter_by(id=transfer.toId).first()
+        value = transfer.value
+        date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
+
+        if value[-1] == 'k':
+            value = float(value[1:-1]) / 1000
+        else:
+            value = float(value[1:-1])
+
+        if valueFrom != '':
+            if value < float(valueFrom):
+                continue
+
+        if valueTo != '':
+            if value > float(valueTo):
+                continue
+
+        if dateFrom != '':
+            if date < dateFrom:
+                continue
+
+        if dateTo != '':
+            if date > dateTo:
+                continue
+
+        if season != 'all':
+            if transfer.season != season:
+                continue
+
+        if clicked == transfer.fromId:
+            alter_id.append(transfer.toId)
+
+        elif clicked == transfer.toId:
+            alter_id.append(transfer.fromId)
+        else:
+            continue
+
+        temp = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
+        if transfer.season == '2017/2018':
+            s17_18.append(temp)
+        elif transfer.season == '2018/2019':
+            s18_19.append(temp)
+        elif transfer.season == '2019/2020':
+            s19_20.append(temp)
+
+        pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
+        pair_clubs.append(pair)
+
+    for i in range(len(alter_id)):
+        alterAsFrom = Transfer.query.filter_by(fromId=alter_id[i])
+        for a in alterAsFrom:
+            if a.toId in alter_id:
+                clubFrom = Club.query.filter_by(id=alter_id[i]).first()
+                clubTo = Club.query.filter_by(id=a.toId).first()
+                value = alterAsFrom.value
+                temp = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
+                if transfer.season == '2017/2018':
+                    s17_18.append(temp)
+                elif transfer.season == '2018/2019':
+                    s18_19.append(temp)
+                elif transfer.season == '2019/2020':
+                    s19_20.append(temp)
+                pair = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
+                pair_clubs.append(pair)
+
+        alterAsTo = Transfer.query.filter_by(toId=alter_id[i])
+        for a in alterAsTo:
+            if a.fromId in alter_id:
+                clubFrom = Club.query.filter_by(id=a.fromId).first()
+                clubTo = Club.query.filter_by(id=alter_id[i]).first()
+                value = alterAsFrom.value
+                temp = [clubFrom.name, clubTo.name, value, a.toId, alter_id[i]]
+                if transfer.season == '2017/2018':
+                    s17_18.append(temp)
+                elif transfer.season == '2018/2019':
+                    s18_19.append(temp)
+                elif transfer.season == '2019/2020':
+                    s19_20.append(temp)
+                pair = [clubFrom.name, clubTo.name, value, a.toId, alter_id[i]]
+                pair_clubs.append(pair)
+
+    if pair_clubs:
+        df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s17_18:
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s18_19:
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    if s19_20:
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+    else:
+        data = {'From': ['Invalid Filter'],
+                'To': ['Invalid Filter'],
+                'Value': [500],
+                'From Id': '-',
+                'To Id': '-'
+                }
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+
+    graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
+    egotab = ego_table(clicked)
+    return graphJSON, egotab
 
 
 # --------------Stats table-----------------------------------------------------------------
@@ -825,10 +911,10 @@ def statistics():
         position_list.append(player.position)
         nationality_list.append(player.nationality)
 
-    country_list = list(dict.fromkeys(country_list))
-    season_list = list(dict.fromkeys(season_list))
-    position_list = list(dict.fromkeys(position_list))
-    nationality_list = list(dict.fromkeys(nationality_list))
+    country_list = sorted(list(dict.fromkeys(country_list)), key=str)
+    season_list = sorted(list(dict.fromkeys(season_list)), key=str)
+    position_list = sorted(list(dict.fromkeys(position_list)), key=str)
+    nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
     table = create_plot('statistics', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
                          dateFrom, dateTo)
@@ -886,7 +972,7 @@ def stats_table(df, status):
     cc = nx.closeness_centrality(G)
     ec = nx.eigenvector_centrality(G)
     for node in G.degree:
-        items.append(dict(name=node[0], deg=node[1], bet=bc[node[0]], clo=cc[node[0]], eig=ec[node[0]]))
+        items.append(dict(name=node[0], deg=node[1], bet=round(bc[node[0]], 4), clo=round(cc[node[0]], 4), eig=round(ec[node[0]], 4)))
 
     numer = 0
     denom = 0
@@ -900,8 +986,8 @@ def stats_table(df, status):
     reciprocity = numer/denom
 
     if status == 'init':
-        table = degree(items)
-        return table, numer, denom, reciprocity
+        # table = degree(items)
+        return items, numer, denom, reciprocity
     elif status == 're':
         table = dict(data=items)
         return table, numer, denom, reciprocity
@@ -950,10 +1036,10 @@ def explore_league():
             position_list.append(player.position)
         nationality_list.append(player.nationality)
 
-    country_list = list(dict.fromkeys(country_list))
-    season_list = list(dict.fromkeys(season_list))
-    position_list = list(dict.fromkeys(position_list))
-    nationality_list = list(dict.fromkeys(nationality_list))
+    country_list = sorted(list(dict.fromkeys(country_list)), key=str)
+    season_list = sorted(list(dict.fromkeys(season_list)), key=str)
+    position_list = sorted(list(dict.fromkeys(position_list)), key=str)
+    nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
     bar_table = create_plot_league('explore_league', season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
                             dateFrom, dateTo)
@@ -967,7 +1053,33 @@ def explore_league():
 
 def create_plot_league(page, season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
     df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net', 'link'])
-    transfers = Transfer.query.all()
+
+    transfers = Transfer.query
+    if country != 'all':
+        transfers = transfers.filter(and_(Transfer.fromCountry == country, Transfer.toCountry == country))
+    # position
+    if position != 'all':
+        transfers = transfers.join(Player).filter(Player.position == position)
+    # nationality
+    if nationality != 'all':
+        if position != 'all':
+            transfers = transfers.filter(Player.nationality == nationality)
+        else:
+            transfers = transfers.join(Player).filter(Player.nationality == nationality)
+
+    # age
+    if ageFrom != '':
+        if position != 'all' or nationality != 'all':
+            transfers = transfers.filter(Player.age >= ageFrom)
+        else:
+            transfers = transfers.join(Player).filter(Player.age >= ageFrom)
+
+    if ageTo != '':
+        if position != 'all' or nationality != 'all' or ageFrom != '':
+            transfers = transfers.filter(Player.age <= ageTo)
+        else:
+            transfers = transfers.join(Player).filter(Player.age <= ageTo)
+
     s17_18 = []
     s18_19 = []
     s19_20 = []
@@ -979,14 +1091,14 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
         LeagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
         LeagueTo = League.query.filter_by(id=clubTo.leagueId).first()
         value = transfer.value
-        country_from = LeagueFrom.country
+        """country_from = LeagueFrom.country
         country_to = LeagueTo.country
         player_position = Player.query.filter_by(id=transfer.playerId).first().position
         player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age
+        player_age = Player.query.filter_by(id=transfer.playerId).first().age"""
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
 
-        if country != 'all':
+        """if country != 'all':
             if country_from != country or country_to != country:
                 continue
 
@@ -1004,7 +1116,7 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
 
         if ageTo != '':
             if player_age > ageTo:
-                continue
+                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -1155,9 +1267,32 @@ def changes_features_league_ego():
 def create_plot_league_ego(clicked, season, country, position, nationality, ageFrom, ageTo, valueFrom,
                            valueTo, dateFrom, dateTo):
     df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
-    df_table.set_index('name')
+    # df_table.set_index('name')
 
-    transfers = Transfer.query.all()
+    transfers = Transfer.query.filter(or_(Transfer.fromLeagueId == clicked, Transfer.toLeagueId == clicked))
+    if country != 'all':
+        transfers = transfers.filter(or_(Transfer.fromCountry == country, Transfer.toCountry == country))
+
+    if position != 'all':
+        transfers = transfers.join(Player).filter(Player.position == position)
+
+    if nationality != 'all':
+        if position != 'all':
+            transfers = transfers.filter(Player.nationality == nationality)
+        else:
+            transfers = transfers.join(Player).filter(Player.nationality == nationality)
+
+    if ageFrom != '':
+        if position != 'all' or nationality != 'all':
+            transfers = transfers.filter(Player.age >= ageFrom)
+        else:
+            transfers = transfers.join(Player).filter(Player.age >= ageFrom)
+
+    if ageTo != '':
+        if position != 'all' or nationality != 'all' or ageFrom != '':
+            transfers = transfers.filter(Player.age <= ageTo)
+        else:
+            transfers = transfers.join(Player).filter(Player.age <= ageTo)
     pair_leagues = []
     alter_id = []
     s17_18 = []
@@ -1170,33 +1305,8 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
         leagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
         leagueTo = League.query.filter_by(id=clubTo.leagueId).first()
 
-        player_position = Player.query.filter_by(id=transfer.playerId).first().position
-        player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        country_from = leagueFrom.country
-        country_to = leagueTo.country
         value = transfer.value
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
-
-        if country != 'all':
-            if country_from != country or country_to != country:
-                continue
-
-        if position != 'all':
-            if player_position != position:
-                continue
-
-        if nationality != 'all':
-            if player_nationality != nationality:
-                continue
-
-        if ageFrom != '':
-            if player_age < ageFrom:
-                continue
-
-        if ageTo != '':
-            if player_age > ageTo:
-                continue
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -1398,9 +1508,9 @@ def explore_country():
             position_list.append(player.position)
         nationality_list.append(player.nationality)
 
-    season_list = list(dict.fromkeys(season_list))
-    position_list = list(dict.fromkeys(position_list))
-    nationality_list = list(dict.fromkeys(nationality_list))
+    season_list = sorted(list(dict.fromkeys(season_list)), key=str)
+    position_list = sorted(list(dict.fromkeys(position_list)), key=str)
+    nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
     bar_table = create_plot_country('explore_country', season, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
                                     dateFrom, dateTo)
@@ -1414,7 +1524,29 @@ def explore_country():
 
 def create_plot_country(page, season, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
     df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net', 'link'])
-    transfers = Transfer.query.all()
+    transfers = Transfer.query
+    # position
+    if position != 'all':
+        transfers = transfers.join(Player).filter(Player.position == position)
+    # nationality
+    if nationality != 'all':
+        if position != 'all':
+            transfers = transfers.filter(Player.nationality == nationality)
+        else:
+            transfers = transfers.join(Player).filter(Player.nationality == nationality)
+
+    # age
+    if ageFrom != '':
+        if position != 'all' or nationality != 'all':
+            transfers = transfers.filter(Player.age >= ageFrom)
+        else :
+            transfers = transfers.join(Player).filter(Player.age >= ageFrom)
+
+    if ageTo != '':
+        if position != 'all' or nationality != 'all' or ageFrom != '':
+            transfers = transfers.filter(Player.age <= ageTo)
+        else:
+            transfers = transfers.join(Player).filter(Player.age <= ageTo)
     s17_18 = []
     s18_19 = []
     s19_20 = []
@@ -1426,12 +1558,12 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
         value = transfer.value
         country_from = clubFrom.country
         country_to = clubTo.country
-        player_position = Player.query.filter_by(id=transfer.playerId).first().position
+        """player_position = Player.query.filter_by(id=transfer.playerId).first().position
         player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age
+        player_age = Player.query.filter_by(id=transfer.playerId).first().age"""
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
 
-        if position != 'all':
+        """if position != 'all':
             if player_position != position:
                 continue
 
@@ -1445,7 +1577,7 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
 
         if ageTo != '':
             if player_age > ageTo:
-                continue
+                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -1616,10 +1748,10 @@ def explore_player():
             position_list.append(player.position)
         nationality_list.append(player.nationality)
 
-    country_list = list(dict.fromkeys(country_list))
-    season_list = list(dict.fromkeys(season_list))
-    position_list = list(dict.fromkeys(position_list))
-    nationality_list = list(dict.fromkeys(nationality_list))
+    country_list = sorted(list(dict.fromkeys(country_list)), key=str)
+    season_list = sorted(list(dict.fromkeys(season_list)), key=str)
+    position_list = sorted(list(dict.fromkeys(position_list)), key=str)
+    nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
     bar_table = create_plot_player('explore_player', season, country, position, nationality, ageFrom, ageTo, valueFrom,
                                    valueTo,
@@ -1634,24 +1766,47 @@ def explore_player():
 
 def create_plot_player(page, season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
     df_table = pd.DataFrame(columns=['player_nationality', 'destination', 'total_transfer'])
-    transfers = Transfer.query.all()
+    transfers = Transfer.query
+    if country != 'all':
+        transfers = transfers.filter(Transfer.toCountry == country)
+    # position
+    if position != 'all':
+        transfers = transfers.join(Player).filter(Player.position == position)
+    # nationality
+    if nationality != 'all':
+        if position != 'all':
+            transfers = transfers.filter(Player.nationality == nationality)
+        else:
+            transfers = transfers.join(Player).filter(Player.nationality == nationality)
+
+    # age
+    if ageFrom != '':
+        if position != 'all' or nationality != 'all':
+            transfers = transfers.filter(Player.age >= ageFrom)
+        else:
+            transfers = transfers.join(Player).filter(Player.age >= ageFrom)
+
+    if ageTo != '':
+        if position != 'all' or nationality != 'all' or ageFrom != '':
+            transfers = transfers.filter(Player.age <= ageTo)
+        else:
+            transfers = transfers.join(Player).filter(Player.age <= ageTo)
+
     s17_18 = []
     s18_19 = []
     s19_20 = []
     pair_playerCountry = []
 
     for transfer in transfers:
-        # clubFrom = Club.query.filter_by(id=transfer.fromId).first()
         clubTo = Club.query.filter_by(id=transfer.toId).first()
         value = transfer.value
-        # country_from = clubFrom.country
         country_to = clubTo.country
         player_position = Player.query.filter_by(id=transfer.playerId).first().position
         player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
         player_age = Player.query.filter_by(id=transfer.playerId).first().age
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
 
-        if country != 'all':
+        """if country != 'all':
             if country_to != country:
                 continue
 
@@ -1669,7 +1824,7 @@ def create_plot_player(page, season, country, position, nationality, ageFrom, ag
 
         if ageTo != '':
             if player_age > ageTo:
-                continue
+                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000

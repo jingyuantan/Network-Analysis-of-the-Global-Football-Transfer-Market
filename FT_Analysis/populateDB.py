@@ -52,12 +52,13 @@ for i in range(len(df)):
 
             transfer = Transfer(playerId=df["player"][i]["href"], id=df["transfer"][i]["href"],
                                 value=df["transfer"][i]["value"], timestamp=df["transfer"][i]["timestamp"],
-                                fromId=df["from"][i]["href"], toId=df["to"][i]["href"], season=df["season"][i])
+                                fromId=df["from"][i]["href"], toId=df["to"][i]["href"], season=df["season"][i],
+                                fromLeagueId=df["from"][i]["leagueId"], toLeagueId=df["to"][i]["leagueId"],
+                                fromCountry=df["from"][i]["country"], toCountry=df["to"][i]["country"])
             db.session.add(transfer)
             db.session.commit()
 
     except IntegrityError as e:
-        print(df["player"][i]["name"])
         print(e)
         db.session.rollback()
 
