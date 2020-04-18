@@ -607,64 +607,6 @@ def create_table1(df, status):
         return table
 
 
-def ego_table(clicked):
-    # clicked = request.args['clicked']
-    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
-    df_table.set_index('name')
-    transfers = Transfer.query.filter(or_(Transfer.fromId == clicked, Transfer.toId == clicked))
-    alter_id = []
-
-    for transfer in transfers:
-        if clicked == transfer.fromId:
-            alter_id.append(transfer.toId)
-
-        elif clicked == transfer.toId:
-            alter_id.append(transfer.fromId)
-        else:
-            continue
-
-        clubFrom = Club.query.filter_by(id=transfer.fromId).first()
-        clubTo = Club.query.filter_by(id=transfer.toId).first()
-        value = transfer.value
-        if value[-1] == 'k':
-            value = float(value[1:-1]) / 1000
-        else:
-            value = float(value[1:-1])
-
-        if clubFrom.name in df_table.values:
-            df_table.loc[df_table.name == clubFrom.name, 'transfer_out'] += 1
-            df_table.loc[df_table.name == clubFrom.name, 'total_transfer'] += 1
-            df_table.loc[df_table.name == clubFrom.name, 'received'] += value
-            df_table.loc[df_table.name == clubFrom.name, 'net'] -= value
-        else:
-            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value]
-
-        if clubTo.name in df_table.values:
-            df_table.loc[df_table.name == clubTo.name, 'transfer_in'] += 1
-            df_table.loc[df_table.name == clubTo.name, 'total_transfer'] += 1
-            df_table.loc[df_table.name == clubTo.name, 'spent'] += value
-            df_table.loc[df_table.name == clubTo.name, 'net'] += value
-        else:
-            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value]
-
-    # Populate the table
-    items = []
-    records = 0
-    for clubName in df_table['name']:
-        spent = u"\xA3" + str(float("{0:.2f}".format(df_table['spent'][clubName]))) + 'm'
-        received = u"\xA3" + str(float("{0:.2f}".format(df_table['received'][clubName]))) + 'm'
-        net = u"\xA3" + str(float("{0:.2f}".format(df_table['net'][clubName]))) + 'm'
-
-        items.append(dict(name=df_table['name'][clubName], transfer_in=df_table['transfer_in'][clubName],
-                          transfer_out=df_table['transfer_out'][clubName],
-                          total_transfer=df_table['total_transfer'][clubName],
-                          spent=spent, received=received, net=net))
-        records += 1
-
-    proper_json = dict(data=items)
-    return proper_json
-
-
 @app.route('/explore_filter_1', methods=['GET', 'POST'])
 def change_features():
     season = request.args['season']
@@ -705,6 +647,8 @@ def change_features_ego():
 
 @cache.memoize(50)
 def create_plot_ego(clicked, season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
+    df_table.set_index('name')
     transfers = Transfer.query.filter(or_(Transfer.fromId == clicked, Transfer.toId == clicked))
     if league != 'all':
         transfers = transfers.filter(or_(Transfer.fromLeagueId == league, Transfer.toLeagueId == league))
@@ -758,18 +702,6 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
             if value > float(valueTo):
                 continue
 
-        if dateFrom != '':
-            if date < dateFrom:
-                continue
-
-        if dateTo != '':
-            if date > dateTo:
-                continue
-
-        if season != 'all':
-            if transfer.season != season:
-                continue
-
         if clicked == transfer.fromId:
             alter_id.append(transfer.toId)
 
@@ -786,8 +718,36 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
         elif transfer.season == '2019/2020':
             s19_20.append(temp)
 
+        if dateFrom != '':
+            if date < dateFrom:
+                continue
+
+        if dateTo != '':
+            if date > dateTo:
+                continue
+
+        if season != 'all':
+            if transfer.season != season:
+                continue
+
         pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
         pair_clubs.append(pair)
+
+        if clubFrom.name in df_table.values:
+            df_table.loc[df_table.name == clubFrom.name, 'transfer_out'] += 1
+            df_table.loc[df_table.name == clubFrom.name, 'total_transfer'] += 1
+            df_table.loc[df_table.name == clubFrom.name, 'received'] += value
+            df_table.loc[df_table.name == clubFrom.name, 'net'] -= value
+        else:
+            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value]
+
+        if clubTo.name in df_table.values:
+            df_table.loc[df_table.name == clubTo.name, 'transfer_in'] += 1
+            df_table.loc[df_table.name == clubTo.name, 'total_transfer'] += 1
+            df_table.loc[df_table.name == clubTo.name, 'spent'] += value
+            df_table.loc[df_table.name == clubTo.name, 'net'] += value
+        else:
+            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value]
 
     for i in range(len(alter_id)):
         alterAsFrom = Transfer.query.filter_by(fromId=alter_id[i])
@@ -803,6 +763,15 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
                     s18_19.append(temp)
                 elif transfer.season == '2019/2020':
                     s19_20.append(temp)
+                if dateFrom != '':
+                    if date < dateFrom:
+                        continue
+                if dateTo != '':
+                    if date > dateTo:
+                        continue
+                if season != 'all':
+                    if transfer.season != season:
+                        continue
                 pair = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
                 pair_clubs.append(pair)
 
@@ -819,7 +788,16 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
                     s18_19.append(temp)
                 elif transfer.season == '2019/2020':
                     s19_20.append(temp)
-                pair = [clubFrom.name, clubTo.name, value, a.toId, alter_id[i]]
+                if dateFrom != '':
+                    if date < dateFrom:
+                        continue
+                if dateTo != '':
+                    if date > dateTo:
+                        continue
+                if season != 'all':
+                    if transfer.season != season:
+                        continue
+                pair = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
                 pair_clubs.append(pair)
 
     if pair_clubs:
@@ -868,8 +846,24 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
 
         df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
 
+    # Populate the table
+    items = []
+    records = 0
+    for clubName in df_table['name']:
+        spent = u"\xA3" + str(float("{0:.2f}".format(df_table['spent'][clubName]))) + 'm'
+        received = u"\xA3" + str(float("{0:.2f}".format(df_table['received'][clubName]))) + 'm'
+        net = u"\xA3" + str(float("{0:.2f}".format(df_table['net'][clubName]))) + 'm'
+
+        items.append(dict(name=df_table['name'][clubName], transfer_in=df_table['transfer_in'][clubName],
+                          transfer_out=df_table['transfer_out'][clubName],
+                          total_transfer=df_table['total_transfer'][clubName],
+                          spent=spent, received=received, net=net))
+        records += 1
+
+    egotab = dict(data=items)
+
     graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
-    egotab = ego_table(clicked)
+    # egotab = ego_table(clicked, season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo)
     return graphJSON, egotab
 
 
@@ -1321,6 +1315,22 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
             if value > float(valueTo):
                 continue
 
+        temp = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
+        if transfer.season == '2017/2018':
+            s17_18.append(temp)
+        elif transfer.season == '2018/2019':
+            s18_19.append(temp)
+        elif transfer.season == '2019/2020':
+            s19_20.append(temp)
+
+        if clicked == leagueFrom.id:
+            alter_id.append(transfer.toId)
+
+        elif clicked == leagueTo.id:
+            alter_id.append(transfer.fromId)
+        else:
+            continue
+
         if dateFrom != '':
             if date < dateFrom:
                 continue
@@ -1332,22 +1342,6 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
         if season != 'all':
             if transfer.season != season:
                 continue
-
-        if clicked == leagueFrom.id:
-            alter_id.append(transfer.toId)
-
-        elif clicked == leagueTo.id:
-            alter_id.append(transfer.fromId)
-        else:
-            continue
-
-        temp = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
-        if transfer.season == '2017/2018':
-            s17_18.append(temp)
-        elif transfer.season == '2018/2019':
-            s18_19.append(temp)
-        elif transfer.season == '2019/2020':
-            s19_20.append(temp)
 
         pair = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
         pair_leagues.append(pair)
@@ -1385,6 +1379,15 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
                     s18_19.append(temp)
                 elif transfer.season == '2019/2020':
                     s19_20.append(temp)
+                if dateFrom != '':
+                    if date < dateFrom:
+                        continue
+                if dateTo != '':
+                    if date > dateTo:
+                        continue
+                if season != 'all':
+                    if transfer.season != season:
+                        continue
                 pair = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
                 pair_leagues.append(pair)
 
@@ -1403,6 +1406,15 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
                     s18_19.append(temp)
                 elif transfer.season == '2019/2020':
                     s19_20.append(temp)
+                if dateFrom != '':
+                    if date < dateFrom:
+                        continue
+                if dateTo != '':
+                    if date > dateTo:
+                        continue
+                if season != 'all':
+                    if transfer.season != season:
+                        continue
                 pair = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
                 pair_leagues.append(pair)
 
@@ -1467,8 +1479,8 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
         records += 1
 
     graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
-    proper_json = dict(data=items)
-    return graphJSON, proper_json
+    ego_tab = dict(data=items)
+    return graphJSON, ego_tab
 
 
 # ------------------------country level-----------------------------------------------------
