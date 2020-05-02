@@ -3,6 +3,7 @@ $(document).ready(function () {
     "pagingType": "first_last_numbers",
       'columns': [
                 {"data": "name"},
+                {"data": "country"},
                 {"data": "transfer_in"},
                 {"data": "transfer_out"},
                 {"data": "total_transfer"},
@@ -16,7 +17,6 @@ $(document).ready(function () {
 });
 
 function generateGraph() {
-  //document.getElementById("loader").style.display = "block";
   $(".overlay").show();
     $.ajax({
         url: "/explore_league_filter",
@@ -36,12 +36,10 @@ function generateGraph() {
         },
         dataType:"json",
         success: function (data) {
-            console.log(data)
             Plotly.react('bargraph', data[0]);
             $('#main_table').DataTable().clear().rows.add(data[1].data).draw();
             document.getElementById("title").innerHTML = 'Network by Leagues (Based on user input)';
             $(".overlay").hide();
-            //document.getElementById("loader").style.display = "none";
         }
     });
 }
@@ -52,7 +50,6 @@ myPlot.on('plotly_click', function(eventData){
     for(var i=0; i < eventData.points.length; i++){
         clicked = eventData.points[i].text
     };
-    //document.getElementById("loader").style.display = "block";
     $(".overlay").show();
     $.ajax({
         url: "/league_one",
@@ -79,5 +76,4 @@ myPlot.on('plotly_click', function(eventData){
             $(".overlay").hide();
         }
     });
-    console.log('out')
 });

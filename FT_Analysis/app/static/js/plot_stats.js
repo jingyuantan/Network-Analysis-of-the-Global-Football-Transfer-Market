@@ -15,7 +15,6 @@ $(document).ready(function () {
 
 function change_tables() {
     $(".overlay").show();
-  //document.getElementById("loader").style.display = "block";
     $.ajax({
         url: "/re_statistics",
         type: "GET",

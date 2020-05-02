@@ -12,7 +12,6 @@ $(document).ready(function () {
 });
 
 function generateGraph() {
-  //document.getElementById("loader").style.display = "block";
   $(".overlay").show();
     $.ajax({
         url: "/explore_player_filter",
@@ -36,7 +35,6 @@ function generateGraph() {
             $('#main_table').DataTable().clear().rows.add(data[1].data).draw();
             document.getElementById("title").innerHTML = 'Network by Players (Based on user input)';
             $(".overlay").hide();
-            //document.getElementById("loader").style.display = "none";
         }
     });
 }

@@ -4,7 +4,7 @@ from app import db
 import pandas as pd
 from app.models import Player, Club, League, Transfer
 
-df = pd.read_json('data/transfers-20200131.json', lines=True)
+df = pd.read_json('data/transfers-20200418.json', lines=True)
 for z in range(6):
     for i in range(len(df)):
         try:

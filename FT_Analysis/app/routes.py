@@ -1,14 +1,12 @@
 from datetime import datetime
-from flask import Flask, render_template, request
+from flask import render_template, request
 import plotly
 import plotly.graph_objs as go
 import networkx as nx
-from flask_table import Table, Col, LinkCol
 from app.models import Player, League, Club, Transfer
 import pandas as pd
 import json
 from app import app, cache
-from flask_caching import Cache
 from sqlalchemy import or_, and_
 from collections import Counter
 
@@ -17,26 +15,27 @@ from collections import Counter
 @app.route('/index')
 @cache.cached(timeout=50)
 def index():
-    players = Player.query.all()
+    # this function is to for the home page
     transfers = Transfer.query.all()
-
     dates = []
+    unique_list = []
 
+    # get all the transfer dates from database
     for transfer in transfers:
         dates.append(int(transfer.timestamp))
 
+    # calculate the number of occurrence for every dates
     dates.sort()
-    num_occurence = Counter(dates).values()  # counts the elements' frequency
+    num_occurrence = Counter(dates).values()
 
-    unique_list = []
-    # traverse for all elements
+    # create a list of dates for x axis for the graph
     for x in dates:
-        # check if exists in unique_list or not
         dt_object = datetime.fromtimestamp(x).date()
         if dt_object not in unique_list:
             unique_list.append(dt_object)
 
-    fig = json.dumps(go.Figure(data=go.Scatter(x=unique_list, y=list(num_occurence))), cls=plotly.utils.PlotlyJSONEncoder)
+    # create the graph
+    fig = json.dumps(go.Figure(data=go.Scatter(x=unique_list, y=list(num_occurrence))), cls=plotly.utils.PlotlyJSONEncoder)
 
     return render_template('index.html', plot=fig)
 
@@ -44,6 +43,8 @@ def index():
 @app.route('/explore/')
 @cache.cached(timeout=50)
 def explore():
+    # this function is for the 'explore - network by club' page
+    # default filter parameters
     season = 'all'
     leagueid = 'premier-leaguetransferswettbewerbGB1'
     country = 'all'
@@ -56,6 +57,7 @@ def explore():
     dateFrom = ''
     dateTo = ''
 
+    # declare lists for filter values for the filtering section
     league_lists = []
     country_list = []
     season_list = []
@@ -70,44 +72,42 @@ def explore():
         country_list.append(league.country)
         league_lists.append(temp)
 
+    # populate values into lists
     transfers = Transfer.query.all()
     for transfer in transfers:
         season_list.append(transfer.season)
 
     players = Player.query.all()
     for player in players:
-        if player.position == '':
-            continue
-        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
-            position_list.append('Forward')
-        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
-            position_list.append('Defender')
-        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
-            position_list.append('Midfielder')
-        else:
-            position_list.append(player.position)
+        position_list.append(player.position)
         nationality_list.append(player.nationality)
 
+    # remove duplicates
     league_lists = sorted(league_lists, key=str)
     country_list = sorted(list(dict.fromkeys(country_list)), key=str)
     season_list = sorted(list(dict.fromkeys(season_list)), key=str)
     position_list = sorted(list(dict.fromkeys(position_list)), key=str)
     nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
-    bar_table = create_plot('explore', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
-                            dateFrom, dateTo)
+    plots = create_plot('explore', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+                        dateFrom, dateTo)
 
-    bar = bar_table[0]
-    table1 = bar_table[1]
+    plot1 = plots[0]
+    table1 = plots[1]
 
-    return render_template('explore.html', plot=bar, seasons=season_list, leagues=league_lists, countries=country_list,
+    return render_template('explore.html', plot=plot1, seasons=season_list, leagues=league_lists, countries=country_list,
                            positions=position_list, nationalities=nationality_list, table1=table1)
 
 
-# @cache.memoize(50)
 def create_plot(page, season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
-    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net',
-                                     'link'])
+    # this function is to retrieve relevant data from database based on the filter parameters,
+    # and return graphs + tables for the page
+
+    # declare a data frame with coulmn names initialized to store filtered data for table drawing
+    df_table = pd.DataFrame(columns=['name', 'league', 'country', 'transfer_in', 'transfer_out', 'total_transfer',
+                                     'spent', 'received', 'net', 'link'])
+
+    # filtering process begins...
     transfers = Transfer.query
     if leagueid != 'all':
         transfers = transfers.filter(and_(Transfer.fromLeagueId == leagueid, Transfer.toLeagueId == leagueid))
@@ -145,36 +145,9 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
         clubFrom = Club.query.filter_by(id=transfer.fromId).first()
         clubTo = Club.query.filter_by(id=transfer.toId).first()
         value = transfer.value
-        """country_from = clubFrom.country
-        country_to = clubTo.country
-        player_position = Player.query.filter_by(id=transfer.playerId).first().position
-        player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age"""
+        leagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
+        leagueTo = League.query.filter_by(id=clubTo.leagueId).first()
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
-
-        """if leagueid != 'all':
-            if clubFrom.leagueId != leagueid or clubTo.leagueId != leagueid:
-                continue
-
-        if country != 'all':
-            if country_from != country or country_to != country:
-                continue
-
-        if position != 'all':
-            if player_position != position:
-                continue
-
-        if nationality != 'all':
-            if player_nationality != nationality:
-                continue
-
-        if ageFrom != '':
-            if player_age < ageFrom:
-                continue
-
-        if ageTo != '':
-            if player_age > ageTo:
-                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -189,7 +162,7 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
             if value > float(valueTo):
                 continue
 
-        temp = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
+        temp = [clubFrom.name, clubTo.name, transfer.fromId, transfer.toId]
         if transfer.season == '2017/2018':
             s17_18.append(temp)
         elif transfer.season == '2018/2019':
@@ -209,7 +182,7 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
             if transfer.season != season:
                 continue
 
-        pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
+        pair = [clubFrom.name, clubTo.name, transfer.fromId, transfer.toId]
         pair_clubs.append(pair)
 
         if clubFrom.name in df_table.values:
@@ -218,7 +191,7 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
             df_table.loc[df_table.name == clubFrom.name, 'received'] += value
             df_table.loc[df_table.name == clubFrom.name, 'net'] -= value
         else:
-            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value, clubFrom.id]
+            df_table.loc[clubFrom.name] = [clubFrom.name, leagueFrom.name, clubFrom.country, 0, 1, 1, 0, value, -value, clubFrom.id]
 
         if clubTo.name in df_table.values:
             df_table.loc[df_table.name == clubTo.name, 'transfer_in'] += 1
@@ -226,59 +199,61 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
             df_table.loc[df_table.name == clubTo.name, 'spent'] += value
             df_table.loc[df_table.name == clubTo.name, 'net'] += value
         else:
-            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value, clubTo.id]
+            df_table.loc[clubTo.name] = [clubTo.name, leagueTo.name, clubTo.country, 1, 0, 1, value, 0, value, clubTo.id]
+    # filtering process ends...
 
+    # this part is to check if there's any empty data frame. A network cannot be plotted with empty data frame so if
+    # there is any, we assign a dummy value to the data frame.
     if pair_clubs:
-        df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s17_18:
-        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s18_19:
-        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s19_20:
-        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
+    # different request will be handled differently here
+    # 'explore' is when we want to display the deault page
+    # 'explore2' is when user uses the filtering function to plot a customized network
     if page == 'explore':
         graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', False)
-        myTable = create_table1(df_table, 'init')
+        myTable = create_table1(df_table, 'init', 1)
         return graphJSON, myTable
     elif page == 'explore2':
         graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
-        myTable = create_table1(df_table, 're')
+        myTable = create_table1(df_table, 're', 1)
         return graphJSON, myTable
     elif page == 'statistics':
         cen = stats_table(df, 'init')
@@ -290,6 +265,9 @@ def create_plot(page, season, leagueid, country, position, nationality, ageFrom,
 
 @cache.memoize(50)
 def plot(df, df17_18, df18_19, df19_20, status, isBipartite):
+    # this function is responsible for creating the network graph
+
+    # create nodes of the network
     G = assign_nodes_edges(df)
     G17_18 = assign_nodes_edges(df17_18)
     G18_19 = assign_nodes_edges(df18_19)
@@ -361,6 +339,7 @@ def plot(df, df17_18, df18_19, df19_20, status, isBipartite):
     node_trace_18_19 = create_node_scatter(node_sizes_18_19)
     node_trace_19_20 = create_node_scatter(node_sizes_19_20)
 
+    # assign information of the nodes to relevant nodes
     for node in G.nodes():
         x, y = G.nodes[node]['pos']
         clubId = G.nodes[node]['id']
@@ -389,31 +368,28 @@ def plot(df, df17_18, df18_19, df19_20, status, isBipartite):
         node_trace_19_20['y'] += tuple([y])
         node_trace_19_20['text'] += tuple([clubId])
 
-    # add color to node points
+    # add colors and texts to node points
     for node, adjacencies in enumerate(G.adjacency()):
         node_trace['marker']['color'] += tuple([len(adjacencies[1])])
         node_info = 'Name: ' + str(adjacencies[0]) + '<br># of connections: ' + str(len(adjacencies[1]))
-        # node_trace['text'] += tuple([node_info])
         node_trace['hovertext'] += tuple([node_info])
 
     for node, adjacencies in enumerate(G17_18.adjacency()):
         node_trace_17_18['marker']['color'] += tuple([len(adjacencies[1])])
         node_info = 'Name: ' + str(adjacencies[0]) + '<br># of connections: ' + str(len(adjacencies[1]))
-        # node_trace['text'] += tuple([node_info])
         node_trace_17_18['hovertext'] += tuple([node_info])
 
     for node, adjacencies in enumerate(G18_19.adjacency()):
         node_trace_18_19['marker']['color'] += tuple([len(adjacencies[1])])
         node_info = 'Name: ' + str(adjacencies[0]) + '<br># of connections: ' + str(len(adjacencies[1]))
-        # node_trace['text'] += tuple([node_info])
         node_trace_18_19['hovertext'] += tuple([node_info])
 
     for node, adjacencies in enumerate(G19_20.adjacency()):
         node_trace_19_20['marker']['color'] += tuple([len(adjacencies[1])])
         node_info = 'Name: ' + str(adjacencies[0]) + '<br># of connections: ' + str(len(adjacencies[1]))
-        # node_trace['text'] += tuple([node_info])
         node_trace_19_20['hovertext'] += tuple([node_info])
 
+    # create the sliders to show dynamic networks
     years = ["2017/2018", "2018/2019", "2019/2020"]
     for year in years:
         slider_step = {"args": [
@@ -425,6 +401,7 @@ def plot(df, df17_18, df18_19, df19_20, status, isBipartite):
             "label": year,
             "method": "animate"}
 
+    # plot the network graph
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
                         # title='<br>Football Transfer Network',
@@ -511,6 +488,7 @@ def plot(df, df17_18, df18_19, df19_20, status, isBipartite):
 
 
 def assign_nodes_edges(df):
+    # this function is use to create nodes and edges for a network graph using the received data frame
     G = nx.Graph()
     for i in range(len(df)):
         f = df["From"][i]
@@ -522,7 +500,7 @@ def assign_nodes_edges(df):
 
 
 def adjust_node_size(G):
-    # adjust node size according to degree, etc
+    # this funciton is to adjust node size according to degree, etc
     d = nx.degree(G)
     node_sizes = []
     for i in d:
@@ -532,6 +510,7 @@ def adjust_node_size(G):
 
 
 def create_edge_scatter():
+    # this function is to adjust the appearance of the edges
     edge_trace = go.Scatter(
         x=[],
         y=[],
@@ -542,6 +521,7 @@ def create_edge_scatter():
 
 
 def create_node_scatter(node_sizes):
+    # this function is to adjust the appearance of the nodes
     node_trace = go.Scatter(
         x=[],
         y=[],
@@ -570,37 +550,41 @@ def create_node_scatter(node_sizes):
 
 
 @app.route('/table')
-def create_table1(df, status):
-    hyperlink = 'https://www.transfermarkt.co.uk'
-
-    """class ItemTable(Table):
-        table_id = 'main_table'
-        classes = ['table', 'table-bordered', 'table-striped']
-        # name = Col('Club Name')
-        name = LinkCol('Name', 'statistics', attr='name', url_kwargs=dict(id='link'), anchor_attrs={'href': hyperlink, 'target': '_blank'})
-        transfer_in = Col('Transfer In')
-        transfer_out = Col('Transfer Out')
-        total_transfer = Col('Total Transfer')
-        spent = Col('Total transfer fee spent')
-        received = Col('Total transfer fee received')
-        net = Col('Net Spent')"""
+def create_table1(df, status, extra_column):
+    # this function is used to create the fact tables for the network pages
 
     # Populate the table
     items = []
-
-    for clubName in df['name']:
-        spent = u"\xA3" + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
-        received = u"\xA3" + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
-        net = u"\xA3" + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
-        tempLink = hyperlink + df['link'][clubName]
-        items.append(dict(name=df['name'][clubName], link=tempLink, transfer_in=df['transfer_in'][clubName],
-                          transfer_out=df['transfer_out'][clubName], total_transfer=df['total_transfer'][clubName],
-                          spent=spent, received=received, net=net))
+    if extra_column == 1:
+        # for network by clubs
+        for clubName in df['name']:
+            spent = u"\xA3" + str(float("{0:.2f}".format(df['spent'][clubName]))) + 'm'
+            received = u"\xA3" + str(float("{0:.2f}".format(df['received'][clubName]))) + 'm'
+            net = u"\xA3" + str(float("{0:.2f}".format(df['net'][clubName]))) + 'm'
+            items.append(dict(name=df['name'][clubName], league=df['league'][clubName], country=df['country'][clubName],
+                              transfer_in=df['transfer_in'][clubName], transfer_out=df['transfer_out'][clubName],
+                              total_transfer=df['total_transfer'][clubName], spent=spent, received=received, net=net))
+    elif extra_column == 2:
+        # for network by leagues
+        for leagueName in df['name']:
+            spent = u"\xA3" + str(float("{0:.2f}".format(df['spent'][leagueName]))) + 'm'
+            received = u"\xA3" + str(float("{0:.2f}".format(df['received'][leagueName]))) + 'm'
+            net = u"\xA3" + str(float("{0:.2f}".format(df['net'][leagueName]))) + 'm'
+            items.append(dict(name=df['name'][leagueName], country=df['country'][leagueName],
+                              transfer_in=df['transfer_in'][leagueName], transfer_out=df['transfer_out'][leagueName],
+                              total_transfer=df['total_transfer'][leagueName], spent=spent, received=received, net=net))
+    else:
+        # for network by countries
+        for countryName in df['name']:
+            spent = u"\xA3" + str(float("{0:.2f}".format(df['spent'][countryName]))) + 'm'
+            received = u"\xA3" + str(float("{0:.2f}".format(df['received'][countryName]))) + 'm'
+            net = u"\xA3" + str(float("{0:.2f}".format(df['net'][countryName]))) + 'm'
+            items.append(dict(name=df['name'][countryName],
+                              transfer_in=df['transfer_in'][countryName], transfer_out=df['transfer_out'][countryName],
+                              total_transfer=df['total_transfer'][countryName], spent=spent, received=received,
+                              net=net))
 
     if status == 'init':
-        # table = ItemTable(items)
-        # return table
-        # proper_json = dict(data=items)
         return items
     elif status == 're':
         table = dict(data=items)
@@ -609,6 +593,9 @@ def create_table1(df, status):
 
 @app.route('/explore_filter_1', methods=['GET', 'POST'])
 def change_features():
+    # this function is responsible to receive requests from client side (network by clubs) when user uses the filtering
+    # function and return necessary response
+
     season = request.args['season']
     league = request.args['league']
     country = request.args['country']
@@ -628,6 +615,9 @@ def change_features():
 
 @app.route('/one', methods=['GET', 'POST'])
 def change_features_ego():
+    # this function is responsible to receive request from client side (network by clubs)
+    # and return an ego network as response to the page
+
     clicked = request.args['clicked']
     season = request.args['season']
     league = request.args['league']
@@ -647,14 +637,19 @@ def change_features_ego():
 
 @cache.memoize(50)
 def create_plot_ego(clicked, season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
-    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
+    # this function is similar to create_plot, but it is responsible to filter values for the
+    # ego network requested by users
+
+    df_table = pd.DataFrame(columns=['name', 'league', 'country', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
     df_table.set_index('name')
+
+    # start of filtering process...
     transfers = Transfer.query.filter(or_(Transfer.fromId == clicked, Transfer.toId == clicked))
     if league != 'all':
-        transfers = transfers.filter(or_(Transfer.fromLeagueId == league, Transfer.toLeagueId == league))
+        transfers = transfers.filter(and_(Transfer.fromLeagueId == league, Transfer.toLeagueId == league))
 
     if country != 'all':
-        transfers = transfers.filter(or_(Transfer.fromCountry == country, Transfer.toCountry == country))
+        transfers = transfers.filter(and_(Transfer.fromCountry == country, Transfer.toCountry == country))
 
     if position != 'all':
         transfers = transfers.join(Player).filter(Player.position == position)
@@ -686,6 +681,8 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
     for transfer in transfers:
         clubFrom = Club.query.filter_by(id=transfer.fromId).first()
         clubTo = Club.query.filter_by(id=transfer.toId).first()
+        leagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
+        leagueTo = League.query.filter_by(id=clubTo.leagueId).first()
         value = transfer.value
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
 
@@ -710,7 +707,7 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
         else:
             continue
 
-        temp = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
+        temp = [clubFrom.name, clubTo.name, transfer.fromId, transfer.toId]
         if transfer.season == '2017/2018':
             s17_18.append(temp)
         elif transfer.season == '2018/2019':
@@ -730,7 +727,7 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
             if transfer.season != season:
                 continue
 
-        pair = [clubFrom.name, clubTo.name, value, transfer.fromId, transfer.toId]
+        pair = [clubFrom.name, clubTo.name, transfer.fromId, transfer.toId]
         pair_clubs.append(pair)
 
         if clubFrom.name in df_table.values:
@@ -739,7 +736,7 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
             df_table.loc[df_table.name == clubFrom.name, 'received'] += value
             df_table.loc[df_table.name == clubFrom.name, 'net'] -= value
         else:
-            df_table.loc[clubFrom.name] = [clubFrom.name, 0, 1, 1, 0, value, -value]
+            df_table.loc[clubFrom.name] = [clubFrom.name, leagueFrom.name, clubFrom.country, 0, 1, 1, 0, value, -value]
 
         if clubTo.name in df_table.values:
             df_table.loc[df_table.name == clubTo.name, 'transfer_in'] += 1
@@ -747,16 +744,17 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
             df_table.loc[df_table.name == clubTo.name, 'spent'] += value
             df_table.loc[df_table.name == clubTo.name, 'net'] += value
         else:
-            df_table.loc[clubTo.name] = [clubTo.name, 1, 0, 1, value, 0, value]
+            df_table.loc[clubTo.name] = [clubTo.name, leagueTo.name, clubTo.country, 1, 0, 1, value, 0, value]
+    # end of filtering process...
 
+    # grouping the focal nodes with alters
     for i in range(len(alter_id)):
         alterAsFrom = Transfer.query.filter_by(fromId=alter_id[i])
         for a in alterAsFrom:
             if a.toId in alter_id:
                 clubFrom = Club.query.filter_by(id=alter_id[i]).first()
                 clubTo = Club.query.filter_by(id=a.toId).first()
-                value = alterAsFrom.value
-                temp = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
+                temp = [clubFrom.name, clubTo.name, alter_id[i], a.toId]
                 if transfer.season == '2017/2018':
                     s17_18.append(temp)
                 elif transfer.season == '2018/2019':
@@ -772,7 +770,7 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
                 if season != 'all':
                     if transfer.season != season:
                         continue
-                pair = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
+                pair = [clubFrom.name, clubTo.name, alter_id[i], a.toId]
                 pair_clubs.append(pair)
 
         alterAsTo = Transfer.query.filter_by(toId=alter_id[i])
@@ -780,8 +778,7 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
             if a.fromId in alter_id:
                 clubFrom = Club.query.filter_by(id=a.fromId).first()
                 clubTo = Club.query.filter_by(id=alter_id[i]).first()
-                value = alterAsFrom.value
-                temp = [clubFrom.name, clubTo.name, value, a.toId, alter_id[i]]
+                temp = [clubFrom.name, clubTo.name, a.toId, alter_id[i]]
                 if transfer.season == '2017/2018':
                     s17_18.append(temp)
                 elif transfer.season == '2018/2019':
@@ -797,54 +794,50 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
                 if season != 'all':
                     if transfer.season != season:
                         continue
-                pair = [clubFrom.name, clubTo.name, value, alter_id[i], a.toId]
+                pair = [clubFrom.name, clubTo.name, alter_id[i], a.toId]
                 pair_clubs.append(pair)
 
     if pair_clubs:
-        df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(pair_clubs, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s17_18:
-        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s18_19:
-        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s19_20:
-        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     # Populate the table
     items = []
@@ -854,7 +847,8 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
         received = u"\xA3" + str(float("{0:.2f}".format(df_table['received'][clubName]))) + 'm'
         net = u"\xA3" + str(float("{0:.2f}".format(df_table['net'][clubName]))) + 'm'
 
-        items.append(dict(name=df_table['name'][clubName], transfer_in=df_table['transfer_in'][clubName],
+        items.append(dict(name=df_table['name'][clubName], league=df_table['league'][clubName],
+                          country=df_table['country'][clubName], transfer_in=df_table['transfer_in'][clubName],
                           transfer_out=df_table['transfer_out'][clubName],
                           total_transfer=df_table['total_transfer'][clubName],
                           spent=spent, received=received, net=net))
@@ -863,13 +857,15 @@ def create_plot_ego(clicked, season, league, country, position, nationality, age
     egotab = dict(data=items)
 
     graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
-    # egotab = ego_table(clicked, season, league, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo)
     return graphJSON, egotab
 
 
 # --------------Stats table-----------------------------------------------------------------
 @app.route('/statistics/')
 def statistics():
+    # this function is responsible to display the statistics table in the statistic page
+
+    # default filter values
     season = 'all'
     leagueid = 'premier-leaguetransferswettbewerbGB1'
     country = 'all'
@@ -888,6 +884,7 @@ def statistics():
     position_list = []
     nationality_list = []
 
+    # to populate the values of the dropdown lists at the filtering section of the page
     leagues = League.query.all()
     for league in leagues:
         temp = dict()
@@ -910,8 +907,8 @@ def statistics():
     position_list = sorted(list(dict.fromkeys(position_list)), key=str)
     nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
-    table = create_plot('statistics', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
-                         dateFrom, dateTo)
+    table = create_plot('statistics', season, leagueid, country, position, nationality, ageFrom, ageTo, valueFrom,
+                        valueTo, dateFrom, dateTo)
 
     return render_template('statistics.html', table=table[0], seasons=season_list,
                            leagues=league_lists, countries=country_list,
@@ -921,6 +918,8 @@ def statistics():
 
 @app.route('/re_statistics/')
 def re_statistics():
+    # this function is responsible to  receive request from client side for statistic page and return a cuztomized
+    # statistic page based on the filter value sent from client side
     season = request.args['season']
     league = request.args['league']
     country = request.args['country']
@@ -948,20 +947,11 @@ def re_statistics():
 
 
 def stats_table(df, status):
-    # Declare your table
-    class degree(Table):
-        table_id = 'centrality'
-        classes = ['table', 'table-bordered', 'table-striped']
-        name = Col('Name')
-        deg = Col('Degree Centrality')
-        bet = Col('Betweenness Centrality')
-        clo = Col('Closeness Centrality')
-        eig = Col('Eigenvector Centrality')
-
-    # Populate the table
+    # this function is responsible to draw the centrality table and calculate reciprocity for statistic page
     items = []
-    G = assign_nodes_edges(df)
 
+    # centrality calculations using libraries from networkx
+    G = assign_nodes_edges(df)
     bc = nx.betweenness_centrality(G)
     cc = nx.closeness_centrality(G)
     ec = nx.eigenvector_centrality(G)
@@ -978,13 +968,11 @@ def stats_table(df, status):
             numer += 1
 
     reciprocity = numer/denom
-
     if status == 'init':
-        # table = degree(items)
-        return items, numer, denom, reciprocity
+        return items, numer, denom, round(reciprocity, 4)
     elif status == 're':
         table = dict(data=items)
-        return table, numer, denom, reciprocity
+        return table, numer, denom, round(reciprocity, 4)
 
 
 # --------------------------league level----------------------------------------------------
@@ -992,6 +980,9 @@ def stats_table(df, status):
 @app.route('/explore_league/')
 @cache.cached(timeout=50)
 def explore_league():
+    # this function is for the 'explore - network by leagues' page
+
+    # default filter parameters
     season = 'all'
     country = 'England'
     position = 'all'
@@ -1008,6 +999,7 @@ def explore_league():
     position_list = []
     nationality_list = []
 
+    # populate values for dropdown lists
     leagues = League.query.all()
     for league in leagues:
         country_list.append(league.country)
@@ -1018,36 +1010,33 @@ def explore_league():
 
     players = Player.query.all()
     for player in players:
-        if player.position == '':
-            continue
-        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
-            position_list.append('Forward')
-        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
-            position_list.append('Defender')
-        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
-            position_list.append('Midfielder')
-        else:
-            position_list.append(player.position)
+        position_list.append(player.position)
         nationality_list.append(player.nationality)
 
+    # remove duplicates
     country_list = sorted(list(dict.fromkeys(country_list)), key=str)
     season_list = sorted(list(dict.fromkeys(season_list)), key=str)
     position_list = sorted(list(dict.fromkeys(position_list)), key=str)
     nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
-    bar_table = create_plot_league('explore_league', season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
-                            dateFrom, dateTo)
+    plots = create_plot_league('explore_league', season, country, position, nationality, ageFrom, ageTo, valueFrom,
+                                   valueTo, dateFrom, dateTo)
 
-    bar = bar_table[0]
-    table1 = bar_table[1]
+    plot1 = plots[0]
+    table1 = plots[1]
 
-    return render_template('explore_league.html', plot=bar, seasons=season_list, countries=country_list,
+    return render_template('explore_league.html', plot=plot1, seasons=season_list, countries=country_list,
                            positions=position_list, nationalities=nationality_list, table1=table1)
 
 
 def create_plot_league(page, season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
-    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net', 'link'])
+    # this function is to retrieve relevant data from database based on the filter parameters,
+    # and return graphs + tables for the page
 
+    df_table = pd.DataFrame(columns=['name', 'country', 'transfer_in', 'transfer_out', 'total_transfer', 'spent',
+                                     'received', 'net', 'link'])
+
+    # filtering process starts...
     transfers = Transfer.query
     if country != 'all':
         transfers = transfers.filter(and_(Transfer.fromCountry == country, Transfer.toCountry == country))
@@ -1085,32 +1074,8 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
         LeagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
         LeagueTo = League.query.filter_by(id=clubTo.leagueId).first()
         value = transfer.value
-        """country_from = LeagueFrom.country
-        country_to = LeagueTo.country
-        player_position = Player.query.filter_by(id=transfer.playerId).first().position
-        player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age"""
+
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
-
-        """if country != 'all':
-            if country_from != country or country_to != country:
-                continue
-
-        if position != 'all':
-            if player_position != position:
-                continue
-
-        if nationality != 'all':
-            if player_nationality != nationality:
-                continue
-
-        if ageFrom != '':
-            if player_age < ageFrom:
-                continue
-
-        if ageTo != '':
-            if player_age > ageTo:
-                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -1125,7 +1090,7 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
             if value > float(valueTo):
                 continue
 
-        temp = [LeagueFrom.name, LeagueTo.name, value, LeagueFrom.id, LeagueTo.id]
+        temp = [LeagueFrom.name, LeagueTo.name, LeagueFrom.id, LeagueTo.id]
         if transfer.season == '2017/2018':
             s17_18.append(temp)
         elif transfer.season == '2018/2019':
@@ -1145,7 +1110,7 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
             if transfer.season != season:
                 continue
 
-        pair = [LeagueFrom.name, LeagueTo.name, value, LeagueFrom.id, LeagueTo.id]
+        pair = [LeagueFrom.name, LeagueTo.name, LeagueFrom.id, LeagueTo.id]
         pair_leagues.append(pair)
 
         if LeagueFrom.name in df_table.values:
@@ -1154,7 +1119,7 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
             df_table.loc[df_table.name == LeagueFrom.name, 'received'] += value
             df_table.loc[df_table.name == LeagueFrom.name, 'net'] -= value
         else:
-            df_table.loc[LeagueFrom.name] = [LeagueFrom.name, 0, 1, 1, 0, value, -value, LeagueFrom.href]
+            df_table.loc[LeagueFrom.name] = [LeagueFrom.name, LeagueFrom.country, 0, 1, 1, 0, value, -value, LeagueFrom.href]
 
         if LeagueTo.name in df_table.values:
             df_table.loc[df_table.name == LeagueTo.name, 'transfer_in'] += 1
@@ -1162,59 +1127,56 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
             df_table.loc[df_table.name == LeagueTo.name, 'spent'] += value
             df_table.loc[df_table.name == LeagueTo.name, 'net'] += value
         else:
-            df_table.loc[LeagueTo.name] = [LeagueTo.name, 1, 0, 1, value, 0, value, LeagueTo.href]
+            df_table.loc[LeagueTo.name] = [LeagueTo.name, LeagueTo.country, 1, 0, 1, value, 0, value, LeagueTo.href]
+    # filtering process ends...
 
     if pair_leagues:
-        df = pd.DataFrame(pair_leagues, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(pair_leagues, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s17_18:
-        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s18_19:
-        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s19_20:
-        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if page == 'explore_league':
         graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', False)
-        myTable = create_table1(df_table, 'init')
+        myTable = create_table1(df_table, 'init', 2)
         return graphJSON, myTable
     elif page == 'explore_league2':
         graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
-        myTable = create_table1(df_table, 're')
+        myTable = create_table1(df_table, 're', 2)
         return graphJSON, myTable
     elif page == 'statistics2':
         cen = stats_table(df, 're')
@@ -1223,6 +1185,9 @@ def create_plot_league(page, season, country, position, nationality, ageFrom, ag
 
 @app.route('/explore_league_filter', methods=['GET', 'POST'])
 def change_features_league():
+    # this function is responsible to receive request from client side
+    # and return customized graph and table based on value sent from client side
+
     season = request.args['season']
     country = request.args['country']
     position = request.args['position']
@@ -1241,6 +1206,9 @@ def change_features_league():
 
 @app.route('/league_one', methods=['GET', 'POST'])
 def changes_features_league_ego():
+    # this function is responsible to receive request from client side
+    # and return customized ego network graph and table based on value sent from client side
+
     clicked = request.args['clicked']
     season = request.args['season']
     country = request.args['country']
@@ -1260,12 +1228,15 @@ def changes_features_league_ego():
 
 def create_plot_league_ego(clicked, season, country, position, nationality, ageFrom, ageTo, valueFrom,
                            valueTo, dateFrom, dateTo):
-    df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net'])
-    # df_table.set_index('name')
+    # this function is to retrieve relevant data from database based on the filter parameters,
+    # and return customized ego network graphs + tables
 
+    df_table = pd.DataFrame(columns=['name', 'country', 'transfer_in', 'transfer_out', 'total_transfer', 'spent',
+                                     'received', 'net'])
+    # filtering process starts...
     transfers = Transfer.query.filter(or_(Transfer.fromLeagueId == clicked, Transfer.toLeagueId == clicked))
     if country != 'all':
-        transfers = transfers.filter(or_(Transfer.fromCountry == country, Transfer.toCountry == country))
+        transfers = transfers.filter(and_(Transfer.fromCountry == country, Transfer.toCountry == country))
 
     if position != 'all':
         transfers = transfers.join(Player).filter(Player.position == position)
@@ -1315,7 +1286,7 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
             if value > float(valueTo):
                 continue
 
-        temp = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
+        temp = [leagueFrom.name, leagueTo.name, leagueFrom.id, leagueTo.id]
         if transfer.season == '2017/2018':
             s17_18.append(temp)
         elif transfer.season == '2018/2019':
@@ -1343,7 +1314,7 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
             if transfer.season != season:
                 continue
 
-        pair = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
+        pair = [leagueFrom.name, leagueTo.name, leagueFrom.id, leagueTo.id]
         pair_leagues.append(pair)
 
         # for the tables
@@ -1353,7 +1324,7 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
             df_table.loc[df_table.name == leagueFrom.name, 'received'] += value
             df_table.loc[df_table.name == leagueFrom.name, 'net'] -= value
         else:
-            df_table.loc[leagueFrom.name] = [leagueFrom.name, 0, 1, 1, 0, value, -value]
+            df_table.loc[leagueFrom.name] = [leagueFrom.name, leagueFrom.country, 0, 1, 1, 0, value, -value]
 
         if leagueTo.name in df_table.values:
             df_table.loc[df_table.name == leagueTo.name, 'transfer_in'] += 1
@@ -1361,7 +1332,8 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
             df_table.loc[df_table.name == leagueTo.name, 'spent'] += value
             df_table.loc[df_table.name == leagueTo.name, 'net'] += value
         else:
-            df_table.loc[leagueTo.name] = [leagueTo.name, 1, 0, 1, value, 0, value]
+            df_table.loc[leagueTo.name] = [leagueTo.name, leagueTo.country, 1, 0, 1, value, 0, value]
+    # filtering process ends...
 
     for i in range(len(alter_id)):
         alterAsFrom = Transfer.query.filter_by(fromId=alter_id[i])
@@ -1371,8 +1343,7 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
                 clubTo = Club.query.filter_by(id=a.toId).first()
                 leagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
                 leagueTo = League.query.filter_by(id=clubTo.leagueId).first()
-                value = alterAsFrom.value
-                temp = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
+                temp = [leagueFrom.name, leagueTo.name, leagueFrom.id, leagueTo.id]
                 if transfer.season == '2017/2018':
                     s17_18.append(temp)
                 elif transfer.season == '2018/2019':
@@ -1388,7 +1359,7 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
                 if season != 'all':
                     if transfer.season != season:
                         continue
-                pair = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
+                pair = [leagueFrom.name, leagueTo.name, leagueFrom.id, leagueTo.id]
                 pair_leagues.append(pair)
 
         alterAsTo = Transfer.query.filter_by(toId=alter_id[i])
@@ -1398,8 +1369,7 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
                 clubTo = Club.query.filter_by(id=alter_id[i]).first()
                 leagueFrom = League.query.filter_by(id=clubFrom.leagueId).first()
                 leagueTo = League.query.filter_by(id=clubTo.leagueId).first()
-                value = alterAsFrom.value
-                temp = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
+                temp = [leagueFrom.name, leagueTo.name, leagueFrom.id, leagueTo.id]
                 if transfer.season == '2017/2018':
                     s17_18.append(temp)
                 elif transfer.season == '2018/2019':
@@ -1415,54 +1385,50 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
                 if season != 'all':
                     if transfer.season != season:
                         continue
-                pair = [leagueFrom.name, leagueTo.name, value, leagueFrom.id, leagueTo.id]
+                pair = [leagueFrom.name, leagueTo.name, leagueFrom.id, leagueTo.id]
                 pair_leagues.append(pair)
 
     if pair_leagues:
-        df = pd.DataFrame(pair_leagues, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(pair_leagues, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s17_18:
-        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s18_19:
-        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s19_20:
-        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     # Populate the table
     items = []
@@ -1472,7 +1438,8 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
         received = u"\xA3" + str(float("{0:.2f}".format(df_table['received'][leagueName]))) + 'm'
         net = u"\xA3" + str(float("{0:.2f}".format(df_table['net'][leagueName]))) + 'm'
 
-        items.append(dict(name=df_table['name'][leagueName], transfer_in=df_table['transfer_in'][leagueName],
+        items.append(dict(name=df_table['name'][leagueName], country=df_table['country'][leagueName],
+                          transfer_in=df_table['transfer_in'][leagueName],
                           transfer_out=df_table['transfer_out'][leagueName],
                           total_transfer=df_table['total_transfer'][leagueName],
                           spent=spent, received=received, net=net))
@@ -1488,6 +1455,9 @@ def create_plot_league_ego(clicked, season, country, position, nationality, ageF
 @app.route('/explore_country/')
 @cache.cached(timeout=50)
 def explore_country():
+    # this function is for the 'explore - network by leagues' page
+
+    # default filter values
     season = 'all'
     position = 'Forward'
     nationality = 'England'
@@ -1502,40 +1472,38 @@ def explore_country():
     position_list = []
     nationality_list = []
 
+    # populate values for dropdown menus at the filtering section
     transfers = Transfer.query.all()
     for transfer in transfers:
         season_list.append(transfer.season)
 
     players = Player.query.all()
     for player in players:
-        if player.position == '':
-            continue
-        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
-            position_list.append('Forward')
-        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
-            position_list.append('Defender')
-        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
-            position_list.append('Midfielder')
-        else:
-            position_list.append(player.position)
+        position_list.append(player.position)
         nationality_list.append(player.nationality)
 
+    # remove duplicates
     season_list = sorted(list(dict.fromkeys(season_list)), key=str)
     position_list = sorted(list(dict.fromkeys(position_list)), key=str)
     nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
-    bar_table = create_plot_country('explore_country', season, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
-                                    dateFrom, dateTo)
+    plots = create_plot_country('explore_country', season, position, nationality, ageFrom, ageTo, valueFrom, valueTo,
+                                dateFrom, dateTo)
 
-    bar = bar_table[0]
-    table1 = bar_table[1]
+    plot1 = plots[0]
+    table1 = plots[1]
 
-    return render_template('explore_country.html', plot=bar, seasons=season_list,
+    return render_template('explore_country.html', plot=plot1, seasons=season_list,
                            positions=position_list, nationalities=nationality_list, table1=table1)
 
 
 def create_plot_country(page, season, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+    # this function is to retrieve relevant data from database based on the filter parameters,
+    # and return graphs + tables for the page
+
     df_table = pd.DataFrame(columns=['name', 'transfer_in', 'transfer_out', 'total_transfer', 'spent', 'received', 'net', 'link'])
+
+    # filtering process starts...
     transfers = Transfer.query
     # position
     if position != 'all':
@@ -1570,26 +1538,7 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
         value = transfer.value
         country_from = clubFrom.country
         country_to = clubTo.country
-        """player_position = Player.query.filter_by(id=transfer.playerId).first().position
-        player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age"""
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
-
-        """if position != 'all':
-            if player_position != position:
-                continue
-
-        if nationality != 'all':
-            if player_nationality != nationality:
-                continue
-
-        if ageFrom != '':
-            if player_age < ageFrom:
-                continue
-
-        if ageTo != '':
-            if player_age > ageTo:
-                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -1604,7 +1553,7 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
             if value > float(valueTo):
                 continue
 
-        temp = [country_from, country_to, value, 1, 1]
+        temp = [country_from, country_to, 1, 1]
         if transfer.season == '2017/2018':
             s17_18.append(temp)
         elif transfer.season == '2018/2019':
@@ -1624,7 +1573,7 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
             if transfer.season != season:
                 continue
 
-        pair = [country_from, country_to, value, 1, 1]
+        pair = [country_from, country_to, 1, 1]
         pair_countries.append(pair)
 
         if country_from in df_table.values:
@@ -1642,58 +1591,55 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
             df_table.loc[df_table.name == country_to, 'net'] += value
         else:
             df_table.loc[country_to] = [country_to, 1, 0, 1, value, 0, value, '#']
+    # filtering process ends...
 
     if pair_countries:
-        df = pd.DataFrame(pair_countries, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(pair_countries, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s17_18:
-        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s18_19:
-        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To',  'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s19_20:
-        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if page == 'explore_country':
         graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', False)
-        myTable = create_table1(df_table, 'init')
+        myTable = create_table1(df_table, 'init', 0)
         return graphJSON, myTable
     elif page == 'explore_country2':
         graphJSON = plot(df, df17_18, df18_19, df19_20, 're', False)
-        myTable = create_table1(df_table, 're')
+        myTable = create_table1(df_table, 're', 0)
         return graphJSON, myTable
     elif page == 'statistics2':
         cen = stats_table(df, 're')
@@ -1702,6 +1648,9 @@ def create_plot_country(page, season, position, nationality, ageFrom, ageTo, val
 
 @app.route('/explore_country_filter', methods=['GET', 'POST'])
 def change_features_country():
+    # this function is responsible to receive request from client side
+    # and return customized graph and table based on value sent from client side
+
     season = request.args['season']
     position = request.args['position']
     nationality = request.args['nationality']
@@ -1717,11 +1666,14 @@ def change_features_country():
     return json.dumps(graphJSON, cls=plotly.utils.PlotlyJSONEncoder)
 
 
-# ------------------------------------------------------------------------------------------
+# -------------------------network by players (ego network)---------------------------------
 # ------------------------------------------------------------------------------------------
 @app.route('/explore_player')
 @cache.cached(timeout=50)
 def explore_player():
+    # this function is for the 'explore - network by leagues' page
+
+    # default filter values
     season = 'all'
     position = 'all'
     nationality = 'Brazil'
@@ -1738,6 +1690,7 @@ def explore_player():
     position_list = []
     nationality_list = []
 
+    # populate values for dropdown menus
     leagues = League.query.all()
     for league in leagues:
         country_list.append(league.country)
@@ -1748,36 +1701,33 @@ def explore_player():
 
     players = Player.query.all()
     for player in players:
-        if player.position == '':
-            continue
-        if player.position == 'Centre-Forward' or player.position == 'Second Striker' or player.position == 'Forward' or player.position == 'Left Winger' or player.position == 'Right Winger':
-            position_list.append('Forward')
-        elif player.position == 'Right-Back' or player.position == 'Defender' or player.position == 'Left-Back' or player.position == 'Centre-Back':
-            position_list.append('Defender')
-        elif player.position == 'Central Midfield' or player.position == 'Attacking Midfield' or player.position == 'Midfielder' or player.position == 'Right Midfield' or player.position == 'Left Midfield' or player.position == 'Defensive Midfield':
-            position_list.append('Midfielder')
-        else:
-            position_list.append(player.position)
+        position_list.append(player.position)
         nationality_list.append(player.nationality)
 
+    # remove duplicates
     country_list = sorted(list(dict.fromkeys(country_list)), key=str)
     season_list = sorted(list(dict.fromkeys(season_list)), key=str)
     position_list = sorted(list(dict.fromkeys(position_list)), key=str)
     nationality_list = sorted(list(dict.fromkeys(nationality_list)), key=str)
 
-    bar_table = create_plot_player('explore_player', season, country, position, nationality, ageFrom, ageTo, valueFrom,
+    plots = create_plot_player('explore_player', season, country, position, nationality, ageFrom, ageTo, valueFrom,
                                    valueTo,
                                    dateFrom, dateTo)
 
-    bar = bar_table[0]
-    table1 = bar_table[1]
+    plot1 = plots[0]
+    table1 = plots[1]
 
-    return render_template('explore_player.html', plot=bar, seasons=season_list, countries=country_list,
+    return render_template('explore_player.html', plot=plot1, seasons=season_list, countries=country_list,
                            positions=position_list, nationalities=nationality_list, table1=table1)
 
 
 def create_plot_player(page, season, country, position, nationality, ageFrom, ageTo, valueFrom, valueTo, dateFrom, dateTo):
+    # this function is to retrieve relevant data from database based on the filter parameters,
+    # and return graphs + tables for the page
+
     df_table = pd.DataFrame(columns=['player_nationality', 'destination', 'total_transfer'])
+
+    # filtering process starts...
     transfers = Transfer.query
     if country != 'all':
         transfers = transfers.filter(Transfer.toCountry == country)
@@ -1813,30 +1763,8 @@ def create_plot_player(page, season, country, position, nationality, ageFrom, ag
         clubTo = Club.query.filter_by(id=transfer.toId).first()
         value = transfer.value
         country_to = clubTo.country
-        player_position = Player.query.filter_by(id=transfer.playerId).first().position
         player_nationality = Player.query.filter_by(id=transfer.playerId).first().nationality
-        player_age = Player.query.filter_by(id=transfer.playerId).first().age
         date = datetime.utcfromtimestamp(int(transfer.timestamp)).strftime('%Y-%m-%d')
-
-        """if country != 'all':
-            if country_to != country:
-                continue
-
-        if position != 'all':
-            if player_position != position:
-                continue
-
-        if nationality != 'all':
-            if player_nationality != nationality:
-                continue
-
-        if ageFrom != '':
-            if player_age < ageFrom:
-                continue
-
-        if ageTo != '':
-            if player_age > ageTo:
-                continue"""
 
         if value[-1] == 'k':
             value = float(value[1:-1]) / 1000
@@ -1853,7 +1781,7 @@ def create_plot_player(page, season, country, position, nationality, ageFrom, ag
 
         pval = player_nationality + ' - player'
         dval = country_to + ' - destination'
-        temp = [pval, dval, value, '#', '#']
+        temp = [pval, dval, '#', '#']
         if transfer.season == '2017/2018':
             s17_18.append(temp)
         elif transfer.season == '2018/2019':
@@ -1876,7 +1804,7 @@ def create_plot_player(page, season, country, position, nationality, ageFrom, ag
         pval = player_nationality + ' - player'
         dval = country_to + ' - destination'
 
-        pair = [pval, dval, value, '#', '#']
+        pair = [pval, dval, '#', '#']
         pair_playerCountry.append(pair)
         if not df_table.loc[(df_table['player_nationality'] == player_nationality) & (df_table['destination'] == country_to)].empty:
             df_table.loc[(df_table['player_nationality'] == player_nationality) & (
@@ -1885,50 +1813,47 @@ def create_plot_player(page, season, country, position, nationality, ageFrom, ag
             temp_df = pd.DataFrame([[player_nationality, country_to, 1]],
                                    columns=['player_nationality', 'destination', 'total_transfer'])
             df_table = pd.concat([df_table, temp_df])
+    # filtering process ends...
 
     if pair_playerCountry:
-        df = pd.DataFrame(pair_playerCountry, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(pair_playerCountry, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s17_18:
-        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(s17_18, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df17_18 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s18_19:
-        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(s18_19, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df18_19 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if s19_20:
-        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(s19_20, columns=['From', 'To', 'From Id', 'To Id'])
     else:
         data = {'From': ['Invalid Filter'],
                 'To': ['Invalid Filter'],
-                'Value': [500],
                 'From Id': '-',
                 'To Id': '-'
                 }
-        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'Value', 'From Id', 'To Id'])
+        df19_20 = pd.DataFrame(data, columns=['From', 'To', 'From Id', 'To Id'])
 
     if page == 'explore_player':
         graphJSON = plot(df, df17_18, df18_19, df19_20, 'init', True)
@@ -1953,6 +1878,9 @@ def create_table_player(df, status):
 
 @app.route('/explore_player_filter', methods=['GET', 'POST'])
 def change_features_player():
+    # this function is responsible to receive request from client side
+    # and return customized graph and table based on value sent from client side
+
     season = request.args['season']
     country = request.args['country']
     position = request.args['position']
