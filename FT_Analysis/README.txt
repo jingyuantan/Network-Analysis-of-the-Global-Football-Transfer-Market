@@ -23,7 +23,7 @@ FT_Analysis\
 The code explanation is available as comments in routes.py.
 
 
-To run this application, change current directory to /FT_Analysis/app and execute the following code:
+To run this application on your server, change current directory to /FT_Analysis/app and execute the following code:
 $ python3 __init__.py
 
 To run it at the background without disconnecting it when the terminal is closed, run this command:
