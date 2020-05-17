@@ -1,3 +1,5 @@
+This project is currently hosting on http://csi420-01-vm7.ucd.ie:8000/
+
 File structure (Description of major files and folders only):
 FT_Analysis\
   -----------
