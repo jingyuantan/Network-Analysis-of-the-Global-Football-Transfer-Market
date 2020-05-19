@@ -1,3 +1,7 @@
+Developer: Jing Yuan Tan
+Supervisor: Derek Greene
+Project Title: Network Analysis of the Global Football Transfer Market
+
 File structure (Description of major files and folders only):
 FT_Analysis\
   -----------
